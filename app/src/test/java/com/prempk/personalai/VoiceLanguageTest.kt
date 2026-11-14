@@ -11,6 +11,7 @@ class VoiceLanguageTest {
 
     @Test fun defaultsLatinAndEnglishInputToEnglishIndia() {
         assertEquals("en-IN", VoiceLanguage.detect("What time is it?"))
-        assertEquals("en-IN", VoiceLanguage.detect("YouTube kholo"))
+        assertEquals("hi-IN", VoiceLanguage.detect("YouTube kholo"))
+        assertEquals("hi-IN", VoiceLanguage.detect("abhi kitne baje hain"))
     }
 }
