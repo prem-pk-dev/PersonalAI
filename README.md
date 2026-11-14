@@ -4,11 +4,13 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 
 ## Current MVP features
 
-- Voice and text command entry.
+- Voice and text command entry with a visible Run Text Command button.
 - User-started wake listening while the app remains open.
 - Two-step interaction: say "Hey Assistant", then speak the command; combined wake phrase + command is also supported.
 - Persisted speech-language selector: English (India) and Hindi (India).
 - Android SpeechRecognizer and TextToSpeech.
+- Deterministic command classification extracted into an Android-independent Kotlin parser.
+- Unit tests for Hindi/English app, call, SMS, alarm, unknown, and whitespace cases.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Permission-gated contact lookup and system dialer handoff for user confirmation.
 - SMS composer with optional dictated message-body prefill; user reviews and sends.
@@ -29,7 +31,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 3. Sync the Gradle project and run the `app` configuration on an Android 13–16 device/emulator.
 4. Grant microphone permission. Contacts permission is requested only when needed.
 
-GitHub Actions builds a debug APK and uploads it as the `personalai-debug-apk` artifact after a successful run. Artifacts are temporary (14-day retention).
+GitHub Actions runs `testDebugUnitTest` before `assembleDebug`, then uploads the debug APK as the `personalai-debug-apk` artifact after a successful run. Artifacts are temporary (14-day retention).
 
 ## Branch strategy
 
@@ -43,4 +45,4 @@ Read `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and `docs/COMMANDS.md` before 
 
 ## Current validation status
 
-A CI run for commit `d191288e62089edb00b388caf51a571f042cba19` successfully built the debug APK and uploaded the artifact. Subsequent speech-language-selector changes are being revalidated; the latest branch head must pass CI before it is considered green. No physical Android device test has yet been recorded.
+CI for commit `ecc07952859a23384cb7ac36f540e365d42187e1` passed after the speech-language state fix. The latest parser, unit-test, UI-button, and CI workflow changes still require a successful run for the exact latest branch head. No physical Android device test has yet been recorded.
