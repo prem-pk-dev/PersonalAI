@@ -39,6 +39,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        speechLanguageTag = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getString(KEY_SPEECH_LANGUAGE, "en-IN") ?: "en-IN"
         tts = TextToSpeech(this, this)
         buildUi()
         ensureAudioPermission()
@@ -98,7 +100,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(0, 18, 0, 8)
         }
 
+        val languageButton = makeButton(languageButtonLabel()) {
+            speechLanguageTag = if (speechLanguageTag == "hi-IN") "en-IN" else "hi-IN"
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                .putString(KEY_SPEECH_LANGUAGE, speechLanguageTag).apply()
+            languageButtonTextRefresh(this)
+            runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
+            respond(if (speechLanguageTag == "hi-IN") "भाषा हिंदी चुनी गई है।" else "English selected.")
+        }
         val controls = listOf(
+            languageButton,
             makeButton("START LISTENING  🎙") { startWakeListening() },
             makeButton("STOP LISTENING") { stopListening() },
             makeButton("RUN TEXT COMMAND  ➜") {
@@ -135,6 +146,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setBackgroundColor(0xFF087E91.toInt())
             setOnClickListener { action() }
         }
+
+    private fun languageButtonLabel() =
+        if (speechLanguageTag == "hi-IN") "VOICE LANGUAGE: HINDI (INDIA)" else "VOICE LANGUAGE: ENGLISH (INDIA)"
+
+    private fun languageButtonTextRefresh(button: Button) {
+        button.text = languageButtonLabel()
+    }
 
     private fun ensureAudioPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -200,7 +218,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, speechLanguageTag)
             }
             recognizer?.startListening(intent)
         } catch (exception: Exception) {
@@ -349,7 +367,11 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     override fun onInit(statusCode: Int) {
         if (statusCode == TextToSpeech.SUCCESS) {
-            tts?.language = Locale.getDefault()
+            val selectedLocale = Locale.forLanguageTag(speechLanguageTag)
+            val result = tts?.setLanguage(selectedLocale)
+            if (result == TextToSpeech.LANG_NOT_SUPPORTED || result == TextToSpeech.LANG_MISSING_DATA) {
+                tts?.language = Locale.ENGLISH
+            }
         }
     }
 
@@ -378,5 +400,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     companion object {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
+        private const val PREFS_NAME = "personalai_preferences"
+        private const val KEY_SPEECH_LANGUAGE = "speech_language"
     }
 }
