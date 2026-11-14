@@ -4,7 +4,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 
 ## Current MVP features
 
-- Voice and text command entry with a visible Run Text Command button.
+- Voice and text command entry with a Siri-inspired dark interface, animated gradient voice orb, tap-to-listen interaction, and compact command composer.
 - User-started wake listening while the app remains open.
 - Two-step interaction: say "Hey Assistant", then speak the command; combined wake phrase + command is also supported.
 - Persisted speech-language selector: English (India) and Hindi (India).
@@ -15,7 +15,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 - If multiple equally ranked contacts match, the app asks the user to choose instead of guessing.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Permission-gated contact lookup and system dialer handoff for user confirmation.
-- SMS composer with optional dictated message-body prefill; user reviews and sends.
+- SMS composer supports phone-number or contact-name recipients, optional dictated message-body prefill, ambiguity chooser, and manual user review/send.
 - Alarm screen shortcut and visible command history.
 
 ## Honest platform limitations
@@ -47,4 +47,4 @@ Read `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and `docs/COMMANDS.md` before 
 
 ## Current validation status
 
-The latest fully verified build before the contact-matching enhancement is commit `65b6ec0843319fde15d464fd1f4f2cabf00742fb` (GitHub Actions Build #32): unit tests, debug APK build, and artifact upload all passed. The new contact-matching and ambiguity-selection changes require CI validation for the new head. No physical Android device test has yet been recorded.
+The contact-name SMS parser and composer handoff are implemented on `development/mvp-foundation`. The Siri-inspired visual redesign is now in the same branch and requires CI validation for its latest head. No physical Android device test has yet been recorded.
