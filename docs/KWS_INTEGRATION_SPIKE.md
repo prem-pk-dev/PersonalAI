@@ -1,0 +1,43 @@
+# Offline KWS integration spike
+
+## Goal
+
+Verify the official sherpa-onnx Android runtime package before adding any native dependency to the PK application. This spike intentionally does not change the production app's Gradle dependencies, microphone lifecycle, or APK.
+
+## Pinned upstream runtime
+
+- Project: https://github.com/k2-fsa/sherpa-onnx
+- Release: v2.0.1
+- Official AAR: https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-2.0.1.aar
+- Published asset size: 49,441,341 bytes (47.2 MiB)
+- Published SHA-256: `a8d09d1d32f3eb8520482c6d3d43fae674681c5b050385967c70a3c2c9bf0ee7`
+- Expected device ABI: arm64-v8a (must be checked on the Redmi Note 9; do not assume based on chipset alone)
+- The release AAR is a prebuilt runtime package, separate from the KWS ONNX model files.
+
+## Automated checks
+
+`.github/workflows/kws-runtime-verification.yml` downloads the exact official release asset, checks its SHA-256, verifies the AAR contains compiled classes and native JNI libraries for arm64-v8a and armeabi-v7a, and uploads the verification evidence. It does not copy third-party binaries into the repository.
+
+## Integration gates
+
+1. Runtime download and checksum verification pass.
+2. A minimal Android instrumentation/smoke test loads the native library on an ARM64 emulator/device.
+3. The official English GigaSpeech KWS model is pinned separately, with its own source, checksum, licence, and offline asset strategy.
+4. The custom spoken phrase "P-K" is evaluated for false accepts/rejects and accent robustness; the model is not represented as Hindi wake-word capable.
+5. AudioRecord processing runs in a user-started microphone foreground service with a persistent notification and clear stop control.
+6. Command handoff stops KWS capture cleanly, runs speech recognition, then returns to KWS only while the user-enabled listening session remains active.
+7. Physical Redmi Note 9 / Android 12 / MIUI 13 tests cover foreground, background, screen-off, battery, and OEM restrictions.
+8. Speaker verification is evaluated as a separate model and enrollment flow. Keyword spotting alone is not owner authentication.
+
+## Explicit non-goals
+
+- No continuous SpeechRecognizer restart loop as a substitute for KWS.
+- No hidden microphone capture, automatic permission bypass, or lock-screen bypass.
+- No claim of screen-off wake detection until real-device tests pass.
+- No claim of owner-only activation until speaker verification and replay/false-accept evaluation pass.
+
+## Upstream references
+
+- https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.1
+- https://k2-fsa.github.io/sherpa/onnx/android/build-sherpa-onnx.html
+- https://github.com/k2-fsa/sherpa-onnx/tree/master/android/SherpaOnnxKws
