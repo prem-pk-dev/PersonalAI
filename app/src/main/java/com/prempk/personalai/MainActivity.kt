@@ -32,7 +32,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var wakeMode = false
     private var awaitingCommand = false
-    private var speechLanguageTag = "en-IN"
+    private var responseLanguageTag = "en-IN"
     private lateinit var status: TextView
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
@@ -47,8 +47,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        speechLanguageTag = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-            .getString(KEY_SPEECH_LANGUAGE, "en-IN") ?: "en-IN"
         tts = TextToSpeech(this, this)
         buildUi()
         ensureAudioPermission()
@@ -93,20 +91,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             gravity = Gravity.CENTER_VERTICAL
         }
         val brand = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        brand.addView(label("PERSONALAI", 20f, white, true))
-        brand.addView(label("YOUR EVERYDAY AI COMPANION", 9f, muted, true))
-        val languageButton = makeButton(if (speechLanguageTag == "hi-IN") "हिंदी" else "EN") { }
-        languageButton.textSize = 12f
+        brand.addView(label("PK", 22f, white, true))
+        brand.addView(label("YOUR PERSONAL VOICE ASSISTANT", 9f, muted, true))
+        val languageButton = makeButton("AUTO LANGUAGE") { }
+        languageButton.textSize = 11f
+        languageButton.isAllCaps = false
+        languageButton.isClickable = false
         languageButton.background = surface(0x332F9DCE, 22, 0x6658D8F2)
-        languageButton.setPadding(dp(18), dp(9), dp(18), dp(9))
-        languageButton.setOnClickListener {
-            speechLanguageTag = if (speechLanguageTag == "hi-IN") "en-IN" else "hi-IN"
-            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-                .putString(KEY_SPEECH_LANGUAGE, speechLanguageTag).apply()
-            languageButton.text = if (speechLanguageTag == "hi-IN") "हिंदी" else "EN"
-            runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
-            respond(if (speechLanguageTag == "hi-IN") "हिंदी भाषा चुनी गई।" else "English selected.")
-        }
+        languageButton.setPadding(dp(14), dp(9), dp(14), dp(9))
         header.addView(brand, LinearLayout.LayoutParams(0, dp(52), 1f))
         header.addView(languageButton)
 
@@ -117,7 +109,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val subtitle = label("Say “PK” to wake me  •  Hindi + English", 13f, muted).apply {
             gravity = Gravity.CENTER
         }
-        orb = SiriOrbView(this).apply { contentDescription = "PersonalAI voice assistant" }
+        orb = SiriOrbView(this).apply { contentDescription = "PK voice assistant" }
         val orbFrame = FrameLayout(this).apply {
             addView(orb, FrameLayout.LayoutParams(dp(224), dp(224), Gravity.CENTER))
         }
@@ -164,7 +156,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         quickRow("⌖  Maps" to "Maps kholo", "❔  Help" to "help")
         
         commandInput = EditText(this).apply {
-            hint = "Message PersonalAI…"
+            hint = "Message PK…"
             setHintTextColor(0xFF8295B0.toInt())
             setTextColor(white)
             textSize = 15f
@@ -338,7 +330,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, speechLanguageTag)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, "und")
             }
             recognizer?.startListening(intent)
         } catch (exception: Exception) {
@@ -349,6 +341,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun processVoice(raw: String) {
         transcript.text = "You said: $raw"
+        responseLanguageTag = VoiceLanguage.detect(raw)
         val normalized = raw.lowercase(Locale.ROOT)
         // Accept PK, and the common Hindi speech-to-text forms "पीके" / "पी के".
         val commandAfterWake = WakeWordParser.extractCommand(raw)
@@ -387,6 +380,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         stopListening()
 
         val command = raw.trim()
+        responseLanguageTag = VoiceLanguage.detect(command)
         addLog("You: $command")
 
         when (CommandParser.parse(command)) {
@@ -397,21 +391,31 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.OPEN_CHROME ->
                 openApp(listOf("com.android.chrome"), "Chrome")
             AssistantCommandType.OPEN_SETTINGS ->
-                openIntent(Intent(Settings.ACTION_SETTINGS), "Opening Settings.")
+                openIntent(Intent(Settings.ACTION_SETTINGS), localized("Opening Settings.", "सेटिंग्स खोल रहा हूँ।"))
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
             AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), "Opening Maps.")
-            AssistantCommandType.INFO_TIME -> respond("The time is " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date()) + ".")
-            AssistantCommandType.INFO_DATE -> respond("Today is " + java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(java.util.Date()) + ".")
+            AssistantCommandType.INFO_TIME -> {
+                val time = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date())
+                respond(localized("The time is $time.", "अभी $time बजे हैं।"))
+            }
+            AssistantCommandType.INFO_DATE -> {
+                val date = java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(java.util.Date())
+                respond(localized("Today is $date.", "आज $date है।"))
+            }
             AssistantCommandType.INFO_BATTERY -> {
                 val batteryManager = getSystemService(BATTERY_SERVICE) as BatteryManager
                 val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-                respond(if (level in 0..100) "Your battery is at $level percent." else "I cannot read the battery level right now.")
+                respond(if (level in 0..100) localized("Your battery is at $level percent.", "आपकी बैटरी $level प्रतिशत है।")
+                    else localized("I cannot read the battery level right now.", "अभी बैटरी का स्तर नहीं पढ़ पा रहा हूँ।"))
             }
-            AssistantCommandType.HELP -> respond("I can open apps, prepare calls and SMS, show time, date and battery level, open Maps and Settings, and listen for voice commands.")
+            AssistantCommandType.HELP -> respond(localized(
+                "I can open apps, prepare calls and SMS, show time, date and battery level, open Maps and Settings.",
+                "मैं ऐप खोल सकता हूँ, कॉल और SMS तैयार कर सकता हूँ, समय, तारीख और बैटरी बता सकता हूँ तथा Maps और Settings खोल सकता हूँ।"
+            ))
             AssistantCommandType.UNKNOWN ->
-                respond("I heard: $command. This command is not supported yet.")
+                respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
         }
     }
 
@@ -572,6 +576,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun containsAny(text: String, vararg terms: String) = terms.any(text::contains)
 
+    private fun localized(english: String, hindi: String): String =
+        if (responseLanguageTag == "hi-IN") hindi else english
+
     private fun respond(message: String) {
         transcript.text = message
         addLog("Assistant: $message")
@@ -579,6 +586,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun speak(message: String) {
+        val spokenLanguage = VoiceLanguage.detect(message)
+        val languageResult = tts?.setLanguage(Locale.forLanguageTag(spokenLanguage))
+        if (languageResult == TextToSpeech.LANG_MISSING_DATA ||
+            languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+            tts?.setLanguage(Locale.ENGLISH)
+        }
         tts?.speak(message, TextToSpeech.QUEUE_FLUSH, null, "assistant_reply")
     }
 
@@ -596,13 +609,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     override fun onInit(statusCode: Int) {
-        if (statusCode == TextToSpeech.SUCCESS) {
-            val selectedLocale = Locale.forLanguageTag(speechLanguageTag)
-            val result = tts?.setLanguage(selectedLocale)
-            if (result == TextToSpeech.LANG_NOT_SUPPORTED || result == TextToSpeech.LANG_MISSING_DATA) {
-                tts?.language = Locale.ENGLISH
-            }
-        }
+        if (statusCode == TextToSpeech.SUCCESS) tts?.language = Locale.ENGLISH
     }
 
     override fun onRequestPermissionsResult(
@@ -640,7 +647,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
         private const val PREFS_NAME = "personalai_preferences"
-        private const val KEY_SPEECH_LANGUAGE = "speech_language"
         private const val KEY_COMMAND_HISTORY = "command_history"
         private const val MAX_HISTORY_ENTRIES = 30
     }
