@@ -13,7 +13,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Supported device range: Android 13–16 (API 33–36).
 - Primary language: Kotlin.
 - Input: voice + text.
-- Wake phrase: "Hey Assistant".
+- Wake word: "PK"; Hindi speech transcript variants "पीके" and "पी के" are accepted.
 - Budget: ₹0; prefer Android platform APIs and free/open-source tooling.
 - Delivery order: first make a working MVP, then add advanced capabilities incrementally.
 - The user expects progress updates and continuity; do not silently discard agreed features or constraints.
@@ -46,7 +46,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Cellular call disconnect requires a compliant default-dialer implementation and the user's explicit role approval; it is not a normal app permission.
 - WhatsApp does not expose general public APIs for arbitrary call control or silently sending messages. Use supported deep links/intents and user confirmation only.
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
-- The app now declares an ACTION_ASSIST activity handler and can request Android ROLE_ASSISTANT through the system consent flow. This lets supported devices route the system assistant invocation to PersonalAI.\n- This is not yet a full VoiceInteractionService / VoiceInteractionSessionService implementation. Do not describe the wake phrase as always-on: current SpeechRecognizer listening still runs only while the app is open and explicitly started.
+- The app now declares an ACTION_ASSIST activity handler and can request Android ROLE_ASSISTANT through the system consent flow. This lets supported devices route the system assistant invocation to PersonalAI.\n- The wake word was changed from "Hey Assistant" to "PK". The current SpeechRecognizer-based detector still requires the app to be open and listening; screen-off hotword detection is not yet implemented.\n- This is not yet a full VoiceInteractionService / VoiceInteractionSessionService implementation. Do not describe the wake phrase as always-on: current SpeechRecognizer listening still runs only while the app is open and explicitly started.
 - Offline speech recognition depends on the device's installed recognition provider and language packs.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
 
@@ -67,7 +67,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Contact lookup now presents a chooser when multiple equally ranked contacts match; it never silently picks the first result.
 - `ContactMatcherTest.kt` covers exact ranking, ambiguity, number deduplication, and empty/unmatched queries. This newest contact-matching change still requires CI validation.
 - CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
-- Two-step wake handling is implemented: wake phrase first, command in the next recognition result; combined wake phrase + command also works.
+- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - No physical Android device test has yet been performed.
