@@ -313,14 +313,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun composeSms(command: String) {
-        val number = Regex("\\+?[0-9][0-9\\s-]{7,}").find(command)
-            ?.value?.replace(Regex("[\\s-]"), "")
+        val match = Regex("\\+?[0-9][0-9\\s-]{7,}").find(command)
+        val number = match?.value?.replace(Regex("[\\s-]"), "")
         if (number == null) {
             respond("For now, say SMS followed by a phone number.")
             return
         }
-        openIntent(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number")),
-            "Messages opened. Review and send your message there.")
+        val body = command.substring(match.range.last + 1)
+            .trim().removePrefix("message").removePrefix("मैसेज").trim()
+        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number")).apply {
+            if (body.isNotBlank()) putExtra("sms_body", body)
+        }
+        openIntent(intent, if (body.isBlank()) {
+            "Messages opened. Review and send your message there."
+        } else {
+            "Message prepared. Review and send it in your Messages app."
+        })
     }
 
     private fun containsAny(text: String, vararg terms: String) = terms.any(text::contains)
