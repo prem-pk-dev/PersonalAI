@@ -19,7 +19,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 - Say "PK" (Hindi speech transcript forms "पीके" or "पी के") and then speak the command.
 - A combined utterance such as "PK YouTube kholo" is also supported.
 - Wake-word recognition is active only during a user-started listening session while the app is open.
-- Android's voice-interaction session can open the app; it is not itself an always-on PK detector.
+- ACTION_ASSIST is declared as an app entry point, but default-assistant role integration is deferred until a valid Android RecognitionService provider is integrated.
 
 ## Contact resolution and communication safety
 
