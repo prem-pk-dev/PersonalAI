@@ -351,7 +351,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
         val command = raw.trim()
         responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(command)
-        addLog("You: $command")
 
         when (CommandParser.parse(command)) {
             AssistantCommandType.OPEN_WHATSAPP ->
@@ -563,16 +562,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             tts?.setLanguage(Locale.ENGLISH)
         }
         tts?.speak(message, TextToSpeech.QUEUE_FLUSH, null, "assistant_reply")
-    }
-
-    private fun addLog(message: String) {
-        val preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        val previous = preferences.getString(KEY_COMMAND_HISTORY, "").orEmpty()
-        val entries = (previous.split("\n") + message)
-            .filter { it.isNotBlank() }
-            .takeLast(MAX_HISTORY_ENTRIES)
-        val savedHistory = entries.joinToString("\n")
-        preferences.edit().putString(KEY_COMMAND_HISTORY, savedHistory).apply()
     }
 
     override fun onInit(statusCode: Int) {
