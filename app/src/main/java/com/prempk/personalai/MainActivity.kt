@@ -201,7 +201,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         history = TextView(this).apply {
-            text = "RECENT ACTIVITY"
+            text = "RECENT ACTIVITY\\n" + getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getString(KEY_COMMAND_HISTORY, "").orEmpty()
             textSize = 12f
             letterSpacing = 0.08f
             setTextColor(0xFF8FA3C8.toInt())
@@ -253,7 +254,32 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun ensureAudioPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_AUDIO)
+            requestPermissionWithRationale(
+                Manifest.permission.RECORD_AUDIO,
+                REQUEST_AUDIO,
+                "Microphone access",
+                "PersonalAI uses the microphone only after you tap Start listening, so it can recognize your voice commands."
+            )
+        }
+    }
+
+    private fun requestPermissionWithRationale(
+        permission: String,
+        requestCode: Int,
+        title: String,
+        explanation: String
+    ) {
+        if (shouldShowRequestPermissionRationale(permission)) {
+            AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(explanation)
+                .setPositiveButton("Continue") { _, _ ->
+                    requestPermissions(arrayOf(permission), requestCode)
+                }
+                .setNegativeButton("Not now", null)
+                .show()
+        } else {
+            requestPermissions(arrayOf(permission), requestCode)
         }
     }
 
@@ -451,7 +477,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             return
         }
         if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), REQUEST_CONTACTS)
+            requestPermissionWithRationale(
+                Manifest.permission.READ_CONTACTS,
+                REQUEST_CONTACTS,
+                "Contacts access",
+                "PersonalAI reads contact names and phone numbers only when you ask it to call or prepare an SMS to a saved contact."
+            )
             return
         }
 
@@ -543,7 +574,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun addLog(message: String) {
-        if (::history.isInitialized) history.append("$message")
+        val preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val previous = preferences.getString(KEY_COMMAND_HISTORY, "").orEmpty()
+        val entries = (previous.split("\\n") + message)
+            .filter { it.isNotBlank() }
+            .takeLast(MAX_HISTORY_ENTRIES)
+        val savedHistory = entries.joinToString("\\n")
+        preferences.edit().putString(KEY_COMMAND_HISTORY, savedHistory).apply()
+        if (::history.isInitialized) {
+            history.text = "RECENT ACTIVITY\\n" + savedHistory
+        }
     }
 
     override fun onInit(statusCode: Int) {
@@ -562,11 +602,20 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_AUDIO && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            status.text = "Microphone permission granted"
+        if (requestCode == REQUEST_AUDIO) {
+            if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                status.text = "Microphone permission granted"
+                respond("Microphone permission granted. Tap Start listening when ready.")
+            } else {
+                respond("Microphone permission was not granted. Voice commands need microphone access; text commands remain available.")
+            }
         }
-        if (requestCode == REQUEST_CONTACTS && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            respond("Contacts permission granted. Repeat your command.")
+        if (requestCode == REQUEST_CONTACTS) {
+            if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                respond("Contacts permission granted. Repeat your command.")
+            } else {
+                respond("Contacts permission was not granted. You can still use a phone number for calls or SMS.")
+            }
         }
     }
 
@@ -583,5 +632,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         private const val REQUEST_CONTACTS = 102
         private const val PREFS_NAME = "personalai_preferences"
         private const val KEY_SPEECH_LANGUAGE = "speech_language"
+        private const val KEY_COMMAND_HISTORY = "command_history"
+        private const val MAX_HISTORY_ENTRIES = 30
     }
 }
