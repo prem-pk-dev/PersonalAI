@@ -21,8 +21,8 @@
 - [x] Launch WhatsApp, YouTube, Chrome, and Android Settings.
 - [x] Contact dialing via system dialer confirmation.
 - [x] Contact-name and number SMS composer with optional body and manual send.
-- [x] Add contextual microphone/contacts permission rationale, explicit denial feedback, and persistent last-30-entry command history.
-- [x] Refresh assistant home UI with an animated orb, quick actions, and conversation-style history.
+- [x] Add contextual microphone/contacts permission rationale and explicit denial feedback.
+- [x] Refresh assistant home UI with an animated orb and compact command composer; Quick Actions and Recent Conversation are intentionally hidden.
 - [x] Add offline time/date/battery responses, Maps launch, and help command with parser tests.
 
 ## Milestone 2 — Android assistant integration and wake-word research
