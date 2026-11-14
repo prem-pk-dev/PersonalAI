@@ -55,32 +55,36 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Default branch: `main`; keep it stable.
 - Active branch: `development/mvp-foundation`.
 - Pull request: #1, draft, targets `main`.
-- Initial Android project and first MVP Activity are committed to the development branch.
-- CI workflow exists at `.github/workflows/android-ci.yml`.
-- The first CI attempt failed at Kotlin compilation because the Activity property named `background` shadowed the View background property. This was corrected by renaming it to `backgroundColorValue`; a new CI result must be checked before claiming the build passes.
-- A follow-up fix added two-step wake handling (wake phrase first, command in the next recognition result) and additional Hindi/English call-command filler-word cleanup.
+- Android Gradle project, native Activity, CI workflow, and continuity documentation are committed to the development branch.
+- The first CI attempt failed because an Activity property named `background` shadowed the View background property. It was renamed to `backgroundColorValue`.
+- CI for commit `d191288e62089edb00b388caf51a571f042cba19` passed: debug APK build and artifact upload both succeeded.
+- A later language-selector CI attempt exposed a missing `speechLanguageTag` property declaration. This was added in commit `ecc07952859a23384cb7ac36f540e365d42187e1`; a fresh run for the latest branch head must be checked before calling the current branch green.
+- Two-step wake handling is implemented: wake phrase first, command in the next recognition result; combined wake phrase + command also works.
+- English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
+- SMS composer can prefill an optional dictated message body; user must review and send.
 - No physical Android device test has yet been performed.
-- No release APK has yet been validated or published.
+- No release APK for the latest branch head has yet been validated.
 
 ## MVP scope
 
 - Voice recognition using Android SpeechRecognizer.
 - Text command input.
 - TextToSpeech responses.
+- Explicit English (India) / Hindi (India) speech language selection.
 - Wake phrase detection during an explicitly user-started listening session while the app is open.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Contact lookup after Contacts permission and open system dialer for user confirmation.
-- Open SMS composer for user review and send.
+- Open SMS composer with optional prefilled body for user review and send.
 - Alarm screen intent.
 - Visible command history.
 
 ## Next development sequence
 
-1. Fix and verify the CI build; preserve the full logs and fix every compile error.
-2. Add a downloadable debug APK artifact to successful CI runs.
+1. Verify CI for the latest branch head; preserve logs and fix every compile error.
+2. Verify the latest debug APK artifact and install it on a physical device.
 3. Add unit-testable command parsing and tests for Hindi/English phrases.
-4. Add explicit language selection (Hindi India / English India) for speech recognition and TTS.
-5. Improve app-launch, contact, SMS-composer, and alarm actions with error handling.
+4. Improve contact matching, ambiguity handling, and contact-name SMS composition.
+5. Improve error states, permission rationale, and persistent command history.
 6. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
 7. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
 8. Add optional AI reasoning only after deterministic phone actions are reliable.
