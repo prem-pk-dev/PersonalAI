@@ -33,6 +33,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var wakeMode = false
     private var awaitingCommand = false
     private var responseLanguageTag = "en-IN"
+    private var recognitionDetectedLanguageTag: String? = null
     private lateinit var status: TextView
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
@@ -282,6 +283,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun startRecognition() {
         if (!wakeMode || isFinishing) return
         try {
+            recognitionDetectedLanguageTag = null
             recognizer?.destroy()
             recognizer = if (android.os.Build.VERSION.SDK_INT >= 31 &&
                 SpeechRecognizer.isOnDeviceRecognitionAvailable(this)) {
@@ -320,7 +322,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 override fun onLanguageDetection(results: Bundle) {
                     if (android.os.Build.VERSION.SDK_INT >= 34) {
                         val detected = results.getString(SpeechRecognizer.DETECTED_LANGUAGE)
-                        responseLanguageTag = VoiceLanguage.fromLanguageTag(detected)
+                        recognitionDetectedLanguageTag = VoiceLanguage.fromLanguageTag(detected)
                     }
                 }
                 override fun onEvent(eventType: Int, params: Bundle?) = Unit
@@ -347,7 +349,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun processVoice(raw: String) {
         transcript.text = "You said: $raw"
-        responseLanguageTag = VoiceLanguage.detect(raw)
+        responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(raw)
         val normalized = raw.lowercase(Locale.ROOT)
         // Accept PK, and the common Hindi speech-to-text forms "पीके" / "पी के".
         val commandAfterWake = WakeWordParser.extractCommand(raw)
@@ -386,7 +388,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         stopListening()
 
         val command = raw.trim()
-        responseLanguageTag = VoiceLanguage.detect(command)
+        responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(command)
         addLog("You: $command")
 
         when (CommandParser.parse(command)) {
