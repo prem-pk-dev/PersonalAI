@@ -46,7 +46,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Cellular call disconnect requires a compliant default-dialer implementation and the user's explicit role approval; it is not a normal app permission.
 - WhatsApp does not expose general public APIs for arbitrary call control or silently sending messages. Use supported deep links/intents and user confirmation only.
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
-- The app declares ACTION_ASSIST, requests Android ROLE_ASSISTANT only after user action, and registers VoiceInteractionService plus VoiceInteractionSessionService with binding permissions and service metadata. The session opens the full app.
+- The app declares an ACTION_ASSIST activity entry point. Default-assistant ROLE_ASSISTANT registration and VoiceInteractionService registration are currently deferred because the required RecognitionService provider has not been integrated.
 - The wake word is "PK" (Hindi STT variants "पीके" / "पी के"). SpeechRecognizer-based PK recognition still requires the app to be open and listening started by the user. The registered assistant services are not an always-on hotword detector. Screen-off detection requires a compatible hotword engine, keyphrase enrollment, device SoundTrigger/DSP support, and foreground/background lifecycle validation.
 - Offline speech recognition depends on the device's installed recognition provider and language packs.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
@@ -73,10 +73,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - No physical Android device test has yet been performed.
 - CI run 43578152900 passed for commit 20a849eef89bf702ef0267efe471d003a8292913: unit tests, debug APK build, and artifact upload succeeded. Artifact personalai-debug-apk (artifact ID 14107681808, SHA-256 43d31f51f3954aa66d0bf74b37257848701be4f96c9b8f2f3a064373168771d1) expires 2026-11-28. This artifact predates the subsequent VoiceInteraction registration changes and is not the latest APK.
-- The manifest now registers PersonalAIVoiceInteractionService and PersonalAIVoiceInteractionSessionService; the session surface launches the full app. These later changes require CI verification.
+- VoiceInteractionService/session-service registration was briefly added, then safely removed because the required RecognitionService metadata/provider was not integrated. The app retains ACTION_ASSIST but is not currently registered as the default assistant.
 - Latest branch head: `4e92118e59623b110317c04d176c24c0f06b426f` (2026-11-14), commit message `Render assistant session text with proper line breaks`.
 - CI run `43578918662` passed for that exact commit: unit tests, debug APK build, and artifact upload succeeded. Artifact `personalai-debug-apk`, ID `14107658281`, size 877,405 bytes, SHA-256 `fd7e5a505f178281dcb00280826096632b8073ea3792a81161e110733b99f01d`, expires 2026-11-28.
-- The successful CI run currently executes `testDebugUnitTest assembleDebug`; static Android lint is not yet part of the workflow.
+- CI was upgraded to run `lintDebug testDebugUnitTest assembleDebug`; the latest run for the lint-enabled workflow must be verified against the current branch head.
 - No physical Android device test has yet been performed; do not claim screen-off PK behavior.
 
 ## UI direction
@@ -86,10 +86,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Assistant role integration
 
-- MainActivity requests `RoleManager.ROLE_ASSISTANT` after explicit user action and registers an `android.intent.action.ASSIST` handler.
-- Android may allow PersonalAI to be selected as the default assistant only if the device exposes the role and accepts the app's qualification; the user must approve the system prompt.
-- `PersonalAIVoiceInteractionService` and `PersonalAIVoiceInteractionSessionService` are registered with the required binding permissions and metadata.
-- The minimal assistant session opens the full app when tapped. It does not yet start speech recognition or a hotword detector.
+- MainActivity declares an `android.intent.action.ASSIST` handler, but does not currently request `RoleManager.ROLE_ASSISTANT`.
+- The incomplete VoiceInteractionService and session-service registrations were removed to avoid advertising an assistant provider without the required RecognitionService metadata/provider.
+- A valid RecognitionService provider is a prerequisite before restoring ROLE_ASSISTANT and VoiceInteractionService integration.
 - PK listening remains app-open and user-started. Screen-off PK requires separate engine, enrollment, hardware, and device validation.
 
 ## MVP scope
@@ -109,11 +108,11 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Add Android static lint to CI and resolve any actionable findings.
-2. Complete source-level review of permissions, assistant services, intents, and user-confirmation boundaries.
-3. Improve permission rationale, error states, and persistent command history.
-4. Research a free offline PK hotword engine, licence, keyphrase enrollment, and device SoundTrigger/DSP compatibility before foreground microphone implementation.
-5. Add optional AI reasoning only after deterministic phone actions are reliable.
+1. Verify lint-enabled CI and APK artifact for the exact latest branch head.
+2. Integrate a valid RecognitionService provider compatible with the Android support range before restoring default-assistant registration.
+3. Complete source-level review of permissions, intents, and user-confirmation boundaries.
+4. Improve permission rationale, error states, and persistent command history.
+5. Research a free offline PK hotword engine, licence, keyphrase enrollment, and device SoundTrigger/DSP compatibility before foreground microphone implementation.
 6. Install and test the final candidate APK on the user's physical Android device; record Android version and observed behavior.
 7. Merge to main only after CI is green, review is complete, and device testing is recorded.
 
