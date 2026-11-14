@@ -15,6 +15,8 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Contact dialing through the system dialer; user confirms the call.
 - SMS composer for phone-number or contact-name recipients, optional body prefill, and manual review/send.
+- Local offline utilities: current time, date, battery percentage, Maps launch, and command help.
+- Refreshed Siri-inspired original interface with animated voice orb, quick-action grid, compact composer, and persistent conversation panel.
 
 ## Wake-word and platform limitations
 
