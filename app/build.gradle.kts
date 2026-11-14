@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.prempk.personalai"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -25,5 +26,8 @@ android {
 }
 
 dependencies {
+    implementation(files("libs/sherpa-onnx-2.0.1.aar"))
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
 }
