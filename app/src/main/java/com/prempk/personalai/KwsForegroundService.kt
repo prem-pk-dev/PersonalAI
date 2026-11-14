@@ -83,6 +83,8 @@ class KwsForegroundService : Service() {
                     AudioFormat.ENCODING_PCM_16BIT
                 )
                 check(minBuffer > 0) { "AudioRecord minimum buffer size is unavailable." }
+                checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED ||
+                    error("Microphone permission was revoked before audio capture started.")
                 localRecorder = AudioRecord(
                     MediaRecorder.AudioSource.MIC,
                     SAMPLE_RATE,
