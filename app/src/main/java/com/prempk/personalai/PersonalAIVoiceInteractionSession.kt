@@ -14,7 +14,7 @@ class PersonalAIVoiceInteractionSession(context: android.content.Context) :
 
     override fun onCreateContentView(): View {
         return TextView(context).apply {
-            text = "PersonalAI\\n\\nTap to open PersonalAI and start PK listening."
+            text = "PersonalAI\n\nTap to open PersonalAI and start PK listening."
             textSize = 18f
             setPadding(40, 48, 40, 48)
             setTextColor(0xFFF3F7FB.toInt())
