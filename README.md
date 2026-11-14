@@ -30,7 +30,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 3. Sync Gradle and run the `app` configuration on an Android 13–16 device/emulator.
 4. Grant microphone permission; Contacts permission is requested only when a contact action needs it.
 
-GitHub Actions runs `testDebugUnitTest assembleDebug` and uploads `personalai-debug-apk` on success (14-day artifact retention).
+GitHub Actions runs `lintDebug testDebugUnitTest assembleDebug` and uploads `personalai-debug-apk` only when all checks pass (14-day artifact retention).
 
 ## Branch strategy
 
