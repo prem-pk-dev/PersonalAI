@@ -37,7 +37,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var status: TextView
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
-    private lateinit var history: TextView
     private lateinit var orb: SiriOrbView
 
     private val backgroundColorValue = 0xFF08111F.toInt()
@@ -128,34 +127,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(dp(18), dp(18), dp(18), dp(18))
             background = surface(0xCC111F35.toInt(), 22, 0x553D628A)
         }
-        val section = label("QUICK ACTIONS", 11f, 0xFF8FA9C8.toInt(), true).apply {
-            setPadding(0, dp(22), 0, dp(10))
-            letterSpacing = 0.12f
-        }
-        val quickGrid = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        fun quickRow(vararg actions: Pair<String, String>) {
-            val row = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.HORIZONTAL }
-            actions.forEachIndexed { index, item ->
-                val button = makeButton(item.first) { handleCommand(item.second) }.apply {
-                    textSize = 12f
-                    background = surface(0xFF142943.toInt(), 18, 0x554E789D)
-                    setPadding(dp(8), dp(13), dp(8), dp(13))
-                    isAllCaps = false
-                }
-                row.addView(button, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
-                    if (index > 0) marginStart = dp(8)
-                })
-            }
-            quickGrid.addView(row, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(8) })
-        }
-        quickRow("▶  YouTube" to "YouTube kholo", "●  WhatsApp" to "WhatsApp kholo")
-        quickRow("◎  Chrome" to "Chrome kholo", "⚙  Settings" to "Settings kholo")
-        quickRow("☎  Call" to "call", "✉  SMS" to "SMS")
-        quickRow("◷  Time" to "time kya hua", "▣  Battery" to "battery kitni hai")
-        quickRow("⌖  Maps" to "Maps kholo", "❔  Help" to "help")
-        
         commandInput = EditText(this).apply {
             hint = "Message PK…"
             setHintTextColor(0xFF8295B0.toInt())
@@ -195,25 +166,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         listenRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
         listenRow.addView(stopButton, LinearLayout.LayoutParams(dp(90), dp(50)))
 
-        val historyTitle = label("RECENT CONVERSATION", 11f, 0xFF8FA9C8.toInt(), true).apply {
-            setPadding(0, dp(24), 0, dp(8))
-            letterSpacing = 0.1f
-        }
-        history = label(getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-            .getString(KEY_COMMAND_HISTORY, "Your recent activity will appear here.").orEmpty(), 13f, 0xFF8BDDE8.toInt()).apply {
-            setPadding(dp(14), dp(14), dp(14), dp(14))
-            background = surface(0x99111F35.toInt(), 18, 0x443D628A)
-        }
         val footer = label("Private by design  •  Actions stay under your control", 10f, 0xFF7387A4.toInt()).apply {
             gravity = Gravity.CENTER
             setPadding(0, dp(18), 0, 0)
         }
 
-        listOf<View>(header, greeting, subtitle, orbFrame, statusWrap, transcript, section,
-            quickGrid, inputRow, listenRow, historyTitle, history, footer).forEachIndexed { index, view ->
+        listOf<View>(header, greeting, subtitle, orbFrame, statusWrap, transcript,
+            inputRow, listenRow, footer).forEachIndexed { index, view ->
             val top = when (index) {
-                1 -> dp(10); 3 -> dp(4); 4 -> dp(0); 5 -> dp(16); 6 -> dp(2)
-                8 -> dp(10); 9 -> dp(10); else -> dp(0)
+                1 -> dp(10); 3 -> dp(4); 4 -> dp(0); 5 -> dp(16)
+                6 -> dp(10); 7 -> dp(10); else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -611,9 +573,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             .takeLast(MAX_HISTORY_ENTRIES)
         val savedHistory = entries.joinToString("\n")
         preferences.edit().putString(KEY_COMMAND_HISTORY, savedHistory).apply()
-        if (::history.isInitialized) {
-            history.text = "RECENT ACTIVITY\n" + savedHistory
-        }
     }
 
     override fun onInit(statusCode: Int) {
