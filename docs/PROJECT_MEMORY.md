@@ -59,13 +59,17 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - The first CI attempt failed because an Activity property named `background` shadowed the View background property. It was renamed to `backgroundColorValue`.
 - CI for commit `d191288e62089edb00b388caf51a571f042cba19` passed: debug APK build and artifact upload both succeeded.
 - CI for commit `ecc07952859a23384cb7ac36f540e365d42187e1` passed on push and pull-request workflows after the speech-language state fix.
+- Commit `65b6ec0843319fde15d464fd1f4f2cabf00742fb` passed GitHub Actions Build #32: `testDebugUnitTest`, `assembleDebug`, and APK artifact upload all succeeded. Artifact: `personalai-debug-apk`, SHA-256 `a510f5f35a617ff6569e7a2ecd07558f91459e40aeb0587d7d2f972bea6b3a58`.
 - A UI inspection found that the Run Text Command button was created but omitted from the displayed view list. It is now included in the layout after the text input.
 - Command classification has been extracted from MainActivity into Android-independent `CommandParser.kt` and `AssistantCommandType`.
-- JUnit tests were added for Hindi/English app launches, calls, SMS, alarms, whitespace, and unknown commands.
-- CI now runs `gradle testDebugUnitTest assembleDebug` before uploading the APK. Latest branch-head test/build result must be checked before declaring green.
+- JUnit tests cover Hindi/English app launches, calls, SMS, alarms, whitespace, and unknown commands.
+- A standalone `ContactMatcher.kt` now ranks exact-name matches before prefix and partial matches, and deduplicates equivalent phone-number formatting.
+- Contact lookup now presents a chooser when multiple equally ranked contacts match; it never silently picks the first result.
+- `ContactMatcherTest.kt` covers exact ranking, ambiguity, number deduplication, and empty/unmatched queries. This newest contact-matching change still requires CI validation.
+- CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
 - Two-step wake handling is implemented: wake phrase first, command in the next recognition result; combined wake phrase + command also works.
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
-- SMS composer can prefill an optional dictated body; user must review and send.
+- SMS composer can prefill an optional dictated message body; user must review and send.
 - No physical Android device test has yet been performed.
 - No release APK for the latest branch head has yet been validated.
 
@@ -76,6 +80,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - TextToSpeech responses.
 - Explicit English (India) / Hindi (India) speech language selection.
 - Unit-testable deterministic Hindi/English command classification.
+- Exact-first, ambiguity-safe contact matching and user-selected dialer handoff.
 - Wake phrase detection during an explicitly user-started listening session while the app is open.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Contact lookup after Contacts permission and open system dialer for user confirmation.
@@ -85,9 +90,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Verify CI tests and build for the latest branch head; preserve logs and fix every failure.
+1. Verify CI tests and build for the latest contact-matching branch head; preserve logs and fix every failure.
 2. Verify the latest debug APK artifact and install it on a physical device.
-3. Improve contact matching, ambiguity handling, and contact-name SMS composition.
+3. Support contact-name SMS composition using the same ambiguity-safe chooser.
 4. Improve error states, permission rationale, and persistent command history.
 5. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
 6. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
