@@ -5,25 +5,26 @@
 - [x] Add Android manifest and Gradle configuration.
 - [x] Add initial voice/text Activity.
 - [x] Add GitHub Actions Android build workflow.
-- [x] Build debug APK successfully on an earlier verified commit.
-- [x] Upload debug APK as a workflow artifact on that successful run.
-- [ ] Verify green CI and artifact for the latest branch head.
+- [x] Build debug APK successfully on earlier verified commits.
+- [x] Upload debug APK as a workflow artifact on a successful run.
+- [ ] Verify tests, green CI, and APK artifact for the latest branch head.
 - [ ] Validate install and launch on a physical Android 13–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
-- [x] Text command input.
+- [x] Text command input and visible Run Text Command button.
 - [x] Android speech recognition integration.
 - [x] Text-to-speech response integration.
 - [x] Start/stop visible listening controls.
 - [x] Wake phrase + command in one utterance.
 - [x] Wake phrase and command in two successive utterances.
 - [x] Persisted Hindi/English speech-language selector.
+- [x] Deterministic command parser extracted into a standalone Kotlin class.
+- [x] JUnit tests for Hindi/English command classification.
 - [x] Launch WhatsApp, YouTube, Chrome, Settings.
 - [x] Contact lookup and system dialer confirmation.
 - [x] SMS composer for a phone number.
 - [x] Optional SMS body prefill for user review.
 - [x] Open alarm screen.
-- [ ] Unit-test command parsing.
 - [ ] Improve contact matching and ambiguity handling.
 - [ ] Support contact-name SMS composition.
 - [ ] Improve error states, permission rationale, and command history persistence.
@@ -62,8 +63,7 @@
 
 ## Release gates
 Do not merge a milestone to `main` until:
-1. CI build passes for the exact head commit.
-2. Unit tests pass where applicable.
-3. Device test results are recorded.
-4. README and project memory are updated.
-5. Known Android/WhatsApp limitations are clearly documented.
+1. CI tests and build pass for the exact head commit.
+2. Device test results are recorded.
+3. README and project memory are updated.
+4. Known Android/WhatsApp limitations are clearly documented.
