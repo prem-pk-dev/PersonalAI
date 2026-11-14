@@ -5,8 +5,8 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 ## Current MVP features
 
 - Voice and text command entry with a Siri-inspired dark interface, animated gradient voice orb, tap-to-listen interaction, and compact command composer.
-- User-started wake listening while the app remains open.\n- Android default assistant role request through the system consent screen; the app handles the ACTION_ASSIST entry point.
-- Two-step interaction: say "Hey Assistant", then speak the command; combined wake phrase + command is also supported.
+- User-started wake listening while the app remains open; current wake word is "PK" (not always-on/background).\n- Android default assistant role request through the system consent screen; the app handles the ACTION_ASSIST entry point.
+- Two-step interaction: say "PK" (Hindi speech-to-text variants "पीके" / "पी के" are accepted), then speak the command; combined wake word + command is also supported.
 - Persisted speech-language selector: English (India) and Hindi (India).
 - Android SpeechRecognizer and TextToSpeech.
 - Deterministic command classification extracted into an Android-independent Kotlin parser.
