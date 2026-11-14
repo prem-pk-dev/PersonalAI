@@ -73,6 +73,11 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - No physical Android device test has yet been performed.
 - No release APK for the latest branch head has yet been validated.
 
+## UI direction
+
+- The native Android interface uses a Siri-inspired dark assistant experience: animated gradient orb, tap-to-listen interaction, listening state, language toggle, response panel, and compact text composer.
+- This is a visual design reference only; the app remains a native Android Kotlin app and does not claim to be Apple Siri or iOS.
+
 ## MVP scope
 
 - Voice recognition using Android SpeechRecognizer.
