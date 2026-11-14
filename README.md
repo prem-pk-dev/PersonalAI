@@ -1,13 +1,13 @@
 # PersonalAI — Native Android Voice Assistant
 
-PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MVP uses Android speech APIs and system intents; it requires no backend or paid AI API.
+PK is a native Kotlin Android assistant for Android 13–16. The ₹0 MVP uses Android speech APIs and system intents; it requires no backend or paid AI API.
 
 ## Current features
 
 - Siri-inspired dark interface with animated orb, tap-to-listen, transcript, text command entry, and activity log.
 - The only configured wake phrase is "PK" (Hindi speech transcripts "पीके" / "पी के" are accepted); "Hey Assistant" is not used. Listening is currently user-started while the app is open.
 - Combined "PK + command" and two-step "PK", then command.
-- Android SpeechRecognizer and TextToSpeech, with persisted English (India) / Hindi (India) selection.
+- Android SpeechRecognizer and TextToSpeech, with automatic response-language selection: Hindi-script input selects Hindi (India) TTS; Latin-script input defaults to English (India). Recognition requests an unspecified language (`und`) and depends on the installed speech provider for multilingual recognition.
 - ACTION_ASSIST activity entry point for compatible system handoff; default-assistant role registration is deferred until a valid recognition-service provider is integrated.
 - Deterministic command parser and JUnit coverage.
 - Contact lookup with contextual permission rationale, exact-first matching, duplicate-number normalization, and chooser for ambiguous matches.
@@ -16,7 +16,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 - Contact dialing through the system dialer; user confirms the call.
 - SMS composer for phone-number or contact-name recipients, optional body prefill, and manual review/send.
 - Local offline utilities: current time, date, battery percentage, Maps launch, and command help.
-- Refreshed Siri-inspired original interface with animated voice orb, quick-action grid, compact composer, and persistent conversation panel.
+- Refreshed PK-branded original interface with animated voice orb, quick-action grid, compact composer, and persistent conversation panel.
 
 ## Wake-word and platform limitations
 
