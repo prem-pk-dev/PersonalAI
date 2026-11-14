@@ -7,7 +7,7 @@ PK is a native Kotlin Android assistant for Android 13–16. The ₹0 MVP uses A
 - Siri-inspired dark interface with animated orb, tap-to-listen, transcript, text command entry, and activity log.
 - The only configured wake phrase is "PK" (Hindi speech transcripts "पीके" / "पी के" are accepted); "Hey Assistant" is not used. Listening is currently user-started while the app is open.
 - Combined "PK + command" and two-step "PK", then command.
-- Android SpeechRecognizer and TextToSpeech, with automatic response-language selection: Hindi-script input selects Hindi (India) TTS; Latin-script input defaults to English (India). Recognition requests an unspecified language (`und`) and depends on the installed speech provider for multilingual recognition.
+- Android SpeechRecognizer and TextToSpeech, with automatic response-language selection: Hindi-script and common Romanized-Hindi input select Hindi (India) TTS; English/other Latin input defaults to English (India). Android 14+ language-detection callbacks are enabled when supported; Android 12 uses the script/phrase heuristic fallback. Actual recognition depends on the installed provider and language models.
 - ACTION_ASSIST activity entry point for compatible system handoff; default-assistant role registration is deferred until a valid recognition-service provider is integrated.
 - Deterministic command parser and JUnit coverage.
 - Contact lookup with contextual permission rationale, exact-first matching, duplicate-number normalization, and chooser for ambiguous matches.
