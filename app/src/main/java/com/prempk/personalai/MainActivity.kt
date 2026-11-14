@@ -64,6 +64,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.getBooleanExtra(KwsForegroundService.EXTRA_WAKE_DETECTED, false)) {
+            window.decorView.post { startCommandListeningAfterWake() }
+        }
+    }
+
     private fun buildUi() {
         val density = resources.displayMetrics.density
         fun dp(value: Int) = (value * density).toInt()
