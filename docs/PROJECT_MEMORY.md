@@ -76,7 +76,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - VoiceInteractionService/session-service registration was briefly added, then safely removed because the required RecognitionService metadata/provider was not integrated. The app retains ACTION_ASSIST but is not currently registered as the default assistant.
 - Latest branch head: `4e92118e59623b110317c04d176c24c0f06b426f` (2026-11-14), commit message `Render assistant session text with proper line breaks`.
 - CI run `43578918662` passed for that exact commit: unit tests, debug APK build, and artifact upload succeeded. Artifact `personalai-debug-apk`, ID `14107658281`, size 877,405 bytes, SHA-256 `fd7e5a505f178281dcb00280826096632b8073ea3792a81161e110733b99f01d`, expires 2026-11-28.
-- CI was upgraded to run `lintDebug testDebugUnitTest assembleDebug`; the latest run for the lint-enabled workflow must be verified against the current branch head.
+- CI runs `lintDebug testDebugUnitTest assembleDebug`. Run `43586183849` passed for exact commit `ebe804b4084d399696cf320dc0fee07f667fc968`: lint, unit tests, APK build, and artifact upload all succeeded. Artifact `personalai-debug-apk`, ID `14109918243`, size 874,250 bytes, SHA-256 `74699af9196568e009381b0ce5f8d14b19a214d0cab81dfb3d7f1f059ea08474`, expires 2026-11-28.
 - No physical Android device test has yet been performed; do not claim screen-off PK behavior.
 
 ## UI direction
@@ -108,7 +108,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Verify lint-enabled CI and APK artifact for the exact latest branch head.
+1. Keep the lint-enabled CI gate green for each code change.
 2. Integrate a valid RecognitionService provider compatible with the Android support range before restoring default-assistant registration.
 3. Complete source-level review of permissions, intents, and user-confirmation boundaries.
 4. Improve permission rationale, error states, and persistent command history.
