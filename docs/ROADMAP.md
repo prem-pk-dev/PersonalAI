@@ -1,72 +1,56 @@
 # PersonalAI Development Roadmap
 
 ## Milestone 0 — Repository foundation
-- [x] Create native Android Kotlin project.
-- [x] Add Android manifest and Gradle configuration.
-- [x] Add initial voice/text Activity.
-- [x] Add GitHub Actions Android build workflow.
-- [x] Build debug APK successfully on earlier verified commits.
-- [x] Upload debug APK as a workflow artifact on a successful run.
-- [ ] Verify tests, green CI, and APK artifact for the latest contact-matching branch head.
-- [ ] Validate install and launch on a physical Android 13–16 device.
+- [x] Native Kotlin Android project, Gradle configuration, and CI workflow.
+- [x] Debug APK build and artifact upload on successful CI.
+- [x] Verify unit tests, CI, and APK artifact for current tested commit.
+- [ ] Install and validate on a physical Android 13–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
-- [x] Text command input and visible Run Text Command button.
-- [x] Siri-inspired dark assistant UI with animated voice orb and tap-to-listen control.\n- [x] Request Android ROLE_ASSISTANT with user consent and handle ACTION_ASSIST launch.
-- [x] Android speech recognition integration.
-- [x] Text-to-speech response integration.
-- [x] Start/stop visible listening controls.
-- [x] Wake phrase + command in one utterance.
-- [x] Wake phrase and command in two successive utterances.
-- [x] Persisted Hindi/English speech-language selector.
-- [x] Deterministic command parser extracted into a standalone Kotlin class.
-- [x] JUnit tests for Hindi/English command classification.
-- [x] Exact-first contact matcher with normalized phone-number deduplication.
-- [x] User chooser for multiple equally ranked contact matches.
-- [x] Contact matcher unit tests for exact, partial, ambiguous, duplicate, and empty cases.
-- [x] Launch WhatsApp, YouTube, Chrome, Settings.
-- [x] Contact lookup and system dialer confirmation.
-- [x] SMS composer for a phone number.
-- [x] Optional SMS body prefill for user review.
-- [x] Open alarm screen.
-- [x] Support contact-name SMS composition with shared ambiguity-safe contact matching and manual-send composer handoff.
-- [ ] Improve error states, permission rationale, and command history persistence.
+- [x] Siri-inspired dark UI, animated orb, tap-to-listen, transcript, and text composer.
+- [x] Android SpeechRecognizer and TextToSpeech integration.
+- [x] Visible start/stop listening controls.
+- [x] PK wake phrase + command in one utterance and two-step utterances.
+- [x] Hindi speech-to-text variants पीके / पी के.
+- [x] Persisted English (India) / Hindi (India) language selector.
+- [x] Deterministic command parser and JUnit tests.
+- [x] Exact-first contact matcher, duplicate-number normalization, and ambiguity chooser.
+- [x] Launch WhatsApp, YouTube, Chrome, and Android Settings.
+- [x] Contact dialing via system dialer confirmation.
+- [x] Contact-name and number SMS composer with optional body and manual send.
+- [ ] Improve permission rationale, error states, and persistent command history.
 
-## Milestone 2 — Background wake phrase
-- [ ] Implement VoiceInteractionService and VoiceInteractionSessionService for system-level assistant sessions and supported hotword behavior.\n- [ ] User-started microphone foreground service.
-- [ ] Android 13 notification permission handling.
-- [ ] Correct foreground service type and microphone permissions for supported API levels.
-- [ ] Persistent, clear listening notification with stop action.
-- [ ] Battery and OEM restriction guidance.
-- [ ] Test screen-off behavior on Android 13, 14, 15, and 16.
-- [ ] Evaluate offline wake-word detection engine and document tradeoffs.
+## Milestone 2 — Android assistant integration and wake-word research
+- [x] Register VoiceInteractionService with Android binding permission and service metadata.
+- [x] Register VoiceInteractionSessionService and a minimal assistant session surface.
+- [x] Assistant session can open the full PersonalAI app.
+- [x] ACTION_ASSIST activity entry point and user-consented ROLE_ASSISTANT request.
+- [ ] Select and integrate a compatible PK hotword engine with a documented licence and offline model.
+- [ ] Confirm keyphrase enrollment and SoundTrigger/DSP support on target devices.
+- [ ] Implement foreground microphone listening only after the detection engine and Android lifecycle design are validated.
+- [ ] Test screen-off behavior on physical Android 13, 14, 15, and 16 devices.
+- [ ] Document battery and OEM restrictions from real device testing.
 
 ## Milestone 3 — Phone actions
-- [ ] Open contact detail and dialer reliably.
-- [ ] WhatsApp supported share/deep-link flows with user confirmation.
-- [ ] Alarm/timer creation with time parsing.
-- [ ] App discovery and launching beyond a fixed package list.
-- [ ] Settings shortcuts where public Android intents exist.
-- [ ] Explicitly unsupported-action responses.
+- [ ] Broader app discovery and launching.
+- [ ] Supported WhatsApp share/deep-link flows with user confirmation.
+- [ ] Alarm/timer creation and time parsing (existing alarm shortcut remains separately controlled).
+- [ ] Explicit unsupported-action responses.
 
-## Milestone 4 — AI command understanding
-- [ ] Local deterministic intent parser first.
+## Milestone 4 — Local intelligence
+- [ ] Expand deterministic Hindi/English intent coverage.
 - [ ] Optional free/local AI model research; no paid API requirement.
-- [ ] Action allowlist and confirmation policy.
-- [ ] Conversation context and short-term session memory.
-- [ ] Graceful offline fallback.
+- [ ] Action allowlist, confirmation policy, short-term conversation context, and offline fallback.
 
-## Milestone 5 — Advanced telephony and release
-- [ ] Research compliant default-dialer role and Telecom APIs.
-- [ ] Implement cellular call controls only if the app qualifies and the user opts in.
-- [ ] Keep WhatsApp calling control marked unsupported unless a documented public interface exists.
+## Milestone 5 — Release
 - [ ] Accessibility and privacy review.
-- [ ] Automated tests and manual device test matrix.
+- [ ] Physical-device test matrix and regression tests.
 - [ ] Signed release build and installation guide.
+- [ ] Merge to main only after CI, review, and device testing.
 
 ## Release gates
-Do not merge a milestone to `main` until:
-1. CI tests and build pass for the exact head commit.
-2. Device test results are recorded.
-3. README and project memory are updated.
-4. Known Android/WhatsApp limitations are clearly documented.
+1. CI tests and build pass for the exact branch head.
+2. APK artifact is verified.
+3. Device test results are recorded; do not claim device validation before it occurs.
+4. README and project memory are current.
+5. Android and third-party app limitations are documented.
