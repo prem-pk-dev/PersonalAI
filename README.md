@@ -1,6 +1,6 @@
 # PersonalAI — Native Android Voice Assistant
 
-PK is a native Kotlin Android assistant for Android 13–16. The ₹0 MVP uses Android speech APIs and system intents; it requires no backend or paid AI API.
+PK is a native Kotlin Android assistant for Android 12–16 (device validation is still pending). The ₹0 MVP uses Android speech APIs and system intents; it requires no backend or paid AI API.
 
 ## Current features
 
