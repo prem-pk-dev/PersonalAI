@@ -12,7 +12,7 @@
 - [x] Visible start/stop listening controls.
 - [x] PK wake phrase + command in one utterance and two-step utterances.
 - [x] Hindi speech-to-text variants पीके / पी के.
-- [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).\n- [ ] Verify provider-level multilingual speech recognition and mixed Hindi-English (Hinglish) on Redmi Note 9; `und` behavior is provider-dependent.
+- [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).\n- [x] Enable Android 14+ recognizer language-detection callback constrained to `en-IN` and `hi-IN` where supported.\n- [ ] Verify Android 12 fallback behavior and mixed Hindi-English (Hinglish) on Redmi Note 9; provider support remains device-dependent.
 - [x] Deterministic command parser and JUnit tests.
 - [x] Exact-first contact matcher, duplicate-number normalization, and ambiguity chooser.
 - [x] Launch WhatsApp, YouTube, Chrome, and Android Settings.
@@ -27,11 +27,11 @@
 - [ ] Implement or select a valid RecognitionService provider compatible with the supported Android range.
 - [ ] Register VoiceInteractionService metadata only after recognitionService and sessionService contracts are satisfied.
 - [ ] Restore user-consented ROLE_ASSISTANT request after provider integration and Android 13–16 device verification.
-- [ ] Select and integrate a compatible PK hotword engine with a documented licence and offline model.
+- [ ] Integrate sherpa-onnx open-vocabulary KWS (Apache-2.0 code) with an English model/custom `PK` keyword; validate model licence, size, CPU/battery cost, and Hindi transcript variants.
 - [ ] Confirm keyphrase enrollment and SoundTrigger/DSP support on target devices.
-- [ ] Implement foreground microphone listening only after the detection engine and Android lifecycle design are validated.
-- [ ] Test screen-off behavior on physical Android 13, 14, 15, and 16 devices.
-- [ ] Document battery and OEM restrictions from real device testing.
+- [ ] Implement user-started microphone foreground service backed by KWS AudioRecord (not continuous SpeechRecognizer) after model integration and Android lifecycle review.
+- [ ] Test screen-off behavior on physical Android 12 MIUI 13 (Redmi Note 9) and additional supported Android versions.
+- [ ] Add local speaker verification enrollment and matching; validate false accepts/rejects and replay limitations.\n- [ ] Document battery and OEM restrictions from real device testing.
 
 ## Milestone 3 — Phone actions
 - [ ] Broader app discovery and launching.
