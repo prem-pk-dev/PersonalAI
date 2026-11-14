@@ -14,6 +14,14 @@ object VoiceLanguage {
     fun detect(text: String): String =
         if (devanagari.containsMatchIn(text) || romanHindi.containsMatchIn(text)) "hi-IN" else "en-IN"
 
-    fun fromLanguageTag(languageTag: String?): String =
-        if (languageTag?.startsWith("hi", ignoreCase = true) == true) "hi-IN" else "en-IN"
+    fun fromLanguageTag(languageTag: String?): String? = when {
+        languageTag.isNullOrBlank() -> null
+        languageTag.startsWith("hi", ignoreCase = true) -> "hi-IN"
+        languageTag.startsWith("en", ignoreCase = true) -> "en-IN"
+        else -> null
+    }
+
+    /** Prefer an explicit recognizer result; use transcript heuristics only as fallback. */
+    fun resolve(text: String, detectedLanguageTag: String?): String =
+        fromLanguageTag(detectedLanguageTag) ?: detect(text)
 }
