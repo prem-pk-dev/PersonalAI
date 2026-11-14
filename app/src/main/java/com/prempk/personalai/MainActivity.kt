@@ -317,6 +317,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                         ?.firstOrNull()
                     if (!partial.isNullOrBlank()) transcript.text = partial
                 }
+                override fun onLanguageDetection(results: Bundle) {
+                    if (android.os.Build.VERSION.SDK_INT >= 34) {
+                        val detected = results.getString(SpeechRecognizer.DETECTED_LANGUAGE)
+                        responseLanguageTag = VoiceLanguage.fromLanguageTag(detected)
+                    }
+                }
                 override fun onEvent(eventType: Int, params: Bundle?) = Unit
             })
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -324,6 +330,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
                 putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, "und")
+                if (android.os.Build.VERSION.SDK_INT >= 34) {
+                    putExtra(RecognizerIntent.EXTRA_ENABLE_LANGUAGE_DETECTION, true)
+                    putStringArrayListExtra(
+                        RecognizerIntent.EXTRA_LANGUAGE_DETECTION_ALLOWED_LANGUAGES,
+                        arrayListOf("en-IN", "hi-IN")
+                    )
+                }
             }
             recognizer?.startListening(intent)
         } catch (exception: Exception) {
