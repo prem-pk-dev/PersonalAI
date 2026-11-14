@@ -13,7 +13,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Supported device range: Android 13–16 (API 33–36).
 - Primary language: Kotlin.
 - Input: voice + text.
-- Wake word: "PK"; Hindi speech transcript variants "पीके" and "पी के" are accepted.
+- The only configured wake word is "PK"; "Hey Assistant" and "Hey PersonalAI" are not wake phrases. Hindi speech transcript variants "पीके" and "पी के" are accepted.
 - Budget: ₹0; prefer Android platform APIs and free/open-source tooling.
 - Delivery order: first make a working MVP, then add advanced capabilities incrementally.
 - The user expects progress updates and continuity; do not silently discard agreed features or constraints.
@@ -68,7 +68,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Contact lookup now presents a chooser when multiple equally ranked contacts match; it never silently picks the first result.
 - `ContactMatcherTest.kt` covers exact ranking, ambiguity, number deduplication, and empty/unmatched queries. This newest contact-matching change still requires CI validation.
 - CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
-- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
+- The UI explicitly prompts users to say "PK"; a regression test confirms "Hey Assistant" does not trigger the wake parser.\n- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - Permission flow now explains microphone use (only after user starts listening) and Contacts use (only for requested call/SMS lookup), and reports denials with available alternatives.
