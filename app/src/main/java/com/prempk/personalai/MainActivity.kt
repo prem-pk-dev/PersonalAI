@@ -25,6 +25,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var recognizer: SpeechRecognizer? = null
     private var tts: TextToSpeech? = null
     private var wakeMode = false
+    private var awaitingCommand = false
     private lateinit var status: TextView
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
@@ -152,6 +153,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             return
         }
         wakeMode = true
+        awaitingCommand = false
         transcript.text = "Listening for the wake phrase: Hey Assistant"
         startRecognition()
     }
@@ -212,17 +214,27 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val normalized = raw.lowercase(Locale.ROOT)
         val wakeWords = listOf("hey assistant", "hello assistant", "हे असिस्टेंट", "अरे असिस्टेंट")
         val wake = wakeWords.firstOrNull { normalized.contains(it) }
-        if (wake == null) return
-        val command = normalized.replace(wake, "").trim(' ', ',', '.', '!')
-        if (command.isBlank()) {
-            respond("Yes, tell me.")
-        } else {
-            handleCommand(command)
+        if (wake != null) {
+            val command = normalized.replace(wake, "").trim(' ', ',', '.', '!')
+            if (command.isBlank()) {
+                awaitingCommand = true
+                respond("Yes, tell me.")
+            } else {
+                awaitingCommand = false
+                handleCommand(command)
+            }
+            return
+        }
+        // Allow the wake phrase and command to arrive as two separate speech results.
+        if (awaitingCommand) {
+            awaitingCommand = false
+            handleCommand(normalized)
         }
     }
 
     private fun stopListening() {
         wakeMode = false
+        awaitingCommand = false
         recognizer?.stopListening()
         recognizer?.destroy()
         recognizer = null
@@ -270,7 +282,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun callContact(command: String) {
         val query = command
-            .replace(Regex("(?i)hey assistant|call|कॉल|करो|करना|लगाओ|फोन|please|\\bko\\b|को"), " ")
+            .replace(Regex("(?i)hey assistant|call|karo|karna|lagao|lagana|phone|please|कॉल|करो|करना|लगाओ|लगाना|फोन|\\bko\\b|को"), " ")
             .trim()
         val directNumber = Regex("\\+?[0-9][0-9\\s-]{7,}").find(query)
             ?.value?.replace(Regex("[\\s-]"), "")
