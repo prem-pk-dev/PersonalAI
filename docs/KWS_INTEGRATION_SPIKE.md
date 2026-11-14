@@ -20,7 +20,7 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 
 ## Integration gates
 
-1. Runtime download and checksum verification pass.
+1. <strong>Passed:</strong> Runtime download and checksum verification pass; CI confirms the AAR contains native JNI payloads for arm64-v8a and armeabi-v7a (run 43600986575, artifact 14115548372).
 2. A minimal Android instrumentation/smoke test loads the native library on an ARM64 emulator/device.
 3. The official English GigaSpeech KWS model is pinned separately, with its own source, checksum, licence, and offline asset strategy.
 4. The custom spoken phrase "P-K" is evaluated for false accepts/rejects and accent robustness; the model is not represented as Hindi wake-word capable.
