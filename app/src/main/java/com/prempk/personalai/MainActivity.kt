@@ -3,7 +3,6 @@ package com.prempk.personalai
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.role.RoleManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -106,15 +105,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
             respond(if (speechLanguageTag == "hi-IN") "भाषा हिंदी चुनी गई है।" else "English selected.")
         }
-        val assistantRoleButton = makeButton("Set default") { requestAssistantRole() }.apply {
-            textSize = 11f
-            background = rounded(0x332D9CDB, 22, 0x6659C9F2)
-            setPadding(dp(10), dp(7), dp(10), dp(7))
-        }
         topBar.addView(brand, LinearLayout.LayoutParams(0, dp(48), 1f))
-        topBar.addView(assistantRoleButton, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT, dp(38)
-        ).apply { marginEnd = dp(7) })
         topBar.addView(languageButton)
 
         val headline = TextView(this).apply {
@@ -258,44 +249,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun languageButtonTextRefresh(button: Button) {
         button.text = languageButtonLabel()
-    }
-
-    private fun requestAssistantRole() {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
-            respond("Default assistant selection requires Android 10 or newer.")
-            return
-        }
-        val roleManager = getSystemService(RoleManager::class.java)
-        if (!roleManager.isRoleAvailable(RoleManager.ROLE_ASSISTANT)) {
-            respond("This phone does not expose the default assistant role to apps.")
-            return
-        }
-        if (roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)) {
-            respond("PersonalAI is already your default assistant.")
-            return
-        }
-        runCatching {
-            startActivityForResult(roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT), REQUEST_ASSISTANT_ROLE)
-        }.onFailure { respond("Could not open the system assistant selection screen.") }
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-        if (intent?.action == Intent.ACTION_ASSIST) startWakeListening()
-    }
-
-    @Deprecated("Uses the platform role-consent activity result")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_ASSISTANT_ROLE) {
-            val roleManager = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) getSystemService(RoleManager::class.java) else null
-            if (roleManager?.isRoleHeld(RoleManager.ROLE_ASSISTANT) == true) {
-                respond("PersonalAI is now selected as your default assistant.")
-            } else {
-                respond("Default assistant was not changed. You can choose it later in Android Settings.")
-            }
-        }
     }
 
     private fun ensureAudioPermission() {
@@ -628,7 +581,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     companion object {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
-        private const val REQUEST_ASSISTANT_ROLE = 103
         private const val PREFS_NAME = "personalai_preferences"
         private const val KEY_SPEECH_LANGUAGE = "speech_language"
     }
