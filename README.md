@@ -5,7 +5,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 ## Current MVP features
 
 - Voice and text command entry with a Siri-inspired dark interface, animated gradient voice orb, tap-to-listen interaction, and compact command composer.
-- User-started wake listening while the app remains open.
+- User-started wake listening while the app remains open.\n- Android default assistant role request through the system consent screen; the app handles the ACTION_ASSIST entry point.
 - Two-step interaction: say "Hey Assistant", then speak the command; combined wake phrase + command is also supported.
 - Persisted speech-language selector: English (India) and Hindi (India).
 - Android SpeechRecognizer and TextToSpeech.
@@ -20,7 +20,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 
 ## Honest platform limitations
 
-- The wake phrase is not always-on. Screen-off/background listening is a separate foreground-service milestone and must be explicitly started by the user.
+- The current default-assistant integration handles the system assistant invocation and starts app-level listening. It is not yet a full VoiceInteractionService/hotword implementation, so always-on screen-off "Hey Assistant" is not available. A proper VoiceInteractionService and session implementation is a separate milestone.
 - A normal third-party app cannot silently answer, originate, or disconnect arbitrary calls. Cellular call disconnect requires a compliant default-dialer implementation and the user's role approval.
 - WhatsApp does not expose general third-party controls for arbitrary call control or silent message sending. Supported intents/deep links and user confirmation are the only planned approach.
 - Speech recognition and offline language availability depend on the device's installed recognition service and language packs.
