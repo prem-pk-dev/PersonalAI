@@ -13,7 +13,19 @@ class VoiceLanguageTest {
         assertEquals("hi-IN", VoiceLanguage.fromLanguageTag("hi-IN"))
         assertEquals("hi-IN", VoiceLanguage.fromLanguageTag("hi"))
         assertEquals("en-IN", VoiceLanguage.fromLanguageTag("en-US"))
-        assertEquals("en-IN", VoiceLanguage.fromLanguageTag(null))
+        assertEquals(null, VoiceLanguage.fromLanguageTag(null))
+    }
+
+
+    @Test fun explicitRecognizerLanguageTakesPriorityOverTranscriptHeuristic() {
+        assertEquals("en-IN", VoiceLanguage.resolve("YouTube kholo", "en-US"))
+        assertEquals("hi-IN", VoiceLanguage.resolve("Open YouTube", "hi-IN"))
+        assertEquals("hi-IN", VoiceLanguage.resolve("YouTube kholo", null))
+        assertEquals("en-IN", VoiceLanguage.resolve("Open YouTube", null))
+    }
+
+    @Test fun ignoresUnsupportedRecognizerLanguageAndUsesTranscriptFallback() {
+        assertEquals("hi-IN", VoiceLanguage.resolve("YouTube kholo", "fr-FR"))
     }
 
     @Test fun defaultsLatinAndEnglishInputToEnglishIndia() {
