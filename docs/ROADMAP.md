@@ -12,6 +12,7 @@
 
 ## Milestone 1 — Reliable MVP command engine
 - [x] Text command input and visible Run Text Command button.
+- [x] Siri-inspired dark assistant UI with animated voice orb and tap-to-listen control.
 - [x] Android speech recognition integration.
 - [x] Text-to-speech response integration.
 - [x] Start/stop visible listening controls.
