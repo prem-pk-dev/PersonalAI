@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Build
 import android.os.BatteryManager
 import android.provider.AlarmClock
 import android.provider.ContactsContract
@@ -38,6 +39,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
     private lateinit var orb: SiriOrbView
+    private lateinit var kwsSetupStatus: TextView
+    private var modelInstallInProgress = false
 
     private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
@@ -52,6 +55,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         ensureAudioPermission()
         if (intent?.action == Intent.ACTION_ASSIST) {
             window.decorView.post { startWakeListening() }
+        }
+        if (intent?.getBooleanExtra(KwsForegroundService.EXTRA_WAKE_DETECTED, false) == true) {
+            window.decorView.post { startCommandListeningAfterWake() }
         }
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             status.text = "Speech recognition unavailable on this device"
@@ -158,7 +164,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(dp(18), dp(13), dp(18), dp(13))
             isAllCaps = false
         }
-        val stopButton = makeButton("Stop") { stopListening() }.apply {
+        val stopButton = makeButton("Stop") { stopListening(); stopKwsService() }.apply {
             background = surface(0xFF1A2940.toInt(), 26, 0x665B7897)
             setPadding(dp(18), dp(13), dp(18), dp(13))
             isAllCaps = false
@@ -166,16 +172,38 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         listenRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
         listenRow.addView(stopButton, LinearLayout.LayoutParams(dp(90), dp(50)))
 
+        val kwsSetupRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        val installModelButton = makeButton("Download offline PK model") { installOfflineModel() }.apply {
+            isAllCaps = false
+            textSize = 12f
+            setPadding(dp(8), dp(12), dp(8), dp(12))
+        }
+        val startKwsButton = makeButton("Enable background PK") { requestStartKwsSession() }.apply {
+            isAllCaps = false
+            textSize = 12f
+            setPadding(dp(8), dp(12), dp(8), dp(12))
+        }
+        kwsSetupRow.addView(installModelButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
+        kwsSetupRow.addView(startKwsButton, LinearLayout.LayoutParams(0, dp(50), 1f))
+
+        kwsSetupStatus = label(
+            if (KwsModelInstaller.isInstalled(this)) "Offline model installed" else "Offline wake-word model not installed",
+            11f, muted
+        ).apply { gravity = Gravity.CENTER; setPadding(0, dp(8), 0, 0) }
+
         val footer = label("Private by design  •  Actions stay under your control", 10f, 0xFF7387A4.toInt()).apply {
             gravity = Gravity.CENTER
             setPadding(0, dp(18), 0, 0)
         }
 
         listOf<View>(header, greeting, subtitle, orbFrame, statusWrap, transcript,
-            inputRow, listenRow, footer).forEachIndexed { index, view ->
+            inputRow, listenRow, kwsSetupRow, kwsSetupStatus, footer).forEachIndexed { index, view ->
             val top = when (index) {
                 1 -> dp(10); 3 -> dp(4); 4 -> dp(0); 5 -> dp(16)
-                6 -> dp(10); 7 -> dp(10); else -> dp(0)
+                6 -> dp(10); 7 -> dp(10); 8 -> dp(10); 9 -> dp(4); else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -223,6 +251,82 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         } else {
             requestPermissions(arrayOf(permission), requestCode)
         }
+    }
+
+    private fun installOfflineModel() {
+        if (modelInstallInProgress) return
+        modelInstallInProgress = true
+        kwsSetupStatus.text = "Preparing offline wake-word model…"
+        Thread {
+            try {
+                KwsModelInstaller.install(this) { message ->
+                    runOnUiThread { kwsSetupStatus.text = message }
+                }
+                runOnUiThread {
+                    modelInstallInProgress = false
+                    kwsSetupStatus.text = "Offline model installed. Tap Enable background PK."
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    modelInstallInProgress = false
+                    kwsSetupStatus.text = "Model setup failed: " + (error.localizedMessage ?: "unknown error")
+                }
+            }
+        }.start()
+    }
+
+    private fun requestStartKwsSession() {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ensureAudioPermission()
+            kwsSetupStatus.text = "Allow microphone permission, then tap Enable background PK."
+            return
+        }
+        if (!KwsModelInstaller.isInstalled(this)) {
+            kwsSetupStatus.text = "Download the offline model first."
+            return
+        }
+        if (Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
+            return
+        }
+        startKwsService()
+    }
+
+    private fun startKwsService() {
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_KWS_ENABLED, true).apply()
+        val serviceIntent = Intent(this, KwsForegroundService::class.java).setAction(KwsForegroundService.ACTION_START)
+        try {
+            if (Build.VERSION.SDK_INT >= 26) startForegroundService(serviceIntent) else startService(serviceIntent)
+            kwsSetupStatus.text = "Background PK listening started. Use notification to stop."
+            status.text = "●  Listening for PK in the background"
+        } catch (error: Exception) {
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_KWS_ENABLED, false).apply()
+            kwsSetupStatus.text = "Could not start listener: " + (error.localizedMessage ?: "system restriction")
+        }
+    }
+
+    private fun stopKwsService() {
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_KWS_ENABLED, false).apply()
+        startService(Intent(this, KwsForegroundService::class.java).setAction(KwsForegroundService.ACTION_STOP))
+        kwsSetupStatus.text = "Background PK listening stopped."
+    }
+
+    private fun startCommandListeningAfterWake() {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ensureAudioPermission()
+            return
+        }
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            respond("Speech recognition is unavailable.")
+            return
+        }
+        wakeMode = true
+        awaitingCommand = true
+        orb.setListening(true)
+        transcript.text = "PK detected. Tell me your command."
+        status.text = "●  PK detected — listening for command"
+        startRecognition()
     }
 
     private fun startWakeListening() {
@@ -385,6 +489,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             ))
             AssistantCommandType.UNKNOWN ->
                 respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
+        }
+        if (getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
+            window.decorView.postDelayed({ startKwsService() }, 900)
         }
     }
 
@@ -581,6 +688,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 respond("Microphone permission was not granted. Voice commands need microphone access; text commands remain available.")
             }
         }
+        if (requestCode == REQUEST_NOTIFICATIONS) {
+            if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                startKwsService()
+            } else {
+                kwsSetupStatus.text = "Notification permission is needed for listener controls."
+            }
+        }
         if (requestCode == REQUEST_CONTACTS) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                 respond("Contacts permission granted. Repeat your command.")
@@ -601,5 +715,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     companion object {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
+        private const val REQUEST_NOTIFICATIONS = 103
+        private const val PREFS_NAME = "pk_voice_preferences"
+        private const val KEY_KWS_ENABLED = "background_kws_enabled"
     }
 }
