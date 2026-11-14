@@ -5,7 +5,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 ## Current features
 
 - Siri-inspired dark interface with animated orb, tap-to-listen, transcript, text command entry, and activity log.
-- User-started PK listening while the app is open. Hindi speech transcripts "पीके" and "पी के" are accepted.
+- The only configured wake phrase is "PK" (Hindi speech transcripts "पीके" / "पी के" are accepted); "Hey Assistant" is not used. Listening is currently user-started while the app is open.
 - Combined "PK + command" and two-step "PK", then command.
 - Android SpeechRecognizer and TextToSpeech, with persisted English (India) / Hindi (India) selection.
 - ACTION_ASSIST activity entry point for compatible system handoff; default-assistant role registration is deferred until a valid recognition-service provider is integrated.
