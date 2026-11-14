@@ -24,6 +24,7 @@ import java.security.MessageDigest
 object KwsModelInstaller {
     const val MODEL_DIRECTORY = "sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01-mobile"
     const val ARCHIVE_SHA256 = "2e6ac2577310bfa2f4b6b5fab0478b868c9d0b2cb2c51b3e13b50581b588864d"
+    const val WAKE_KEYWORD_LINE = "▁P K"
     const val ARCHIVE_URL =
         "https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01-mobile.tar.bz2"
 
@@ -41,7 +42,8 @@ object KwsModelInstaller {
 
     fun isInstalled(context: Context): Boolean {
         val dir = modelDirectory(context)
-        return dir.isDirectory && requiredFiles.all { File(dir, it).length() > 0L }
+        return dir.isDirectory && requiredFiles.all { File(dir, it).length() > 0L } &&
+            File(dir, "pk-keywords.txt").takeIf { it.isFile }?.readText()?.trim() == WAKE_KEYWORD_LINE
     }
 
     @Synchronized
@@ -104,6 +106,7 @@ object KwsModelInstaller {
             check(extracted.containsAll(requiredFiles)) {
                 "The model archive is incomplete. Missing: ${requiredFiles - extracted}"
             }
+            File(staging, "pk-keywords.txt").writeText(WAKE_KEYWORD_LINE + "\\n", Charsets.UTF_8)
 
             destination.deleteRecursively()
             check(staging.renameTo(destination)) { "Could not finalize offline model installation." }
@@ -137,7 +140,7 @@ object KwsModelInstaller {
                 numThreads = 2,
                 provider = "cpu"
             ),
-            keywordsFile = "$modelPath/keywords.txt",
+            keywordsFile = "$modelPath/pk-keywords.txt",
             keywordsScore = 1.5f,
             keywordsThreshold = 0.25f
         )
