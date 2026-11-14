@@ -74,7 +74,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Auto Language Mode replaces the manual language selector: recognized Devanagari and common Romanized-Hindi input selects Hindi (India) TTS; Latin input otherwise defaults to English (India). On Android 14+, enable recognizer language detection constrained to `en-IN` and `hi-IN`; Android 12 uses the heuristic fallback. Both require physical-device verification.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - Permission flow now explains microphone use (only after user starts listening) and Contacts use (only for requested call/SMS lookup), and reports denials with available alternatives.
-- Command activity history is persisted locally in app SharedPreferences and capped at the latest 30 entries; no contact contents or credentials are stored.
+- Quick Actions and Recent Conversation were removed from the home screen at the user's request; command-history persistence was removed as well.
 - The home screen uses PK branding, a dark cyan-accented layout, animated orb, quick action grid, compact text composer, and conversation history. A custom cyan/purple PK adaptive launcher icon and app label were added.
 - New offline utility intents provide device time, date, battery percentage, Maps launch, and help. Parser tests cover these intents.
 - No physical Android device test has yet been performed. Auto language recognition and TTS language-pack behavior remain unverified on the Redmi Note 9.
