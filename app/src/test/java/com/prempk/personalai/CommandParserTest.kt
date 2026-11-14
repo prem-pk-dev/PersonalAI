@@ -23,6 +23,11 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("Amit ko SMS karo"))
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("Alarm kholo"))
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("अलार्म खोलो"))
+        assertEquals(AssistantCommandType.OPEN_MAPS, CommandParser.parse("Maps kholo"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("time kya hua"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("आज की तारीख बताओ"))
+        assertEquals(AssistantCommandType.INFO_BATTERY, CommandParser.parse("battery kitni hai"))
+        assertEquals(AssistantCommandType.HELP, CommandParser.parse("help"))
     }
 
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
