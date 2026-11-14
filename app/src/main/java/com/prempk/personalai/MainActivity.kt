@@ -388,7 +388,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
-            AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), "Opening Maps.")
+            AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), localized("Opening Maps.", "Maps खोल रहा हूँ।"))
             AssistantCommandType.INFO_TIME -> {
                 val time = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date())
                 respond(localized("The time is $time.", "अभी $time बजे हैं।"))
@@ -474,12 +474,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun openDialer(phone: String) {
         openIntent(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")),
-            "Opening dialer for $phone. Confirm the call on your phone.")
+            localized("Opening dialer for $phone. Confirm the call on your phone.", "$phone के लिए डायलर खोल रहा हूँ। कॉल की पुष्टि फोन पर करें।"))
     }
 
     private fun findContactMatches(name: String, onSelected: (ContactEntry) -> Unit = { openDialer(it.number) }) {
         if (name.isBlank()) {
-            respond("Please say the contact name or phone number.")
+            respond(localized("Please say the contact name or phone number.", "कृपया संपर्क का नाम या फोन नंबर बोलें।"))
             return
         }
         if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
@@ -516,22 +516,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 }
             }.orEmpty()
         }.getOrElse {
-            respond("I could not read your contacts. Check Contacts permission and try again.")
+            respond(localized("I could not read your contacts. Check Contacts permission and try again.", "संपर्क नहीं पढ़ पाया। Contacts अनुमति जाँचकर फिर कोशिश करें।"))
             return
         }
 
         val bestMatches = ContactMatcher.bestMatches(name, matches)
         when (bestMatches.size) {
-            0 -> respond("No matching contact found. Check the name or speak a phone number.")
+            0 -> respond(localized("No matching contact found. Check the name or speak a phone number.", "कोई मिलता-जुलता संपर्क नहीं मिला। नाम जाँचें या फोन नंबर बोलें।"))
             1 -> onSelected(bestMatches.first())
             else -> {
                 val labels = bestMatches.map { "${it.name} — ${it.number}" }.toTypedArray()
                 AlertDialog.Builder(this)
-                    .setTitle("Choose a contact")
+                    .setTitle(localized("Choose a contact", "संपर्क चुनें"))
                     .setItems(labels) { _, which -> onSelected(bestMatches[which]) }
                     .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                     .show()
-                respond("I found more than one matching contact. Choose the correct person on screen.")
+                respond(localized("I found more than one matching contact. Choose the correct person on screen.", "एक से अधिक संपर्क मिले हैं। स्क्रीन पर सही व्यक्ति चुनें।"))
             }
         }
     }
@@ -539,7 +539,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun composeSms(command: String) {
         val request = SmsCommandParser.parse(command)
         if (request == null) {
-            respond("Say a contact name followed by ko SMS bhejo, or say SMS followed by a phone number.")
+            respond(localized("Say a contact name followed by ko SMS bhejo, or say SMS followed by a phone number.", "संपर्क का नाम बोलकर SMS भेजें कहें, या SMS के साथ फोन नंबर बोलें।"))
             return
         }
         if (!request.phoneNumber.isNullOrBlank()) {
@@ -561,9 +561,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             if (body.isNotBlank()) putExtra("sms_body", body)
         }
         openIntent(intent, if (body.isBlank()) {
-            "Messages opened. Review and send your message there."
+            localized("Messages opened. Review and send your message there.", "Messages खुल गया है। अपना संदेश जाँचकर वहीं भेजें।")
         } else {
-            "Message prepared. Review and send it in your Messages app."
+            localized("Message prepared. Review and send it in your Messages app.", "संदेश तैयार है। Messages ऐप में जाँचकर भेजें।")
         })
     }
 
