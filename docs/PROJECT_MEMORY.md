@@ -46,7 +46,8 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Cellular call disconnect requires a compliant default-dialer implementation and the user's explicit role approval; it is not a normal app permission.
 - WhatsApp does not expose general public APIs for arbitrary call control or silently sending messages. Use supported deep links/intents and user confirmation only.
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
-- The app now declares an ACTION_ASSIST activity handler and can request Android ROLE_ASSISTANT through the system consent flow. This lets supported devices route the system assistant invocation to PersonalAI.\n- The wake word was changed from "Hey Assistant" to "PK". The current SpeechRecognizer-based detector still requires the app to be open and listening; screen-off hotword detection is not yet implemented.\n- This is not yet a full VoiceInteractionService / VoiceInteractionSessionService implementation. Do not describe the wake phrase as always-on: current SpeechRecognizer listening still runs only while the app is open and explicitly started.
+- The app declares ACTION_ASSIST, requests Android ROLE_ASSISTANT only after user action, and registers VoiceInteractionService plus VoiceInteractionSessionService with binding permissions and service metadata. The session opens the full app.
+- The wake word is "PK" (Hindi STT variants "पीके" / "पी के"). SpeechRecognizer-based PK recognition still requires the app to be open and listening started by the user. The registered assistant services are not an always-on hotword detector. Screen-off detection requires a compatible hotword engine, keyphrase enrollment, device SoundTrigger/DSP support, and foreground/background lifecycle validation.
 - Offline speech recognition depends on the device's installed recognition provider and language packs.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
 
@@ -71,7 +72,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - No physical Android device test has yet been performed.
-- No release APK for the latest branch head has yet been validated.
+- CI run 43578152900 passed for commit 20a849eef89bf702ef0267efe471d003a8292913: unit tests, debug APK build, and artifact upload succeeded. Artifact personalai-debug-apk (artifact ID 14107681808, SHA-256 43d31f51f3954aa66d0bf74b37257848701be4f96c9b8f2f3a064373168771d1) expires 2026-11-28. This artifact predates the subsequent VoiceInteraction registration changes and is not the latest APK.
+- The manifest now registers PersonalAIVoiceInteractionService and PersonalAIVoiceInteractionSessionService; the session surface launches the full app. These later changes require CI verification.
+- No physical Android device test has yet been performed; do not claim screen-off PK behavior.
 
 ## UI direction
 
@@ -95,15 +98,13 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Verify CI tests and build for the latest contact-matching branch head; preserve logs and fix every failure.
-2. Verify the latest debug APK artifact and install it on a physical device.
-3. Validate contact-name SMS parser and composer flow with CI, then verify on a physical Android device.
-4. Improve error states, permission rationale, and persistent command history.
-5. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
-6. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
-7. Add optional AI reasoning only after deterministic phone actions are reliable.
-8. Investigate cellular call controls only through a compliant default dialer; document WhatsApp limitations.
-9. Merge to `main` only after CI is green, review is complete, and device testing is recorded.
+1. Verify CI and APK artifact for the latest VoiceInteraction manifest/session changes.
+2. Install and test the new APK on the user's physical Android device; record Android version and observed behavior.
+3. Improve permission rationale, error states, and persistent command history.
+4. Research a free offline PK hotword engine, licence, keyphrase enrollment, and device SoundTrigger/DSP compatibility before foreground microphone implementation.
+5. Add optional AI reasoning only after deterministic phone actions are reliable.
+6. Investigate cellular call controls only through a compliant default dialer; document WhatsApp limitations.
+7. Merge to main only after CI is green, review is complete, and device testing is recorded.
 
 ## Working protocol
 
