@@ -30,7 +30,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var commandInput: EditText
     private lateinit var history: TextView
 
-    private val background = 0xFF08111F.toInt()
+    private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
     private val cyan = 0xFF45D6E8.toInt()
     private val white = 0xFFF3F7FB.toInt()
@@ -50,7 +50,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(22, 30, 22, 22)
-            setBackgroundColor(background)
+            setBackgroundColor(backgroundColorValue)
         }
         val scroll = ScrollView(this)
         val title = TextView(this).apply {
