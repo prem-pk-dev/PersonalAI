@@ -58,19 +58,24 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Android Gradle project, native Activity, CI workflow, and continuity documentation are committed to the development branch.
 - The first CI attempt failed because an Activity property named `background` shadowed the View background property. It was renamed to `backgroundColorValue`.
 - CI for commit `d191288e62089edb00b388caf51a571f042cba19` passed: debug APK build and artifact upload both succeeded.
-- A later language-selector CI attempt exposed a missing `speechLanguageTag` property declaration. This was added in commit `ecc07952859a23384cb7ac36f540e365d42187e1`; a fresh run for the latest branch head must be checked before calling the current branch green.
+- CI for commit `ecc07952859a23384cb7ac36f540e365d42187e1` passed on push and pull-request workflows after the speech-language state fix.
+- A UI inspection found that the Run Text Command button was created but omitted from the displayed view list. It is now included in the layout after the text input.
+- Command classification has been extracted from MainActivity into Android-independent `CommandParser.kt` and `AssistantCommandType`.
+- JUnit tests were added for Hindi/English app launches, calls, SMS, alarms, whitespace, and unknown commands.
+- CI now runs `gradle testDebugUnitTest assembleDebug` before uploading the APK. Latest branch-head test/build result must be checked before declaring green.
 - Two-step wake handling is implemented: wake phrase first, command in the next recognition result; combined wake phrase + command also works.
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
-- SMS composer can prefill an optional dictated message body; user must review and send.
+- SMS composer can prefill an optional dictated body; user must review and send.
 - No physical Android device test has yet been performed.
 - No release APK for the latest branch head has yet been validated.
 
 ## MVP scope
 
 - Voice recognition using Android SpeechRecognizer.
-- Text command input.
+- Text command input and visible Run Text Command control.
 - TextToSpeech responses.
 - Explicit English (India) / Hindi (India) speech language selection.
+- Unit-testable deterministic Hindi/English command classification.
 - Wake phrase detection during an explicitly user-started listening session while the app is open.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Contact lookup after Contacts permission and open system dialer for user confirmation.
@@ -80,16 +85,15 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Verify CI for the latest branch head; preserve logs and fix every compile error.
+1. Verify CI tests and build for the latest branch head; preserve logs and fix every failure.
 2. Verify the latest debug APK artifact and install it on a physical device.
-3. Add unit-testable command parsing and tests for Hindi/English phrases.
-4. Improve contact matching, ambiguity handling, and contact-name SMS composition.
-5. Improve error states, permission rationale, and persistent command history.
-6. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
-7. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
-8. Add optional AI reasoning only after deterministic phone actions are reliable.
-9. Investigate cellular call controls only through a compliant default dialer; document WhatsApp limitations.
-10. Merge to `main` only after CI is green, review is complete, and device testing is recorded.
+3. Improve contact matching, ambiguity handling, and contact-name SMS composition.
+4. Improve error states, permission rationale, and persistent command history.
+5. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
+6. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
+7. Add optional AI reasoning only after deterministic phone actions are reliable.
+8. Investigate cellular call controls only through a compliant default dialer; document WhatsApp limitations.
+9. Merge to `main` only after CI is green, review is complete, and device testing is recorded.
 
 ## Working protocol
 
@@ -99,4 +103,4 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - After each logical change: commit, inspect CI, inspect logs on failure, fix, and re-run.
 - Do not claim an APK exists unless the workflow artifact or a local build has been verified.
 - Do not merge automatically. Keep the PR draft until validation criteria are met.
-- Update this file and the roadmap whenever milestones, limitations, or architecture decisions change.
+- Update this file and the roadmap whenever scope or architecture changes.
