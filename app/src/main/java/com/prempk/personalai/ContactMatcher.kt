@@ -25,10 +25,13 @@ object ContactMatcher {
         return ranked.asSequence()
             .filter { it.first == bestRank }
             .map { it.second }
-            .distinctBy { normalize(it.number) }
+            .distinctBy { normalizeNumber(it.number) }
             .toList()
     }
 
     private fun normalize(value: String): String =
         value.trim().lowercase(Locale.ROOT).replace(Regex("\\s+"), " ")
+
+    private fun normalizeNumber(value: String): String =
+        value.filter(Char::isDigit)
 }
