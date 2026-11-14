@@ -14,6 +14,7 @@
 - [x] Hindi speech-to-text variants पीके / पी के.
 - [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).
 - [x] Enable Android 14+ recognizer language-detection callback constrained to `en-IN` and `hi-IN` where supported.
+- [x] Preserve a supported Android recognizer language result ahead of transcript heuristics; fall back safely for missing/unsupported tags, with unit-test coverage.
 - [ ] Verify Android 12 fallback behavior and mixed Hindi-English (Hinglish) on Redmi Note 9; provider support remains device-dependent.
 - [x] Deterministic command parser and JUnit tests.
 - [x] Exact-first contact matcher, duplicate-number normalization, and ambiguity chooser.
