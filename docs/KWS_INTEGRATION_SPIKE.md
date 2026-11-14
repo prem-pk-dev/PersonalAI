@@ -2,7 +2,7 @@
 
 ## Goal
 
-Verify the official sherpa-onnx Android runtime package before adding any native dependency to the PK application. This spike intentionally does not change the production app's Gradle dependencies, microphone lifecycle, or APK.
+Verify the official sherpa-onnx Android runtime package before adding any native dependency to the PK application. This remains an isolated integration spike, not a production-ready wake-word feature. The spike branch adds the pinned AAR and model installer to the build, but does not yet connect model setup to the UI or run continuous microphone capture in a foreground service.
 
 ## Pinned upstream runtime
 
@@ -31,11 +31,11 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 ## Integration gates
 
 1. <strong>Passed:</strong> Runtime download and checksum verification pass; CI confirms the AAR contains native JNI payloads for arm64-v8a and armeabi-v7a (run 43600986575, artifact 14115548372).
-2. CI confirms the KWS Java classes are packaged and the APK contains sherpa JNI libraries for arm64-v8a and armeabi-v7a. Native loading still requires an ARM64 device test; the hosted x86_64 emulator must not attempt to load an ARM-only JNI library.
+2. CI verifies that the KWS Java class is packaged and that the APK contains sherpa JNI libraries for arm64-v8a and armeabi-v7a. The emulator smoke test loads the class without initializing its JNI static loader because the hosted emulator is x86_64. Native library loading still requires an ARM64 device test.
 3. The official English GigaSpeech KWS model is pinned separately, with its own source, checksum, licence, and offline asset strategy.
 4. The custom spoken phrase "P-K" is evaluated for false accepts/rejects and accent robustness; the model is not represented as Hindi wake-word capable.
-5. AudioRecord processing runs in a user-started microphone foreground service with a persistent notification and clear stop control.
-6. Command handoff stops KWS capture cleanly, runs speech recognition, then returns to KWS only while the user-enabled listening session remains active.
+5. Not implemented yet: AudioRecord processing in a user-started microphone foreground service with a persistent notification and clear stop control.
+6. Not implemented yet: command handoff must stop KWS capture cleanly, run speech recognition, then return to KWS only while the user-enabled listening session remains active.
 7. Physical Redmi Note 9 / Android 12 / MIUI 13 tests cover foreground, background, screen-off, battery, and OEM restrictions.
 8. Speaker verification is evaluated as a separate model and enrollment flow. Keyword spotting alone is not owner authentication.
 
