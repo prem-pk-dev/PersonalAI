@@ -15,6 +15,9 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.view.Gravity
+import android.view.View
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -32,6 +35,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
     private lateinit var history: TextView
+    private lateinit var orb: SiriOrbView
 
     private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
@@ -52,92 +56,178 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun buildUi() {
-        val content = LinearLayout(this).apply {
+        val density = resources.displayMetrics.density
+        fun dp(value: Int) = (value * density).toInt()
+        fun rounded(color: Int, radius: Int, strokeColor: Int? = null) =
+            GradientDrawable().apply {
+                setColor(color)
+                cornerRadius = dp(radius).toFloat()
+                if (strokeColor != null) setStroke(dp(1), strokeColor)
+            }
+
+        val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(22, 30, 22, 22)
-            setBackgroundColor(backgroundColorValue)
+            setPadding(dp(22), dp(18), dp(22), dp(18))
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(Color.rgb(8, 10, 22), Color.rgb(13, 18, 38), Color.rgb(5, 8, 18))
+            )
         }
-        val scroll = ScrollView(this)
-        val title = TextView(this).apply {
-            text = "PERSONAL AI ASSISTANT"
-            textSize = 22f
-            setTextColor(cyan)
-            gravity = Gravity.CENTER
-        }
-        val subtitle = TextView(this).apply {
-            text = "Voice + Text • Hindi + English"
-            textSize = 13f
-            setTextColor(muted)
-            gravity = Gravity.CENTER
-            setPadding(0, 8, 0, 22)
-        }
-        status = TextView(this).apply {
-            text = "● Ready"
-            textSize = 15f
-            setTextColor(cyan)
-            gravity = Gravity.CENTER
-            setPadding(12, 14, 12, 14)
-            setBackgroundColor(panel)
-        }
-        transcript = TextView(this).apply {
-            text = "Tap Start Listening, then say: Hey Assistant, WhatsApp kholo"
-            textSize = 16f
-            setTextColor(white)
-            gravity = Gravity.CENTER
-            setPadding(12, 24, 12, 24)
-        }
-        commandInput = EditText(this).apply {
-            hint = "Type a command, e.g. YouTube kholo"
-            setHintTextColor(muted)
-            setTextColor(white)
-            textSize = 15f
-            setSingleLine(true)
-            setPadding(14, 12, 14, 12)
-            setBackgroundColor(panel)
-        }
-        history = TextView(this).apply {
-            text = "COMMAND HISTORY"
-            textSize = 13f
-            setTextColor(cyan)
-            setPadding(0, 18, 0, 8)
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            clipToPadding = false
         }
 
-        val languageButton = makeButton(languageButtonLabel()) { }
+        val topBar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val brand = TextView(this).apply {
+            text = "PersonalAI"
+            textSize = 21f
+            letterSpacing = 0.02f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextColor(white)
+        }
+        val languageButton = makeButton(if (speechLanguageTag == "hi-IN") "हिंदी  ▾" else "English  ▾") { }
+        languageButton.textSize = 12f
+        languageButton.background = rounded(0x332D9CDB, 22, 0x6659C9F2)
+        languageButton.setPadding(dp(14), dp(7), dp(14), dp(7))
         languageButton.setOnClickListener {
             speechLanguageTag = if (speechLanguageTag == "hi-IN") "en-IN" else "hi-IN"
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                 .putString(KEY_SPEECH_LANGUAGE, speechLanguageTag).apply()
-            languageButtonTextRefresh(languageButton)
+            languageButton.text = if (speechLanguageTag == "hi-IN") "हिंदी  ▾" else "English  ▾"
             runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
             respond(if (speechLanguageTag == "hi-IN") "भाषा हिंदी चुनी गई है।" else "English selected.")
         }
-        val controls = listOf(
-            languageButton,
-            makeButton("START LISTENING  🎙") { startWakeListening() },
-            makeButton("STOP LISTENING") { stopListening() },
-            makeButton("RUN TEXT COMMAND  ➜") {
-                val command = commandInput.text.toString().trim()
-                if (command.isNotEmpty()) {
-                    handleCommand(command)
-                    commandInput.text.clear()
-                }
-            }
-        )
-        val examples = TextView(this).apply {
-            text = "TRY THESE\n• Hey Assistant, WhatsApp kholo\n• YouTube kholo\n• Chrome kholo\n• Rahul ko call karo\n• SMS 9876543210\n• Settings kholo\n• Alarm kholo"
-            textSize = 13f
-            setTextColor(muted)
-            setPadding(4, 18, 4, 18)
+        topBar.addView(brand, LinearLayout.LayoutParams(0, dp(48), 1f))
+        topBar.addView(languageButton)
+
+        val headline = TextView(this).apply {
+            text = "How can I help?"
+            textSize = 27f
+            setTypeface(typeface, android.graphics.Typeface.MEDIUM)
+            setTextColor(white)
+            gravity = Gravity.CENTER
+            setPadding(0, dp(25), 0, dp(4))
+        }
+        val subhead = TextView(this).apply {
+            text = "Your personal assistant"
+            textSize = 14f
+            setTextColor(0xFF9AA8C5.toInt())
+            gravity = Gravity.CENTER
         }
 
-        listOf(title, subtitle, status, transcript, controls[0], controls[1],
-            commandInput, controls[3], controls[2], examples, history).forEach { view ->
-            content.addView(view, LinearLayout.LayoutParams(
+        orb = SiriOrbView(this).apply {
+            contentDescription = "Voice assistant animated orb"
+        }
+        val orbFrame = FrameLayout(this).apply {
+            addView(orb, FrameLayout.LayoutParams(dp(232), dp(232), Gravity.CENTER))
+        }
+
+        status = TextView(this).apply {
+            text = "●  Ready when you are"
+            textSize = 13f
+            setTextColor(0xFFB9C8E8.toInt())
+            gravity = Gravity.CENTER
+            setPadding(dp(16), dp(10), dp(16), dp(10))
+            background = rounded(0x33202B49, 24, 0x334C6B9A)
+        }
+        val statusWrap = LinearLayout(this).apply {
+            gravity = Gravity.CENTER
+            addView(status)
+        }
+
+        transcript = TextView(this).apply {
+            text = "Tap the orb to start listening, or type a command below."
+            textSize = 15f
+            setTextColor(0xFFE6ECFA.toInt())
+            gravity = Gravity.CENTER
+            setPadding(dp(18), dp(17), dp(18), dp(17))
+            background = rounded(0x44212B48, 20, 0x334B6590)
+        }
+
+        commandInput = EditText(this).apply {
+            hint = "Ask me anything..."
+            setHintTextColor(0xFF8794B0.toInt())
+            setTextColor(white)
+            textSize = 15f
+            singleLine = true
+            setPadding(dp(16), dp(13), dp(16), dp(13))
+            background = rounded(0xFF18223A.toInt(), 18, 0x66516A91)
+        }
+
+        val actionRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        val listenButton = makeButton("●  Start listening") { startWakeListening() }.apply {
+            textSize = 14f
+            background = rounded(0xFF277BE8.toInt(), 28)
+            setPadding(dp(18), dp(13), dp(18), dp(13))
+        }
+        val stopButton = makeButton("Stop") { stopListening() }.apply {
+            textSize = 13f
+            background = rounded(0xFF263149.toInt(), 28, 0x665B6D8D)
+            setPadding(dp(16), dp(13), dp(16), dp(13))
+        }
+        actionRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply {
+            marginEnd = dp(8)
+        })
+        actionRow.addView(stopButton, LinearLayout.LayoutParams(dp(92), dp(50)))
+
+        val sendButton = makeButton("Send  ➜") {
+            val command = commandInput.text.toString().trim()
+            if (command.isNotEmpty()) {
+                handleCommand(command)
+                commandInput.text.clear()
+            }
+        }.apply {
+            background = rounded(0xFF277BE8.toInt(), 18)
+            setPadding(dp(18), dp(12), dp(18), dp(12))
+        }
+        val inputRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(commandInput, LinearLayout.LayoutParams(0, dp(52), 1f).apply {
+                marginEnd = dp(8)
+            })
+            addView(sendButton, LinearLayout.LayoutParams(dp(88), dp(52)))
+        }
+
+        history = TextView(this).apply {
+            text = "RECENT ACTIVITY"
+            textSize = 12f
+            letterSpacing = 0.08f
+            setTextColor(0xFF8FA3C8.toInt())
+            setPadding(0, dp(20), 0, dp(8))
+        }
+        val examples = TextView(this).apply {
+            text = "Try: “Rahul ko SMS bhejo”  ·  “YouTube kholo”  ·  “Papa ko call karo”"
+            textSize = 12f
+            setTextColor(0xFF8794B0.toInt())
+            gravity = Gravity.CENTER
+            setPadding(dp(4), dp(12), dp(4), dp(10))
+        }
+
+        listOf<View>(topBar, headline, subhead, orbFrame, statusWrap, transcript,
+            actionRow, inputRow, examples, history).forEachIndexed { index, view ->
+            val top = when (index) {
+                1 -> dp(14)
+                3 -> dp(5)
+                4 -> dp(0)
+                5 -> dp(20)
+                6 -> dp(14)
+                7 -> dp(10)
+                else -> dp(0)
+            }
+            root.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = 10 })
+            ).apply { topMargin = top })
         }
-        scroll.addView(content)
+        scroll.addView(root)
         setContentView(scroll)
     }
 
@@ -191,10 +281,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             recognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
-                    status.text = "● Listening — say Hey Assistant"
+                    status.text = "●  Listening… speak now"\n                    orb.setListening(true)
                 }
                 override fun onBeginningOfSpeech() {
-                    status.text = "● Hearing speech…"
+                    status.text = "●  I’m listening"\n                    orb.setListening(true)
                 }
                 override fun onRmsChanged(rmsdB: Float) = Unit
                 override fun onBufferReceived(buffer: ByteArray?) = Unit
@@ -259,7 +349,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         recognizer?.stopListening()
         recognizer?.destroy()
         recognizer = null
-        status.text = "● Listening stopped"
+        status.text = "●  Ready when you are"\n        orb.setListening(false)
     }
 
     private fun handleCommand(raw: String) {
