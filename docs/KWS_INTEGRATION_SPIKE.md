@@ -12,7 +12,7 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 - Published asset size: 49,441,341 bytes (47.2 MiB)
 - Published SHA-256: `a8d09d1d32f3eb8520482c6d3d43fae674681c5b050385967c70a3c2c9bf0ee7`
 - Expected device ABI: arm64-v8a (must be checked on the Redmi Note 9; do not assume based on chipset alone)
-- The release AAR is a prebuilt runtime package, separate from the KWS ONNX model files.
+- The release AAR is a prebuilt runtime package, separate from the KWS ONNX model files. Hosted CI uses an x86_64 emulator, so native JNI initialization is intentionally reserved for ARM device validation rather than falsely treating a class-loading test as native execution.
 
 ## Automated checks
 
@@ -21,7 +21,7 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 ## Integration gates
 
 1. <strong>Passed:</strong> Runtime download and checksum verification pass; CI confirms the AAR contains native JNI payloads for arm64-v8a and armeabi-v7a (run 43600986575, artifact 14115548372).
-2. A minimal Android instrumentation/smoke test loads the native library on an ARM64 emulator/device.
+2. CI confirms the KWS Java classes are packaged and the APK contains sherpa JNI libraries for arm64-v8a and armeabi-v7a. Native loading still requires an ARM64 device test; the hosted x86_64 emulator must not attempt to load an ARM-only JNI library.
 3. The official English GigaSpeech KWS model is pinned separately, with its own source, checksum, licence, and offline asset strategy.
 4. The custom spoken phrase "P-K" is evaluated for false accepts/rejects and accent robustness; the model is not represented as Hindi wake-word capable.
 5. AudioRecord processing runs in a user-started microphone foreground service with a persistent notification and clear stop control.
