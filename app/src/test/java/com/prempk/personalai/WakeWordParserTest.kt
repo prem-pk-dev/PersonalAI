@@ -18,7 +18,11 @@ class WakeWordParserTest {
         assertEquals("", WakeWordParser.extractCommand("PK"))
     }
 
-    @Test fun doesNotTreatHeyAssistantAsWakeWord() {\n        assertNull(WakeWordParser.extractCommand("Hey Assistant, open YouTube"))\n    }\n\n    @Test fun doesNotMatchPkInsideAnotherWord() {
+    @Test fun doesNotTreatHeyAssistantAsWakeWord() {
+        assertNull(WakeWordParser.extractCommand("Hey Assistant, open YouTube"))
+    }
+
+    @Test fun doesNotMatchPkInsideAnotherWord() {
         assertNull(WakeWordParser.extractCommand("speak to assistant"))
         assertNull(WakeWordParser.extractCommand("package manager"))
     }
