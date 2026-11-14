@@ -69,13 +69,13 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - `ContactMatcherTest.kt` covers exact ranking, ambiguity, number deduplication, and empty/unmatched queries. This newest contact-matching change still requires CI validation.
 - CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
 - The UI explicitly prompts users to say "PK"; a regression test confirms "Hey Assistant" does not trigger the wake parser.\n- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
-- English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
+- Auto Language Mode replaces the manual language selector: recognized Devanagari input selects Hindi (India) TTS; Latin-script input defaults to English (India). Speech recognition requests `und` and provider-level multilingual recognition must be verified on the target device.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - Permission flow now explains microphone use (only after user starts listening) and Contacts use (only for requested call/SMS lookup), and reports denials with available alternatives.
 - Command activity history is persisted locally in app SharedPreferences and capped at the latest 30 entries; no contact contents or credentials are stored.
-- The home screen was refreshed with a dark, cyan-accented Siri-inspired layout, animated orb, quick action grid, compact text composer, and conversation history.
+- The home screen uses PK branding, a dark cyan-accented layout, animated orb, quick action grid, compact text composer, and conversation history. A custom cyan/purple PK adaptive launcher icon and app label were added.
 - New offline utility intents provide device time, date, battery percentage, Maps launch, and help. Parser tests cover these intents.
-- No physical Android device test has yet been performed.
+- No physical Android device test has yet been performed. Auto language recognition and TTS language-pack behavior remain unverified on the Redmi Note 9.
 - CI run 43578152900 passed for commit 20a849eef89bf702ef0267efe471d003a8292913: unit tests, debug APK build, and artifact upload succeeded. Artifact personalai-debug-apk (artifact ID 14107681808, SHA-256 43d31f51f3954aa66d0bf74b37257848701be4f96c9b8f2f3a064373168771d1) expires 2026-11-28. This artifact predates the subsequent VoiceInteraction registration changes and is not the latest APK.
 - VoiceInteractionService/session-service registration was briefly added, then safely removed because the required RecognitionService metadata/provider was not integrated. The app retains ACTION_ASSIST but is not currently registered as the default assistant.
 - Latest branch head: `4e92118e59623b110317c04d176c24c0f06b426f` (2026-11-14), commit message `Render assistant session text with proper line breaks`.
