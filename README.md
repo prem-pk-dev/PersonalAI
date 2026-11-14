@@ -8,7 +8,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 - User-started PK listening while the app is open. Hindi speech transcripts "पीके" and "पी के" are accepted.
 - Combined "PK + command" and two-step "PK", then command.
 - Android SpeechRecognizer and TextToSpeech, with persisted English (India) / Hindi (India) selection.
-- Android assistant role request, ACTION_ASSIST activity entry point, registered VoiceInteractionService, and VoiceInteractionSessionService. The system session opens the full PersonalAI app.
+- ACTION_ASSIST activity entry point for compatible system handoff; default-assistant role registration is deferred until a valid recognition-service provider is integrated.
 - Deterministic command parser and JUnit coverage.
 - Contact lookup with permission gating, exact-first matching, duplicate-number normalization, and chooser for ambiguous matches.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
@@ -17,7 +17,7 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The ₹0 MV
 
 ## Wake-word and platform limitations
 
-- PK listening currently requires the app to be open and the user to start listening. The registered voice-interaction services provide Android's assistant-session integration; they do **not** implement a low-power screen-off PK detector.
+- PK listening currently requires the app to be open and the user to start listening. The app does not currently register as Android's default VoiceInteractionService; ACTION_ASSIST alone does not replace the system assistant.
 - Screen-off hotword detection depends on a compatible hotword engine, keyphrase enrollment, device SoundTrigger/DSP support, Android background-microphone rules, and OEM behavior. It is not safe to claim universal support or emulate it with continuous SpeechRecognizer loops.
 - Offline recognition depends on the installed speech-recognition provider and language packs.
 - Cellular call disconnect requires a compliant default-dialer implementation and user role approval. WhatsApp does not expose general third-party APIs for arbitrary call control or silent message sending.
