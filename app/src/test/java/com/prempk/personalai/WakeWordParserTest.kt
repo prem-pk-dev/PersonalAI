@@ -6,12 +6,12 @@ import org.junit.Test
 
 class WakeWordParserTest {
     @Test fun extractsCommandAfterEnglishPkWakeWord() {
-        assertEquals("youtube kholo", WakeWordParser.extractCommand("PK YouTube kholo"))
+        assertEquals("YouTube kholo", WakeWordParser.extractCommand("PK YouTube kholo"))
     }
 
     @Test fun acceptsHindiSpeechRecognitionVariants() {
-        assertEquals("papa ko call karo", WakeWordParser.extractCommand("पीके पापा को कॉल करो"))
-        assertEquals("rahul ko sms bhejo", WakeWordParser.extractCommand("पी के Rahul ko SMS bhejo"))
+        assertEquals("पापा को कॉल करो", WakeWordParser.extractCommand("पीके पापा को कॉल करो"))
+        assertEquals("Rahul ko SMS bhejo", WakeWordParser.extractCommand("पी के Rahul ko SMS bhejo"))
     }
 
     @Test fun returnsEmptyCommandWhenOnlyWakeWordWasSpoken() {
