@@ -27,6 +27,7 @@ android {
 
 dependencies {
     implementation(files("libs/sherpa-onnx-2.0.1.aar"))
+    implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
