@@ -11,9 +11,13 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "Rahul ko call karo" | DIAL_CONTACT(Rahul) | Rank exact, prefix, and partial contact matches; open dialer for a unique result or ask the user to choose |
 | "9876543210 par call karo" | DIAL_NUMBER(number) | Open dialer for confirmation |
 | "SMS 9876543210" | COMPOSE_SMS(number) | Open SMS composer; user sends manually |
+| "Rahul ko SMS bhejo" / "Papa ko message bhejo" / "Amit ko SMS karo" | COMPOSE_SMS(contact) | Resolve contact using the shared exact-first matcher; open composer or ask user to choose if ambiguous |
 | "Alarm kholo" | OPEN_ALARMS | Open alarm screen |
 
 ## Contact resolution
+
+Contact-name SMS uses the same permission-gated contact query and ambiguity-safe matcher as contact dialing. A unique result opens the SMS composer; equally ranked results show a chooser. The app never sends the SMS automatically.
+
 
 1. Require Contacts permission before querying the phone's contact provider.
 2. Rank exact display-name matches ahead of prefix matches, then substring matches.
