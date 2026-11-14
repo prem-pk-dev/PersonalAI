@@ -463,6 +463,11 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
         val command = raw.trim()
         responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(command)
+        // Restart KWS while this Activity is still foreground; Android 12+ restricts
+        // starting a microphone foreground service after launching another app.
+        if (getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
+            startKwsService()
+        }
 
         when (CommandParser.parse(command)) {
             AssistantCommandType.OPEN_WHATSAPP ->
@@ -497,9 +502,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             ))
             AssistantCommandType.UNKNOWN ->
                 respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
-        }
-        if (getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
-            window.decorView.postDelayed({ startKwsService() }, 900)
         }
     }
 
