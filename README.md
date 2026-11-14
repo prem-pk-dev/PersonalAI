@@ -11,7 +11,7 @@ PK is a native Kotlin Android assistant for Android 12–16 (device validation i
 - ACTION_ASSIST activity entry point for compatible system handoff; default-assistant role registration is deferred until a valid recognition-service provider is integrated.
 - Deterministic command parser and JUnit coverage.
 - Contact lookup with contextual permission rationale, exact-first matching, duplicate-number normalization, and chooser for ambiguous matches.
-- Persistent local activity history (last 30 entries); microphone and Contacts permission denials have clear feedback.
+- Microphone and Contacts permission denials have clear feedback.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Contact dialing through the system dialer; user confirms the call.
 - SMS composer for phone-number or contact-name recipients, optional body prefill, and manual review/send.
