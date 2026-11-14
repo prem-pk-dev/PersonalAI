@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PK</string>
+    <string name="kws_notification_channel">PK wake-word listener</string>
+    <string name="kws_notification_listening">Listening for PK. Tap Stop to end the session.</string>
+    <string name="kws_notification_detected">PK detected. Tap to continue with your command.</string>
+    <string name="kws_notification_error">Wake-word listening stopped. Open PK to review.</string>
+    <string name="kws_notification_stop">Stop listening</string>
 </resources>
