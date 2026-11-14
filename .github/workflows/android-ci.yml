@@ -35,13 +35,13 @@ jobs:
         with:
           gradle-version: "8.13"
 
-      - name: Run unit tests and build debug APK
-        run: gradle lintDebug testDebugUnitTest assembleDebug
+      - name: Clean, test, and rebuild APK without cached build outputs
+        run: gradle clean lintDebug testDebugUnitTest assembleDebug --no-build-cache --rerun-tasks
 
-      - name: Upload debug APK
+      - name: Upload fresh debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: personalai-debug-apk
+          name: personalai-debug-apk-fresh
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
