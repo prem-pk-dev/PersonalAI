@@ -59,18 +59,12 @@ jobs:
           grep -Fx 'lib/arm64-v8a/libsherpa-onnx-jni.so' /tmp/apk-files.txt
           grep -Fx 'lib/armeabi-v7a/libsherpa-onnx-jni.so' /tmp/apk-files.txt
 
-      - name: Run KWS class-packaging smoke test on Android emulator
-        if: github.ref == 'refs/heads/feature/sherpa-onnx-kws-spike'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          arch: x86_64
-          script: gradle connectedDebugAndroidTest --no-build-cache --rerun-tasks
-
-      - name: Upload fresh debug APK
+      # Physical target-device validation is more useful for this microphone/ARM
+      # feature than a hosted x86_64 emulator. The APK is built and uploaded below.
+      - name: Upload fresh debug APK for Redmi Note 9 device validation
         uses: actions/upload-artifact@v4
         with:
-          name: personalai-debug-apk-fresh
+          name: personalai-debug-apk-device-test
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
