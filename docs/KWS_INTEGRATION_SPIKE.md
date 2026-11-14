@@ -18,6 +18,15 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 
 `.github/workflows/kws-runtime-verification.yml` downloads the exact official release asset, checks its SHA-256, verifies the AAR contains compiled classes and native JNI libraries for arm64-v8a and armeabi-v7a, and uploads the verification evidence. It does not copy third-party binaries into the repository.
 
+## Official English KWS model verification
+
+- Official archive: https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01-mobile.tar.bz2
+- Archive SHA-256 verified in CI: `2e6ac2577310bfa2f4b6b5fab0478b868c9d0b2cb2c51b3e13b50581b588864d`
+- CI run: 43603948126 (success); workflow checks the archive digest, extracts the model, confirms required int8/float32 ONNX files, tokens and keywords, and prints the bundled README.
+- The bundled README identifies Apache License 2.0. The model documentation says it is trained on GigaSpeech XL and supports English only. This is not Hindi wake-word support.
+- Mobile archive includes int8 encoder and joiner with float32 decoder; total download is about 15 MiB. Do not bundle model files in the Git repository. The intended product flow is a user-visible one-time model download into app-private storage, followed by offline inference.
+- The KWS model is a separate asset from the sherpa-onnx Android AAR. Pin and verify both independently.
+
 ## Integration gates
 
 1. <strong>Passed:</strong> Runtime download and checksum verification pass; CI confirms the AAR contains native JNI payloads for arm64-v8a and armeabi-v7a (run 43600986575, artifact 14115548372).
