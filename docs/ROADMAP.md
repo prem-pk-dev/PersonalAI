@@ -4,7 +4,7 @@
 - [x] Native Kotlin Android project, Gradle configuration, and CI workflow.
 - [x] Debug APK build and artifact upload on successful CI.
 - [x] Verify unit tests, CI, and APK artifact for current tested commit.
-- [ ] Install and validate on a physical Android 13–16 device.
+- [ ] Install and validate on a physical Android 12–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
 - [x] PK-branded dark UI, custom adaptive launcher icon, animated orb, tap-to-listen, transcript, and text composer.
@@ -12,7 +12,9 @@
 - [x] Visible start/stop listening controls.
 - [x] PK wake phrase + command in one utterance and two-step utterances.
 - [x] Hindi speech-to-text variants पीके / पी के.
-- [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).\n- [x] Enable Android 14+ recognizer language-detection callback constrained to `en-IN` and `hi-IN` where supported.\n- [ ] Verify Android 12 fallback behavior and mixed Hindi-English (Hinglish) on Redmi Note 9; provider support remains device-dependent.
+- [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).
+- [x] Enable Android 14+ recognizer language-detection callback constrained to `en-IN` and `hi-IN` where supported.
+- [ ] Verify Android 12 fallback behavior and mixed Hindi-English (Hinglish) on Redmi Note 9; provider support remains device-dependent.
 - [x] Deterministic command parser and JUnit tests.
 - [x] Exact-first contact matcher, duplicate-number normalization, and ambiguity chooser.
 - [x] Launch WhatsApp, YouTube, Chrome, and Android Settings.
@@ -31,7 +33,8 @@
 - [ ] Confirm keyphrase enrollment and SoundTrigger/DSP support on target devices.
 - [ ] Implement user-started microphone foreground service backed by KWS AudioRecord (not continuous SpeechRecognizer) after model integration and Android lifecycle review.
 - [ ] Test screen-off behavior on physical Android 12 MIUI 13 (Redmi Note 9) and additional supported Android versions.
-- [ ] Add local speaker verification enrollment and matching; validate false accepts/rejects and replay limitations.\n- [ ] Document battery and OEM restrictions from real device testing.
+- [ ] Add local speaker verification enrollment and matching; validate false accepts/rejects and replay limitations.
+- [ ] Document battery and OEM restrictions from real device testing.
 
 ## Milestone 3 — Phone actions
 - [ ] Broader app discovery and launching.
