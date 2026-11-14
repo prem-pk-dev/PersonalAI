@@ -19,7 +19,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "Maps kholo" | OPEN_MAPS | Open a Maps handler |
 | "Help" / "मदद" | HELP | Explain supported assistant actions |
 
-## Wake-word behavior
+## Wake-word behavior\n\n- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
 
 - Say "PK" (Hindi speech transcript forms "पीके" or "पी के") and then speak the command.
 - A combined utterance such as "PK YouTube kholo" is also supported.
