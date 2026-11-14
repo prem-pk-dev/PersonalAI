@@ -317,7 +317,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         wakeMode = true
         orb.setListening(true)
         awaitingCommand = false
-        transcript.text = "Listening for the wake phrase: Hey Assistant"
+        transcript.text = "Listening for wake word: PK"
         startRecognition()
     }
 
@@ -375,10 +375,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun processVoice(raw: String) {
         transcript.text = "You said: $raw"
         val normalized = raw.lowercase(Locale.ROOT)
-        val wakeWords = listOf("hey assistant", "hello assistant", "हे असिस्टेंट", "अरे असिस्टेंट")
-        val wake = wakeWords.firstOrNull { normalized.contains(it) }
-        if (wake != null) {
-            val command = normalized.replace(wake, "").trim(' ', ',', '.', '!')
+        // "PK" is the primary wake word. Speech recognition may return it as
+        // "पीके" / "पी के" for Hindi speech, so accept those transcript variants too.
+        val wakeMatch = Regex("(?i)(?<![a-z0-9])p\\s*k(?![a-z0-9])|पी\\s*के")
+            .find(normalized)
+        if (wakeMatch != null) {
+            val command = (normalized.removeRange(wakeMatch.range))
+                .trim(' ', ',', '.', '!', '?')
             if (command.isBlank()) {
                 awaitingCommand = true
                 respond("Yes, tell me.")
