@@ -12,7 +12,7 @@
 
 ## Milestone 1 — Reliable MVP command engine
 - [x] Text command input and visible Run Text Command button.
-- [x] Siri-inspired dark assistant UI with animated voice orb and tap-to-listen control.
+- [x] Siri-inspired dark assistant UI with animated voice orb and tap-to-listen control.\n- [x] Request Android ROLE_ASSISTANT with user consent and handle ACTION_ASSIST launch.
 - [x] Android speech recognition integration.
 - [x] Text-to-speech response integration.
 - [x] Start/stop visible listening controls.
@@ -33,7 +33,7 @@
 - [ ] Improve error states, permission rationale, and command history persistence.
 
 ## Milestone 2 — Background wake phrase
-- [ ] User-started microphone foreground service.
+- [ ] Implement VoiceInteractionService and VoiceInteractionSessionService for system-level assistant sessions and supported hotword behavior.\n- [ ] User-started microphone foreground service.
 - [ ] Android 13 notification permission handling.
 - [ ] Correct foreground service type and microphone permissions for supported API levels.
 - [ ] Persistent, clear listening notification with stop action.
