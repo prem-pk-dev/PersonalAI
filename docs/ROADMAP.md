@@ -7,7 +7,7 @@
 - [x] Add GitHub Actions Android build workflow.
 - [x] Build debug APK successfully on earlier verified commits.
 - [x] Upload debug APK as a workflow artifact on a successful run.
-- [ ] Verify tests, green CI, and APK artifact for the latest branch head.
+- [ ] Verify tests, green CI, and APK artifact for the latest contact-matching branch head.
 - [ ] Validate install and launch on a physical Android 13–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
@@ -20,12 +20,14 @@
 - [x] Persisted Hindi/English speech-language selector.
 - [x] Deterministic command parser extracted into a standalone Kotlin class.
 - [x] JUnit tests for Hindi/English command classification.
+- [x] Exact-first contact matcher with normalized phone-number deduplication.
+- [x] User chooser for multiple equally ranked contact matches.
+- [x] Contact matcher unit tests for exact, partial, ambiguous, duplicate, and empty cases.
 - [x] Launch WhatsApp, YouTube, Chrome, Settings.
 - [x] Contact lookup and system dialer confirmation.
 - [x] SMS composer for a phone number.
 - [x] Optional SMS body prefill for user review.
 - [x] Open alarm screen.
-- [ ] Improve contact matching and ambiguity handling.
 - [ ] Support contact-name SMS composition.
 - [ ] Improve error states, permission rationale, and command history persistence.
 
