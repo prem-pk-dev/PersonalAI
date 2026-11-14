@@ -348,7 +348,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             "Opening dialer for $phone. Confirm the call on your phone.")
     }
 
-    private fun findContactMatches(name: String) {
+    private fun findContactMatches(name: String, onSelected: (ContactEntry) -> Unit = { openDialer(it.number) }) {
         if (name.isBlank()) {
             respond("Please say the contact name or phone number.")
             return
@@ -389,12 +389,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val bestMatches = ContactMatcher.bestMatches(name, matches)
         when (bestMatches.size) {
             0 -> respond("No matching contact found. Check the name or speak a phone number.")
-            1 -> openDialer(bestMatches.first().number)
+            1 -> onSelected(bestMatches.first())
             else -> {
                 val labels = bestMatches.map { "${it.name} — ${it.number}" }.toTypedArray()
                 AlertDialog.Builder(this)
                     .setTitle("Choose a contact")
-                    .setItems(labels) { _, which -> openDialer(bestMatches[which].number) }
+                    .setItems(labels) { _, which -> onSelected(bestMatches[which]) }
                     .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                     .show()
                 respond("I found more than one matching contact. Choose the correct person on screen.")
@@ -403,14 +403,26 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun composeSms(command: String) {
-        val match = Regex("\\+?[0-9][0-9\\s-]{7,}").find(command)
-        val number = match?.value?.replace(Regex("[\\s-]"), "")
-        if (number == null) {
-            respond("For now, say SMS followed by a phone number.")
+        val request = SmsCommandParser.parse(command)
+        if (request == null) {
+            respond("Say a contact name followed by ko SMS bhejo, or say SMS followed by a phone number.")
             return
         }
-        val body = command.substring(match.range.last + 1)
-            .trim().removePrefix("message").removePrefix("मैसेज").trim()
+        if (!request.phoneNumber.isNullOrBlank()) {
+            openSmsComposer(request.phoneNumber, request.body)
+            return
+        }
+        val contactName = request.contactName
+        if (contactName.isNullOrBlank()) {
+            respond("Please say the contact name or phone number.")
+            return
+        }
+        findContactMatches(contactName) { contact ->
+            openSmsComposer(contact.number, request.body)
+        }
+    }
+
+    private fun openSmsComposer(number: String, body: String) {
         val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number")).apply {
             if (body.isNotBlank()) putExtra("sms_body", body)
         }
@@ -457,7 +469,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             status.text = "Microphone permission granted"
         }
         if (requestCode == REQUEST_CONTACTS && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-            respond("Contacts permission granted. Repeat the call command.")
+            respond("Contacts permission granted. Repeat your command.")
         }
     }
 
