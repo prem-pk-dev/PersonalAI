@@ -21,10 +21,10 @@
 - [ ] Improve permission rationale, error states, and persistent command history.
 
 ## Milestone 2 — Android assistant integration and wake-word research
-- [x] Register VoiceInteractionService with Android binding permission and service metadata.
-- [x] Register VoiceInteractionSessionService and a minimal assistant session surface.
-- [x] Assistant session can open the full PersonalAI app.
-- [x] ACTION_ASSIST activity entry point and user-consented ROLE_ASSISTANT request.
+- [x] ACTION_ASSIST activity entry point.
+- [ ] Implement or select a valid RecognitionService provider compatible with the supported Android range.
+- [ ] Register VoiceInteractionService metadata only after recognitionService and sessionService contracts are satisfied.
+- [ ] Restore user-consented ROLE_ASSISTANT request after provider integration and Android 13–16 device verification.
 - [ ] Select and integrate a compatible PK hotword engine with a documented licence and offline model.
 - [ ] Confirm keyphrase enrollment and SoundTrigger/DSP support on target devices.
 - [ ] Implement foreground microphone listening only after the detection engine and Android lifecycle design are validated.
