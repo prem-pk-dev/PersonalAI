@@ -263,23 +263,23 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun handleCommand(raw: String) {
         val command = raw.trim()
-        val c = command.lowercase(Locale.ROOT)
         addLog("You: $command")
 
-        when {
-            containsAny(c, "whatsapp", "व्हाट्सएप") ->
+        when (CommandParser.parse(command)) {
+            AssistantCommandType.OPEN_WHATSAPP ->
                 openApp(listOf("com.whatsapp", "com.whatsapp.w4b"), "WhatsApp")
-            containsAny(c, "youtube", "यूट्यूब") ->
+            AssistantCommandType.OPEN_YOUTUBE ->
                 openApp(listOf("com.google.android.youtube"), "YouTube")
-            containsAny(c, "chrome", "क्रोम", "browser", "ब्राउज़र") ->
+            AssistantCommandType.OPEN_CHROME ->
                 openApp(listOf("com.android.chrome"), "Chrome")
-            containsAny(c, "settings", "सेटिंग") ->
+            AssistantCommandType.OPEN_SETTINGS ->
                 openIntent(Intent(Settings.ACTION_SETTINGS), "Opening Settings.")
-            containsAny(c, "call", "कॉल", "फोन लगाओ", "फोन करो") -> callContact(command)
-            containsAny(c, "sms", "message", "मैसेज", "संदेश") -> composeSms(command)
-            containsAny(c, "alarm", "अलार्म") ->
+            AssistantCommandType.CALL_CONTACT -> callContact(command)
+            AssistantCommandType.COMPOSE_SMS -> composeSms(command)
+            AssistantCommandType.OPEN_ALARMS ->
                 openIntent(Intent(AlarmClock.ACTION_SHOW_ALARMS), "Opening alarms.")
-            else -> respond("I heard: $command. This command is not supported yet.")
+            AssistantCommandType.UNKNOWN ->
+                respond("I heard: $command. This command is not supported yet.")
         }
     }
 
