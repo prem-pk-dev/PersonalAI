@@ -106,7 +106,7 @@ object KwsModelInstaller {
             check(extracted.containsAll(requiredFiles)) {
                 "The model archive is incomplete. Missing: ${requiredFiles - extracted}"
             }
-            File(staging, "pk-keywords.txt").writeText(WAKE_KEYWORD_LINE + "\\n", Charsets.UTF_8)
+            File(staging, "pk-keywords.txt").writeText(WAKE_KEYWORD_LINE + "\n", Charsets.UTF_8)
 
             destination.deleteRecursively()
             check(staging.renameTo(destination)) { "Could not finalize offline model installation." }
@@ -121,7 +121,7 @@ object KwsModelInstaller {
     }
 
     fun createKeywordSpotter(modelDirectory: File): KeywordSpotter {
-        require(requiredFiles.all { File(modelDirectory, it).isFile }) {
+        require(requiredFiles.all { File(modelDirectory, it).isFile } && File(modelDirectory, "pk-keywords.txt").isFile) {
             "Wake-word model files are missing. Install the model first."
         }
         val modelPath = modelDirectory.absolutePath
