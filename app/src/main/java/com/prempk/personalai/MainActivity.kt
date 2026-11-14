@@ -114,7 +114,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             gravity = Gravity.CENTER
             setPadding(0, dp(24), 0, dp(4))
         }
-        val subtitle = label("Talk naturally. I’m listening when you are.", 13f, muted).apply {
+        val subtitle = label("Say “PK” to wake me  •  Hindi + English", 13f, muted).apply {
             gravity = Gravity.CENTER
         }
         orb = SiriOrbView(this).apply { contentDescription = "PersonalAI voice assistant" }
