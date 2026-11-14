@@ -21,7 +21,7 @@ jobs:
           set -euo pipefail
           url="https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01-mobile.tar.bz2"
           curl --fail --location --retry 3 "$url" --output /tmp/kws-model.tar.bz2
-          sha256sum /tmp/kws-model.tar.bz2 | tee /tmp/kws-model.sha256
+          echo "2e6ac2577310bfa2f4b6b5fab0478b868c9d0b2cb2c51b3e13b50581b588864d  /tmp/kws-model.tar.bz2" | sha256sum --check
           mkdir -p /tmp/kws-model
           tar -xjf /tmp/kws-model.tar.bz2 -C /tmp/kws-model
           find /tmp/kws-model -maxdepth 2 -type f -printf '%P %s bytes\n' | sort
