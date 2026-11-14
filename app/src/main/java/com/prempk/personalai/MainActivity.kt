@@ -107,7 +107,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val headline = TextView(this).apply {
             text = "How can I help?"
             textSize = 27f
-            setTypeface(typeface, android.graphics.Typeface.MEDIUM)
+            setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL))
             setTextColor(white)
             gravity = Gravity.CENTER
             setPadding(0, dp(25), 0, dp(4))
