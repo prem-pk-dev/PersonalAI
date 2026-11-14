@@ -380,6 +380,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun handleCommand(raw: String) {
+        // A recognized command is a one-shot voice interaction. Release the microphone
+        // before launching another app, opening a system screen, or preparing a call/SMS.
+        // The wake-only "PK" path does not call handleCommand, so it can still listen
+        // for the follow-up command.
+        stopListening()
+
         val command = raw.trim()
         addLog("You: $command")
 
