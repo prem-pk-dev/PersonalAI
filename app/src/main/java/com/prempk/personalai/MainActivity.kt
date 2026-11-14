@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.BatteryManager
 import android.provider.AlarmClock
 import android.provider.ContactsContract
 import android.provider.Settings
@@ -159,6 +160,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         quickRow("▶  YouTube" to "YouTube kholo", "●  WhatsApp" to "WhatsApp kholo")
         quickRow("◎  Chrome" to "Chrome kholo", "⚙  Settings" to "Settings kholo")
         quickRow("☎  Call" to "call", "✉  SMS" to "SMS")
+        quickRow("◷  Time" to "time kya hua", "▣  Battery" to "battery kitni hai")
+        quickRow("⌖  Maps" to "Maps kholo", "❔  Help" to "help")
         
         commandInput = EditText(this).apply {
             hint = "Message PersonalAI…"
@@ -392,6 +395,15 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
+            AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), "Opening Maps.")
+            AssistantCommandType.INFO_TIME -> respond("The time is " + java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date()) + ".")
+            AssistantCommandType.INFO_DATE -> respond("Today is " + java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(java.util.Date()) + ".")
+            AssistantCommandType.INFO_BATTERY -> {
+                val batteryManager = getSystemService(BATTERY_SERVICE) as BatteryManager
+                val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+                respond(if (level in 0..100) "Your battery is at $level percent." else "I cannot read the battery level right now.")
+            }
+            AssistantCommandType.HELP -> respond("I can open apps, prepare calls and SMS, show time, date and battery level, open Maps and Settings, and listen for voice commands.")
             AssistantCommandType.UNKNOWN ->
                 respond("I heard: $command. This command is not supported yet.")
         }
