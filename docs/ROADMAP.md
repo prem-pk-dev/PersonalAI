@@ -7,12 +7,12 @@
 - [ ] Install and validate on a physical Android 13–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
-- [x] Siri-inspired dark UI, animated orb, tap-to-listen, transcript, and text composer.
+- [x] PK-branded dark UI, custom adaptive launcher icon, animated orb, tap-to-listen, transcript, and text composer.
 - [x] Android SpeechRecognizer and TextToSpeech integration.
 - [x] Visible start/stop listening controls.
 - [x] PK wake phrase + command in one utterance and two-step utterances.
 - [x] Hindi speech-to-text variants पीके / पी के.
-- [x] Persisted English (India) / Hindi (India) language selector.
+- [x] Automatic response-language selection from the recognized transcript script (Hindi Devanagari → hi-IN; Latin → en-IN).\n- [ ] Verify provider-level multilingual speech recognition and mixed Hindi-English (Hinglish) on Redmi Note 9; `und` behavior is provider-dependent.
 - [x] Deterministic command parser and JUnit tests.
 - [x] Exact-first contact matcher, duplicate-number normalization, and ambiguity chooser.
 - [x] Launch WhatsApp, YouTube, Chrome, and Android Settings.
