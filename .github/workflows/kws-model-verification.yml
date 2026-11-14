@@ -28,6 +28,10 @@ jobs:
           readme="$(find /tmp/kws-model -maxdepth 2 -name README.md -print -quit)"
           test -n "$readme"
           cat "$readme"
+          echo "---- bundled default keywords ----"
+          cat "$(dirname "$readme")/keywords.txt"
+          echo "---- likely P/K BPE token candidates ----"
+          grep -E '(^|[[:space:]])(P|K|▁P|▁K)([[:space:]]|$)' "$(dirname "$readme")/tokens.txt" || true
           root="$(find /tmp/kws-model -mindepth 1 -maxdepth 1 -type d -print -quit)"
           test -f "$root/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
           test -f "$root/decoder-epoch-12-avg-2-chunk-16-left-64.onnx"
