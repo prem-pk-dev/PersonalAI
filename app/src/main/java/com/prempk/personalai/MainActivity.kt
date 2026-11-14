@@ -277,8 +277,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 openIntent(Intent(Settings.ACTION_SETTINGS), "Opening Settings.")
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
-            AssistantCommandType.OPEN_ALARMS ->
-                openIntent(Intent(AlarmClock.ACTION_SHOW_ALARMS), "Opening alarms.")
+            AssistantCommandType.OPEN_ALARMS -> openAlarms()
             AssistantCommandType.UNKNOWN ->
                 respond("I heard: $command. This command is not supported yet.")
         }
@@ -299,6 +298,36 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun openIntent(intent: Intent, successMessage: String) {
         runCatching { startActivity(intent); respond(successMessage) }
             .onFailure { respond("That action is unavailable on this phone.") }
+    }
+
+    /**
+     * OEM clock apps do not all implement ACTION_SHOW_ALARMS.
+     * Try the standard list intent first, then the standard set-alarm
+     * intent, and finally known Clock app launch activities.
+     */
+    private fun openAlarms() {
+        val intents = listOf(
+            Intent(AlarmClock.ACTION_SHOW_ALARMS),
+            Intent(AlarmClock.ACTION_SET_ALARM),
+            Intent.makeMainActivity(android.content.ComponentName(
+                "com.android.deskclock", "com.android.deskclock.DeskClock"
+            )),
+            Intent.makeMainActivity(android.content.ComponentName(
+                "com.google.android.deskclock", "com.android.deskclock.DeskClock"
+            )),
+            packageManager.getLaunchIntentForPackage("com.miui.clock")
+        ).filterNotNull()
+
+        for (intent in intents) {
+            try {
+                startActivity(intent)
+                respond("Opening your Clock app. Please select Alarms if needed.")
+                return
+            } catch (_: Exception) {
+                // Try the next supported Clock entry point.
+            }
+        }
+        respond("I could not find a Clock app. Please check that a Clock app is installed.")
     }
 
     private fun callContact(command: String) {
