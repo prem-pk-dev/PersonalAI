@@ -100,11 +100,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(0, 18, 0, 8)
         }
 
-        val languageButton = makeButton(languageButtonLabel()) {
+        val languageButton = makeButton(languageButtonLabel()) { }
+        languageButton.setOnClickListener {
             speechLanguageTag = if (speechLanguageTag == "hi-IN") "en-IN" else "hi-IN"
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                 .putString(KEY_SPEECH_LANGUAGE, speechLanguageTag).apply()
-            languageButtonTextRefresh(this)
+            languageButtonTextRefresh(languageButton)
             runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
             respond(if (speechLanguageTag == "hi-IN") "भाषा हिंदी चुनी गई है।" else "English selected.")
         }
