@@ -74,6 +74,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - No physical Android device test has yet been performed.
 - CI run 43578152900 passed for commit 20a849eef89bf702ef0267efe471d003a8292913: unit tests, debug APK build, and artifact upload succeeded. Artifact personalai-debug-apk (artifact ID 14107681808, SHA-256 43d31f51f3954aa66d0bf74b37257848701be4f96c9b8f2f3a064373168771d1) expires 2026-11-28. This artifact predates the subsequent VoiceInteraction registration changes and is not the latest APK.
 - The manifest now registers PersonalAIVoiceInteractionService and PersonalAIVoiceInteractionSessionService; the session surface launches the full app. These later changes require CI verification.
+- Latest branch head: `4e92118e59623b110317c04d176c24c0f06b426f` (2026-11-14), commit message `Render assistant session text with proper line breaks`.
+- CI run `43578918662` passed for that exact commit: unit tests, debug APK build, and artifact upload succeeded. Artifact `personalai-debug-apk`, ID `14107658281`, size 877,405 bytes, SHA-256 `fd7e5a505f178281dcb00280826096632b8073ea3792a81161e110733b99f01d`, expires 2026-11-28.
+- The successful CI run currently executes `testDebugUnitTest assembleDebug`; static Android lint is not yet part of the workflow.
 - No physical Android device test has yet been performed; do not claim screen-off PK behavior.
 
 ## UI direction
@@ -81,7 +84,15 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - The native Android interface uses a Siri-inspired dark assistant experience: animated gradient orb, tap-to-listen interaction, listening state, language toggle, response panel, and compact text composer.
 - This is a visual design reference only; the app remains a native Android Kotlin app and does not claim to be Apple Siri or iOS.
 
-## Assistant role integration\n\n- MainActivity requests `RoleManager.ROLE_ASSISTANT` after explicit user action and registers an `android.intent.action.ASSIST` handler.\n- Android may allow PersonalAI to be selected as the default assistant only if the device exposes the role and accepts the app's qualification; the user must approve the system prompt.\n- Full system voice interaction sessions and hotword support remain unimplemented and are separate work.\n\n## MVP scope
+## Assistant role integration
+
+- MainActivity requests `RoleManager.ROLE_ASSISTANT` after explicit user action and registers an `android.intent.action.ASSIST` handler.
+- Android may allow PersonalAI to be selected as the default assistant only if the device exposes the role and accepts the app's qualification; the user must approve the system prompt.
+- `PersonalAIVoiceInteractionService` and `PersonalAIVoiceInteractionSessionService` are registered with the required binding permissions and metadata.
+- The minimal assistant session opens the full app when tapped. It does not yet start speech recognition or a hotword detector.
+- PK listening remains app-open and user-started. Screen-off PK requires separate engine, enrollment, hardware, and device validation.
+
+## MVP scope
 
 - Voice recognition using Android SpeechRecognizer.
 - Text command input and visible Run Text Command control.
@@ -98,12 +109,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Next development sequence
 
-1. Verify CI and APK artifact for the latest VoiceInteraction manifest/session changes.
-2. Install and test the new APK on the user's physical Android device; record Android version and observed behavior.
+1. Add Android static lint to CI and resolve any actionable findings.
+2. Complete source-level review of permissions, assistant services, intents, and user-confirmation boundaries.
 3. Improve permission rationale, error states, and persistent command history.
 4. Research a free offline PK hotword engine, licence, keyphrase enrollment, and device SoundTrigger/DSP compatibility before foreground microphone implementation.
 5. Add optional AI reasoning only after deterministic phone actions are reliable.
-6. Investigate cellular call controls only through a compliant default dialer; document WhatsApp limitations.
+6. Install and test the final candidate APK on the user's physical Android device; record Android version and observed behavior.
 7. Merge to main only after CI is green, review is complete, and device testing is recorded.
 
 ## Working protocol
