@@ -1,37 +1,46 @@
 # PersonalAI — Native Android Voice Assistant
 
-PersonalAI is a privacy-conscious, zero-budget-first Android assistant built with Kotlin. The first milestone is a reliable on-device command shell; advanced AI and background wake-word behavior are added only after the core app builds and is tested.
+PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial MVP uses Android speech and phone intents so core commands do not require a paid AI API or backend.
 
-## MVP scope
+## Current MVP features
 
-- Android 13–16 target devices (API 33–36).
 - Voice and text command entry.
-- User-started listening session with a visible listening state.
-- Hindi/English speech recognition using Android speech services.
-- Spoken responses using Android TextToSpeech.
-- Launch supported apps (WhatsApp, YouTube, Chrome, Settings).
-- Open the system dialer with a resolved contact/number for user confirmation.
-- Open the SMS composer for user review and send.
-- Local command history; no server and no paid API required.
+- User-started wake listening while the app remains open.
+- Two-step interaction: say "Hey Assistant", then speak the command; combined wake phrase + command is also supported.
+- Persisted speech-language selector: English (India) and Hindi (India).
+- Android SpeechRecognizer and TextToSpeech.
+- Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
+- Permission-gated contact lookup and system dialer handoff for user confirmation.
+- SMS composer with optional dictated message-body prefill; user reviews and sends.
+- Alarm screen shortcut and visible command history.
 
 ## Honest platform limitations
 
-- A normal app cannot silently answer, originate, or disconnect arbitrary calls. The MVP opens the system dialer; later cellular-call controls require implementing a compliant default dialer and obtaining the user's role approval.
-- WhatsApp does not expose general third-party controls for its calls or arbitrary message sending. We will use supported intents/deep links where available and require user review.
-- "Hey Assistant" always-on hotword detection is not guaranteed for third-party apps. The first milestone detects a wake phrase only during a user-started, visible listening session. A later foreground-service experiment must be explicitly enabled and comply with Android microphone/background restrictions.
+- The wake phrase is not always-on. Screen-off/background listening is a separate foreground-service milestone and must be explicitly started by the user.
+- A normal third-party app cannot silently answer, originate, or disconnect arbitrary calls. Cellular call disconnect requires a compliant default-dialer implementation and the user's role approval.
+- WhatsApp does not expose general third-party controls for arbitrary call control or silent message sending. Supported intents/deep links and user confirmation are the only planned approach.
 - Speech recognition and offline language availability depend on the device's installed recognition service and language packs.
 - Emergency calling, lock-screen bypass, stealth recording, and silent message/call sending are out of scope.
 
-## Development
+## Build
 
-Open the repository in Android Studio with JDK 17. The Gradle project is under `app/`. Install Android SDK Platform 36 and run the `app` configuration on a physical Android device or emulator. Grant microphone permission; Contacts permission is requested only when needed.
+1. Open this repository in Android Studio.
+2. Use JDK 17 and Android SDK Platform 36.
+3. Sync the Gradle project and run the `app` configuration on an Android 13–16 device/emulator.
+4. Grant microphone permission. Contacts permission is requested only when needed.
+
+GitHub Actions builds a debug APK and uploads it as the `personalai-debug-apk` artifact after a successful run. Artifacts are temporary (14-day retention).
 
 ## Branch strategy
 
 - `main`: stable reviewed code.
 - `development/*`: active implementation branches.
-- Changes merge through pull requests after build/test review.
+- Changes merge through pull requests only after build and device-test review.
 
-## Current status
+## Project continuity
 
-Initial repository foundation. CI and physical-device validation are pending.
+Read `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and `docs/COMMANDS.md` before making architectural changes or adding new device actions.
+
+## Current validation status
+
+A CI run for commit `d191288e62089edb00b388caf51a571f042cba19` successfully built the debug APK and uploaded the artifact. Subsequent speech-language-selector changes are being revalidated; the latest branch head must pass CI before it is considered green. No physical Android device test has yet been recorded.
