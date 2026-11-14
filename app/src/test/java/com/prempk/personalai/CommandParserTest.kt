@@ -18,6 +18,9 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.CALL_CONTACT, CommandParser.parse("राहुल को कॉल करो"))
         assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("SMS 9876543210"))
         assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("मैसेज भेजो"))
+        assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("Rahul ko SMS bhejo"))
+        assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("Papa ko message bhejo"))
+        assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("Amit ko SMS karo"))
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("Alarm kholo"))
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("अलार्म खोलो"))
     }
