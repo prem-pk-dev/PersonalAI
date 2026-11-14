@@ -22,22 +22,6 @@
         android:label="PersonalAI"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.NoActionBar">
-        <service
-            android:name=".PersonalAIVoiceInteractionService"
-            android:label="PersonalAI"
-            android:permission="android.permission.BIND_VOICE_INTERACTION"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.service.voice.VoiceInteractionService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.voice_interaction"
-                android:resource="@xml/voice_interaction_service" />
-        </service>
-        <service
-            android:name=".PersonalAIVoiceInteractionSessionService"
-            android:permission="android.permission.BIND_VOICE_INTERACTION"
-            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
