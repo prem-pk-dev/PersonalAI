@@ -550,7 +550,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun respond(message: String) {
         transcript.text = message
-        addLog("Assistant: $message")
         speak(message)
     }
 
@@ -602,8 +601,5 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     companion object {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
-        private const val PREFS_NAME = "personalai_preferences"
-        private const val KEY_COMMAND_HISTORY = "command_history"
-        private const val MAX_HISTORY_ENTRIES = 30
     }
 }
