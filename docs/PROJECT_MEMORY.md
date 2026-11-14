@@ -10,7 +10,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 - Project/repository: `prem-pk-dev/PersonalAI`.
 - Platform: native Android application.
-- Supported device range: Android 13–16 (API 33–36).
+- Target test range: Android 12–16 (API 31–36); user test device is Redmi Note 9 on Android 12 / MIUI 13.
 - Primary language: Kotlin.
 - Input: voice + text.
 - The only configured wake word is "PK"; "Hey Assistant" and "Hey PersonalAI" are not wake phrases. Hindi speech transcript variants "पीके" and "पी के" are accepted.
@@ -48,7 +48,8 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
 - The app declares an ACTION_ASSIST activity entry point. Default-assistant ROLE_ASSISTANT registration and VoiceInteractionService registration are currently deferred because the required RecognitionService provider has not been integrated.
 - The wake word is "PK" (Hindi STT variants "पीके" / "पी के"). SpeechRecognizer-based PK recognition still requires the app to be open and listening started by the user. The registered assistant services are not an always-on hotword detector. Screen-off detection requires a compatible hotword engine, keyphrase enrollment, device SoundTrigger/DSP support, and foreground/background lifecycle validation.
-- Android 14+ exposes `SpeechRecognizer` language detection callbacks and allowed-language constraints, but provider implementations may ignore the extras. Android 12 (the user's Redmi Note 9) does not expose this API; the current app falls back to transcript-script/Romanized-Hindi heuristics and still needs device verification.\n- sherpa-onnx is a viable offline Android candidate for keyword spotting and speaker verification. Its official docs describe open-vocabulary KWS (custom keywords without retraining) and list English/Chinese pretrained KWS models; this does not establish Hindi wake-word accuracy or Redmi Note 9 performance.
+- Android 14+ exposes `SpeechRecognizer` language detection callbacks and allowed-language constraints, but provider implementations may ignore the extras. Android 12 (the user's Redmi Note 9) does not expose this API; the current app falls back to transcript-script/Romanized-Hindi heuristics and still needs device verification.
+- sherpa-onnx is a viable offline Android candidate for keyword spotting and speaker verification. Its official docs describe open-vocabulary KWS (custom keywords without retraining) and list English/Chinese pretrained KWS models; this does not establish Hindi wake-word accuracy or Redmi Note 9 performance.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
 
 ## Current repository state (2026-11-14)
@@ -68,7 +69,8 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Contact lookup now presents a chooser when multiple equally ranked contacts match; it never silently picks the first result.
 - `ContactMatcherTest.kt` covers exact ranking, ambiguity, number deduplication, and empty/unmatched queries. This newest contact-matching change still requires CI validation.
 - CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
-- The UI explicitly prompts users to say "PK"; a regression test confirms "Hey Assistant" does not trigger the wake parser.\n- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
+- The UI explicitly prompts users to say "PK"; a regression test confirms "Hey Assistant" does not trigger the wake parser.
+- Two-step wake handling is implemented: say "PK" first, then command in the next recognition result; combined "PK + command" also works. Hindi speech transcript variants "पीके" / "पी के" are supported.
 - Auto Language Mode replaces the manual language selector: recognized Devanagari and common Romanized-Hindi input selects Hindi (India) TTS; Latin input otherwise defaults to English (India). On Android 14+, enable recognizer language detection constrained to `en-IN` and `hi-IN`; Android 12 uses the heuristic fallback. Both require physical-device verification.
 - SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - Permission flow now explains microphone use (only after user starts listening) and Contacts use (only for requested call/SMS lookup), and reports denials with available alternatives.
