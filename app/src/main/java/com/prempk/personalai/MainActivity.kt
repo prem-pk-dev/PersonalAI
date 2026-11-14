@@ -2,6 +2,7 @@ package com.prempk.personalai
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -306,30 +307,70 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             .trim()
         val directNumber = Regex("\\+?[0-9][0-9\\s-]{7,}").find(query)
             ?.value?.replace(Regex("[\\s-]"), "")
-        val phone = directNumber ?: findContactNumber(query)
-        if (phone == null) {
-            respond("Contact not found. Allow Contacts permission or speak a phone number.")
+        if (directNumber != null) {
+            openDialer(directNumber)
             return
         }
+        findContactMatches(query)
+    }
+
+    private fun openDialer(phone: String) {
         openIntent(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")),
             "Opening dialer for $phone. Confirm the call on your phone.")
     }
 
-    private fun findContactNumber(name: String): String? {
-        if (name.isBlank()) return null
+    private fun findContactMatches(name: String) {
+        if (name.isBlank()) {
+            respond("Please say the contact name or phone number.")
+            return
+        }
         if (checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.READ_CONTACTS), REQUEST_CONTACTS)
-            return null
+            return
         }
-        return runCatching {
+
+        val matches = runCatching {
             contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER
+                ),
                 "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} LIKE ?",
                 arrayOf("%$name%"),
-                null
-            )?.use { cursor -> if (cursor.moveToFirst()) cursor.getString(0) else null }
-        }.getOrNull()
+                "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} ASC"
+            )?.use { cursor ->
+                val nameIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val numberIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                buildList {
+                    while (cursor.moveToNext()) {
+                        val contactName = cursor.getString(nameIndex).orEmpty()
+                        val number = cursor.getString(numberIndex).orEmpty()
+                        if (contactName.isNotBlank() && number.isNotBlank()) {
+                            add(ContactEntry(contactName, number))
+                        }
+                    }
+                }
+            }.orEmpty()
+        }.getOrElse {
+            respond("I could not read your contacts. Check Contacts permission and try again.")
+            return
+        }
+
+        val bestMatches = ContactMatcher.bestMatches(name, matches)
+        when (bestMatches.size) {
+            0 -> respond("No matching contact found. Check the name or speak a phone number.")
+            1 -> openDialer(bestMatches.first().number)
+            else -> {
+                val labels = bestMatches.map { "${it.name} — ${it.number}" }.toTypedArray()
+                AlertDialog.Builder(this)
+                    .setTitle("Choose a contact")
+                    .setItems(labels) { _, which -> openDialer(bestMatches[which].number) }
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .show()
+                respond("I found more than one matching contact. Choose the correct person on screen.")
+            }
+        }
     }
 
     private fun composeSms(command: String) {
