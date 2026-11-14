@@ -130,7 +130,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         listOf(title, subtitle, status, transcript, controls[0], controls[1],
-            commandInput, controls[2], examples, history).forEach { view ->
+            commandInput, controls[3], controls[2], examples, history).forEach { view ->
             content.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
