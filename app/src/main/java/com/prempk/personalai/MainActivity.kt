@@ -375,19 +375,15 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun processVoice(raw: String) {
         transcript.text = "You said: $raw"
         val normalized = raw.lowercase(Locale.ROOT)
-        // "PK" is the primary wake word. Speech recognition may return it as
-        // "पीके" / "पी के" for Hindi speech, so accept those transcript variants too.
-        val wakeMatch = Regex("(?i)(?<![a-z0-9])p\\s*k(?![a-z0-9])|पी\\s*के")
-            .find(normalized)
-        if (wakeMatch != null) {
-            val command = (normalized.removeRange(wakeMatch.range))
-                .trim(' ', ',', '.', '!', '?')
-            if (command.isBlank()) {
+        // Accept PK, and the common Hindi speech-to-text forms "पीके" / "पी के".
+        val commandAfterWake = WakeWordParser.extractCommand(raw)
+        if (commandAfterWake != null) {
+            if (commandAfterWake.isBlank()) {
                 awaitingCommand = true
                 respond("Yes, tell me.")
             } else {
                 awaitingCommand = false
-                handleCommand(command)
+                handleCommand(commandAfterWake)
             }
             return
         }
