@@ -46,7 +46,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Cellular call disconnect requires a compliant default-dialer implementation and the user's explicit role approval; it is not a normal app permission.
 - WhatsApp does not expose general public APIs for arbitrary call control or silently sending messages. Use supported deep links/intents and user confirmation only.
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
-- The MVP's current wake phrase recognition works only while the app is open and the user has started listening. Do not describe it as always-on.
+- The app now declares an ACTION_ASSIST activity handler and can request Android ROLE_ASSISTANT through the system consent flow. This lets supported devices route the system assistant invocation to PersonalAI.\n- This is not yet a full VoiceInteractionService / VoiceInteractionSessionService implementation. Do not describe the wake phrase as always-on: current SpeechRecognizer listening still runs only while the app is open and explicitly started.
 - Offline speech recognition depends on the device's installed recognition provider and language packs.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
 
@@ -78,7 +78,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - The native Android interface uses a Siri-inspired dark assistant experience: animated gradient orb, tap-to-listen interaction, listening state, language toggle, response panel, and compact text composer.
 - This is a visual design reference only; the app remains a native Android Kotlin app and does not claim to be Apple Siri or iOS.
 
-## MVP scope
+## Assistant role integration\n\n- MainActivity requests `RoleManager.ROLE_ASSISTANT` after explicit user action and registers an `android.intent.action.ASSIST` handler.\n- Android may allow PersonalAI to be selected as the default assistant only if the device exposes the role and accepts the app's qualification; the user must approve the system prompt.\n- Full system voice interaction sessions and hotword support remain unimplemented and are separate work.\n\n## MVP scope
 
 - Voice recognition using Android SpeechRecognizer.
 - Text command input and visible Run Text Command control.
