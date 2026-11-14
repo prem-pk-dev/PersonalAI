@@ -69,7 +69,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - CI runs `gradle testDebugUnitTest assembleDebug` before uploading the APK.
 - Two-step wake handling is implemented: wake phrase first, command in the next recognition result; combined wake phrase + command also works.
 - English (India) / Hindi (India) speech language selector is persisted in SharedPreferences.
-- SMS composer can prefill an optional dictated message body; user must review and send.
+- SMS composer supports phone-number and contact-name recipients, optional dictated body prefill, and manual user review/send. Contact-name SMS shares the exact-first contact matcher and ambiguity chooser with dialing.
 - No physical Android device test has yet been performed.
 - No release APK for the latest branch head has yet been validated.
 
@@ -92,7 +92,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 1. Verify CI tests and build for the latest contact-matching branch head; preserve logs and fix every failure.
 2. Verify the latest debug APK artifact and install it on a physical device.
-3. Support contact-name SMS composition using the same ambiguity-safe chooser.
+3. Validate contact-name SMS parser and composer flow with CI, then verify on a physical Android device.
 4. Improve error states, permission rationale, and persistent command history.
 5. Implement a user-started foreground wake-word service as a separate, permission-aware milestone; test Android 13, 14, 15, and 16 separately.
 6. Evaluate an offline wake-word engine that can run at ₹0; document battery and model-size tradeoffs.
