@@ -11,6 +11,8 @@ PersonalAI is a native Kotlin Android assistant for Android 13–16. The initial
 - Android SpeechRecognizer and TextToSpeech.
 - Deterministic command classification extracted into an Android-independent Kotlin parser.
 - Unit tests for Hindi/English app, call, SMS, alarm, unknown, and whitespace cases.
+- Contact matching prioritizes exact names, then prefix and partial matches; duplicate numbers are collapsed.
+- If multiple equally ranked contacts match, the app asks the user to choose instead of guessing.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
 - Permission-gated contact lookup and system dialer handoff for user confirmation.
 - SMS composer with optional dictated message-body prefill; user reviews and sends.
@@ -45,4 +47,4 @@ Read `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and `docs/COMMANDS.md` before 
 
 ## Current validation status
 
-CI for commit `ecc07952859a23384cb7ac36f540e365d42187e1` passed after the speech-language state fix. The latest parser, unit-test, UI-button, and CI workflow changes still require a successful run for the exact latest branch head. No physical Android device test has yet been recorded.
+The latest fully verified build before the contact-matching enhancement is commit `65b6ec0843319fde15d464fd1f4f2cabf00742fb` (GitHub Actions Build #32): unit tests, debug APK build, and artifact upload all passed. The new contact-matching and ambiguity-selection changes require CI validation for the new head. No physical Android device test has yet been recorded.
