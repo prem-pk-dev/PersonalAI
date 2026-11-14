@@ -28,7 +28,7 @@
 - [x] SMS composer for a phone number.
 - [x] Optional SMS body prefill for user review.
 - [x] Open alarm screen.
-- [ ] Support contact-name SMS composition.
+- [x] Support contact-name SMS composition with shared ambiguity-safe contact matching and manual-send composer handoff.
 - [ ] Improve error states, permission rationale, and command history persistence.
 
 ## Milestone 2 — Background wake phrase
