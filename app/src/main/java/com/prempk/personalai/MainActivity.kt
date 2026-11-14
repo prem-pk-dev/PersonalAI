@@ -62,174 +62,165 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun buildUi() {
         val density = resources.displayMetrics.density
         fun dp(value: Int) = (value * density).toInt()
-        fun rounded(color: Int, radius: Int, strokeColor: Int? = null) =
-            GradientDrawable().apply {
-                setColor(color)
-                cornerRadius = dp(radius).toFloat()
-                if (strokeColor != null) setStroke(dp(1), strokeColor)
+        fun surface(color: Int, radius: Int, stroke: Int = 0) = GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = dp(radius).toFloat()
+            if (stroke != 0) setStroke(dp(1), stroke)
+        }
+        fun label(value: String, size: Float, color: Int, bold: Boolean = false) =
+            TextView(this).apply {
+                text = value
+                textSize = size
+                setTextColor(color)
+                if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
             }
 
+        window.statusBarColor = Color.rgb(5, 10, 22)
+        window.navigationBarColor = Color.rgb(5, 10, 22)
+        window.decorView.systemUiVisibility = 0
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(22), dp(18), dp(22), dp(18))
+            setPadding(dp(20), dp(12), dp(20), dp(22))
             background = GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(Color.rgb(8, 10, 22), Color.rgb(13, 18, 38), Color.rgb(5, 8, 18))
+                intArrayOf(0xFF050A16.toInt(), 0xFF0B1730.toInt(), 0xFF07101F.toInt())
             )
         }
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-            clipToPadding = false
-        }
-
-        val topBar = LinearLayout(this).apply {
+        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
+        val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
-        val brand = TextView(this).apply {
-            text = "PersonalAI"
-            textSize = 21f
-            letterSpacing = 0.02f
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
-            setTextColor(white)
-        }
-        val languageButton = makeButton(if (speechLanguageTag == "hi-IN") "हिंदी  ▾" else "English  ▾") { }
+        val brand = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        brand.addView(label("PERSONALAI", 20f, white, true))
+        brand.addView(label("YOUR EVERYDAY AI COMPANION", 9f, muted, true))
+        val languageButton = makeButton(if (speechLanguageTag == "hi-IN") "हिंदी" else "EN") { }
         languageButton.textSize = 12f
-        languageButton.background = rounded(0x332D9CDB, 22, 0x6659C9F2)
-        languageButton.setPadding(dp(14), dp(7), dp(14), dp(7))
+        languageButton.background = surface(0x332F9DCE, 22, 0x6658D8F2)
+        languageButton.setPadding(dp(18), dp(9), dp(18), dp(9))
         languageButton.setOnClickListener {
             speechLanguageTag = if (speechLanguageTag == "hi-IN") "en-IN" else "hi-IN"
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                 .putString(KEY_SPEECH_LANGUAGE, speechLanguageTag).apply()
-            languageButton.text = if (speechLanguageTag == "hi-IN") "हिंदी  ▾" else "English  ▾"
+            languageButton.text = if (speechLanguageTag == "hi-IN") "हिंदी" else "EN"
             runCatching { tts?.language = Locale.forLanguageTag(speechLanguageTag) }
-            respond(if (speechLanguageTag == "hi-IN") "भाषा हिंदी चुनी गई है।" else "English selected.")
+            respond(if (speechLanguageTag == "hi-IN") "हिंदी भाषा चुनी गई।" else "English selected.")
         }
-        topBar.addView(brand, LinearLayout.LayoutParams(0, dp(48), 1f))
-        topBar.addView(languageButton)
+        header.addView(brand, LinearLayout.LayoutParams(0, dp(52), 1f))
+        header.addView(languageButton)
 
-        val headline = TextView(this).apply {
-            text = "How can I help?"
-            textSize = 27f
-            setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL))
-            setTextColor(white)
+        val greeting = label("Hello. How can I help?", 25f, white, true).apply {
             gravity = Gravity.CENTER
-            setPadding(0, dp(25), 0, dp(4))
+            setPadding(0, dp(24), 0, dp(4))
         }
-        val subhead = TextView(this).apply {
-            text = "Your personal assistant"
-            textSize = 14f
-            setTextColor(0xFF9AA8C5.toInt())
+        val subtitle = label("Talk naturally. I’m listening when you are.", 13f, muted).apply {
             gravity = Gravity.CENTER
         }
-
-        orb = SiriOrbView(this).apply {
-            contentDescription = "Voice assistant animated orb"
-        }
+        orb = SiriOrbView(this).apply { contentDescription = "PersonalAI voice assistant" }
         val orbFrame = FrameLayout(this).apply {
-            addView(orb, FrameLayout.LayoutParams(dp(232), dp(232), Gravity.CENTER))
+            addView(orb, FrameLayout.LayoutParams(dp(224), dp(224), Gravity.CENTER))
         }
-
-        status = TextView(this).apply {
-            text = "●  Ready when you are"
-            textSize = 13f
-            setTextColor(0xFFB9C8E8.toInt())
+        status = label("●  READY", 12f, 0xFF72E8F4.toInt(), true).apply {
             gravity = Gravity.CENTER
-            setPadding(dp(16), dp(10), dp(16), dp(10))
-            background = rounded(0x33202B49, 24, 0x334C6B9A)
+            setPadding(dp(18), dp(10), dp(18), dp(10))
+            background = surface(0x3324C6D8, 30, 0x5543D9E8)
         }
         val statusWrap = LinearLayout(this).apply {
             gravity = Gravity.CENTER
             addView(status)
         }
-
-        transcript = TextView(this).apply {
-            text = "Tap the orb to start listening, or type a command below."
-            textSize = 15f
-            setTextColor(0xFFE6ECFA.toInt())
+        transcript = label("I’m here. Ask me to open an app, call a contact, or prepare a message.", 15f, white).apply {
             gravity = Gravity.CENTER
-            setPadding(dp(18), dp(17), dp(18), dp(17))
-            background = rounded(0x44212B48, 20, 0x334B6590)
+            setPadding(dp(18), dp(18), dp(18), dp(18))
+            background = surface(0xCC111F35.toInt(), 22, 0x553D628A)
         }
-
+        val section = label("QUICK ACTIONS", 11f, 0xFF8FA9C8.toInt(), true).apply {
+            setPadding(0, dp(22), 0, dp(10))
+            letterSpacing = 0.12f
+        }
+        val quickGrid = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        fun quickRow(vararg actions: Pair<String, String>) {
+            val row = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.HORIZONTAL }
+            actions.forEachIndexed { index, item ->
+                val button = makeButton(item.first) { handleCommand(item.second) }.apply {
+                    textSize = 12f
+                    background = surface(0xFF142943.toInt(), 18, 0x554E789D)
+                    setPadding(dp(8), dp(13), dp(8), dp(13))
+                    isAllCaps = false
+                }
+                row.addView(button, LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                    if (index > 0) marginStart = dp(8)
+                })
+            }
+            quickGrid.addView(row, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) })
+        }
+        quickRow("▶  YouTube" to "YouTube kholo", "●  WhatsApp" to "WhatsApp kholo")
+        quickRow("◎  Chrome" to "Chrome kholo", "⚙  Settings" to "Settings kholo")
+        quickRow("☎  Call" to "call", "✉  SMS" to "SMS")
+        
         commandInput = EditText(this).apply {
-            hint = "Ask me anything..."
-            setHintTextColor(0xFF8794B0.toInt())
+            hint = "Message PersonalAI…"
+            setHintTextColor(0xFF8295B0.toInt())
             setTextColor(white)
             textSize = 15f
             isSingleLine = true
             setPadding(dp(16), dp(13), dp(16), dp(13))
-            background = rounded(0xFF18223A.toInt(), 18, 0x66516A91)
+            background = surface(0xFF15243A.toInt(), 26, 0x6654AFC7)
         }
-
-        val actionRow = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-        }
-        val listenButton = makeButton("●  Start listening") { startWakeListening() }.apply {
-            textSize = 14f
-            background = rounded(0xFF277BE8.toInt(), 28)
-            setPadding(dp(18), dp(13), dp(18), dp(13))
-        }
-        val stopButton = makeButton("Stop") { stopListening() }.apply {
-            textSize = 13f
-            background = rounded(0xFF263149.toInt(), 28, 0x665B6D8D)
-            setPadding(dp(16), dp(13), dp(16), dp(13))
-        }
-        actionRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply {
-            marginEnd = dp(8)
-        })
-        actionRow.addView(stopButton, LinearLayout.LayoutParams(dp(92), dp(50)))
-
-        val sendButton = makeButton("Send  ➜") {
+        val sendButton = makeButton("➤") {
             val command = commandInput.text.toString().trim()
-            if (command.isNotEmpty()) {
-                handleCommand(command)
-                commandInput.text.clear()
-            }
+            if (command.isNotEmpty()) { handleCommand(command); commandInput.text.clear() }
         }.apply {
-            background = rounded(0xFF277BE8.toInt(), 18)
+            background = surface(0xFF168FA7.toInt(), 24)
             setPadding(dp(18), dp(12), dp(18), dp(12))
         }
         val inputRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            addView(commandInput, LinearLayout.LayoutParams(0, dp(52), 1f).apply {
-                marginEnd = dp(8)
-            })
-            addView(sendButton, LinearLayout.LayoutParams(dp(88), dp(52)))
+            addView(commandInput, LinearLayout.LayoutParams(0, dp(54), 1f).apply { marginEnd = dp(8) })
+            addView(sendButton, LinearLayout.LayoutParams(dp(56), dp(54)))
         }
-
-        history = TextView(this).apply {
-            text = "RECENT ACTIVITY\n" + getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .getString(KEY_COMMAND_HISTORY, "").orEmpty()
-            textSize = 12f
-            letterSpacing = 0.08f
-            setTextColor(0xFF8FA3C8.toInt())
-            setPadding(0, dp(20), 0, dp(8))
-        }
-        val examples = TextView(this).apply {
-            text = "Try: “Rahul ko SMS bhejo”  ·  “YouTube kholo”  ·  “Papa ko call karo”"
-            textSize = 12f
-            setTextColor(0xFF8794B0.toInt())
+        val listenRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            setPadding(dp(4), dp(12), dp(4), dp(10))
+        }
+        val listenButton = makeButton("🎙  Start listening") { startWakeListening() }.apply {
+            background = surface(0xFF187FAE.toInt(), 26)
+            setPadding(dp(18), dp(13), dp(18), dp(13))
+            isAllCaps = false
+        }
+        val stopButton = makeButton("Stop") { stopListening() }.apply {
+            background = surface(0xFF1A2940.toInt(), 26, 0x665B7897)
+            setPadding(dp(18), dp(13), dp(18), dp(13))
+            isAllCaps = false
+        }
+        listenRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
+        listenRow.addView(stopButton, LinearLayout.LayoutParams(dp(90), dp(50)))
+
+        val historyTitle = label("RECENT CONVERSATION", 11f, 0xFF8FA9C8.toInt(), true).apply {
+            setPadding(0, dp(24), 0, dp(8))
+            letterSpacing = 0.1f
+        }
+        history = label(getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getString(KEY_COMMAND_HISTORY, "Your recent activity will appear here.").orEmpty(), 13f, 0xFF8BDDE8.toInt()).apply {
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            background = surface(0x99111F35.toInt(), 18, 0x443D628A)
+        }
+        val footer = label("Private by design  •  Actions stay under your control", 10f, 0xFF7387A4.toInt()).apply {
+            gravity = Gravity.CENTER
+            setPadding(0, dp(18), 0, 0)
         }
 
-        listOf<View>(topBar, headline, subhead, orbFrame, statusWrap, transcript,
-            actionRow, inputRow, examples, history).forEachIndexed { index, view ->
+        listOf<View>(header, greeting, subtitle, orbFrame, statusWrap, transcript, section,
+            quickGrid, inputRow, listenRow, historyTitle, history, footer).forEachIndexed { index, view ->
             val top = when (index) {
-                1 -> dp(14)
-                3 -> dp(5)
-                4 -> dp(0)
-                5 -> dp(20)
-                6 -> dp(14)
-                7 -> dp(10)
-                else -> dp(0)
+                1 -> dp(10); 3 -> dp(4); 4 -> dp(0); 5 -> dp(16); 6 -> dp(2)
+                8 -> dp(10); 9 -> dp(10); else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { topMargin = top })
         }
         scroll.addView(root)
