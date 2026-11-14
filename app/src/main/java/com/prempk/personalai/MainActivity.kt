@@ -231,13 +231,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setOnClickListener { action() }
         }
 
-    private fun languageButtonLabel() =
-        if (speechLanguageTag == "hi-IN") "VOICE LANGUAGE: HINDI (INDIA)" else "VOICE LANGUAGE: ENGLISH (INDIA)"
-
-    private fun languageButtonTextRefresh(button: Button) {
-        button.text = languageButtonLabel()
-    }
-
     private fun ensureAudioPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionWithRationale(
@@ -424,16 +417,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             packageManager.getLaunchIntentForPackage(it)
         }
         if (launch == null) {
-            respond("$label is not installed.")
+            respond(localized("$label is not installed.", "$label इंस्टॉल नहीं है।"))
         } else {
-            runCatching { startActivity(launch); respond("Opening $label.") }
-                .onFailure { respond("Could not open $label.") }
+            runCatching { startActivity(launch); respond(localized("Opening $label.", "$label खोल रहा हूँ।")) }
+                .onFailure { respond(localized("Could not open $label.", "$label नहीं खुल पाया।")) }
         }
     }
 
     private fun openIntent(intent: Intent, successMessage: String) {
         runCatching { startActivity(intent); respond(successMessage) }
-            .onFailure { respond("That action is unavailable on this phone.") }
+            .onFailure { respond(localized("That action is unavailable on this phone.", "यह सुविधा इस फोन पर उपलब्ध नहीं है।")) }
     }
 
     /**
@@ -457,13 +450,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         for (intent in intents) {
             try {
                 startActivity(intent)
-                respond("Opening your Clock app. Please select Alarms if needed.")
+                respond(localized("Opening your Clock app. Please select Alarms if needed.", "घड़ी ऐप खोल रहा हूँ। जरूरत हो तो अलार्म चुनें।"))
                 return
             } catch (_: Exception) {
                 // Try the next supported Clock entry point.
             }
         }
-        respond("I could not find a Clock app. Please check that a Clock app is installed.")
+        respond(localized("I could not find a Clock app. Please check that a Clock app is installed.", "घड़ी ऐप नहीं मिला। कृपया जाँचें कि ऐप इंस्टॉल है।"))
     }
 
     private fun callContact(command: String) {
