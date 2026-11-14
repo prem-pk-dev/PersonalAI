@@ -201,7 +201,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         history = TextView(this).apply {
-            text = "RECENT ACTIVITY\\n" + getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            text = "RECENT ACTIVITY\n" + getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .getString(KEY_COMMAND_HISTORY, "").orEmpty()
             textSize = 12f
             letterSpacing = 0.08f
@@ -576,13 +576,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun addLog(message: String) {
         val preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         val previous = preferences.getString(KEY_COMMAND_HISTORY, "").orEmpty()
-        val entries = (previous.split("\\n") + message)
+        val entries = (previous.split("\n") + message)
             .filter { it.isNotBlank() }
             .takeLast(MAX_HISTORY_ENTRIES)
-        val savedHistory = entries.joinToString("\\n")
+        val savedHistory = entries.joinToString("\n")
         preferences.edit().putString(KEY_COMMAND_HISTORY, savedHistory).apply()
         if (::history.isInitialized) {
-            history.text = "RECENT ACTIVITY\\n" + savedHistory
+            history.text = "RECENT ACTIVITY\n" + savedHistory
         }
     }
 
