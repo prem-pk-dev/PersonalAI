@@ -166,7 +166,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setHintTextColor(0xFF8794B0.toInt())
             setTextColor(white)
             textSize = 15f
-            singleLine = true
+            isSingleLine = true
             setPadding(dp(16), dp(13), dp(16), dp(13))
             background = rounded(0xFF18223A.toInt(), 18, 0x66516A91)
         }
@@ -333,10 +333,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             recognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
-                    status.text = "●  Listening… speak now"\n                    orb.setListening(true)
+                    status.text = "●  Listening… speak now"                    orb.setListening(true)
                 }
                 override fun onBeginningOfSpeech() {
-                    status.text = "●  I’m listening"\n                    orb.setListening(true)
+                    status.text = "●  I’m listening"                    orb.setListening(true)
                 }
                 override fun onRmsChanged(rmsdB: Float) = Unit
                 override fun onBufferReceived(buffer: ByteArray?) = Unit
@@ -400,7 +400,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         recognizer?.stopListening()
         recognizer?.destroy()
         recognizer = null
-        status.text = "●  Ready when you are"\n        orb.setListening(false)
+        status.text = "●  Ready when you are"        orb.setListening(false)
     }
 
     private fun handleCommand(raw: String) {
@@ -587,7 +587,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun addLog(message: String) {
-        if (::history.isInitialized) history.append("\n$message")
+        if (::history.isInitialized) history.append("$message")
     }
 
     override fun onInit(statusCode: Int) {
