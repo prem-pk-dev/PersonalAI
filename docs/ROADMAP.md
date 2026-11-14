@@ -5,8 +5,9 @@
 - [x] Add Android manifest and Gradle configuration.
 - [x] Add initial voice/text Activity.
 - [x] Add GitHub Actions Android build workflow.
-- [ ] Verify green CI after Kotlin compile fix.
-- [ ] Upload debug APK as a workflow artifact.
+- [x] Build debug APK successfully on an earlier verified commit.
+- [x] Upload debug APK as a workflow artifact on that successful run.
+- [ ] Verify green CI and artifact for the latest branch head.
 - [ ] Validate install and launch on a physical Android 13–16 device.
 
 ## Milestone 1 — Reliable MVP command engine
@@ -16,13 +17,15 @@
 - [x] Start/stop visible listening controls.
 - [x] Wake phrase + command in one utterance.
 - [x] Wake phrase and command in two successive utterances.
+- [x] Persisted Hindi/English speech-language selector.
 - [x] Launch WhatsApp, YouTube, Chrome, Settings.
 - [x] Contact lookup and system dialer confirmation.
 - [x] SMS composer for a phone number.
+- [x] Optional SMS body prefill for user review.
 - [x] Open alarm screen.
 - [ ] Unit-test command parsing.
-- [ ] Explicit Hindi/English language selector.
-- [ ] Improve SMS body prefill and contact-name SMS.
+- [ ] Improve contact matching and ambiguity handling.
+- [ ] Support contact-name SMS composition.
 - [ ] Improve error states, permission rationale, and command history persistence.
 
 ## Milestone 2 — Background wake phrase
@@ -36,7 +39,6 @@
 
 ## Milestone 3 — Phone actions
 - [ ] Open contact detail and dialer reliably.
-- [ ] SMS compose with recipient and prefilled body.
 - [ ] WhatsApp supported share/deep-link flows with user confirmation.
 - [ ] Alarm/timer creation with time parsing.
 - [ ] App discovery and launching beyond a fixed package list.
@@ -60,7 +62,7 @@
 
 ## Release gates
 Do not merge a milestone to `main` until:
-1. CI build passes.
+1. CI build passes for the exact head commit.
 2. Unit tests pass where applicable.
 3. Device test results are recorded.
 4. README and project memory are updated.
