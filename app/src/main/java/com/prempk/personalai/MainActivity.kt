@@ -26,6 +26,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var wakeMode = false
     private var awaitingCommand = false
+    private var speechLanguageTag = "en-IN"
     private lateinit var status: TextView
     private lateinit var transcript: TextView
     private lateinit var commandInput: EditText
