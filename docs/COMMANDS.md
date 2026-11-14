@@ -4,7 +4,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 
 | User phrase examples | Intent | MVP behavior |
 |---|---|---|
-| "Hey Assistant, WhatsApp kholo" | OPEN_APP(whatsapp) | Launch installed WhatsApp app |
+| "PK (also recognized as पीके / पी के), WhatsApp kholo" | OPEN_APP(whatsapp) | Launch installed WhatsApp app |
 | "YouTube kholo" | OPEN_APP(youtube) | Launch YouTube if installed |
 | "Chrome kholo" | OPEN_APP(chrome) | Launch Chrome if installed |
 | "Settings kholo" | OPEN_SETTINGS | Open Android Settings |
