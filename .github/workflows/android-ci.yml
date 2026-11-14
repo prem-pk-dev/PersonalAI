@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - development/mvp-foundation
+      - feature/sherpa-onnx-kws-spike
   pull_request:
     branches:
       - main
@@ -35,8 +36,27 @@ jobs:
         with:
           gradle-version: "8.13"
 
+      - name: Download pinned sherpa-onnx AAR for isolated KWS spike
+        if: github.ref == 'refs/heads/feature/sherpa-onnx-kws-spike'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/libs
+          curl --fail --location --retry 3 \
+            "https://github.com/k2-fsa/sherpa-onnx/releases/download/v2.0.1/sherpa-onnx-2.0.1.aar" \
+            --output app/libs/sherpa-onnx-2.0.1.aar
+          echo "a8d09d1d32f3eb8520482c6d3d43fae674681c5b050385967c70a3c2c9bf0ee7  app/libs/sherpa-onnx-2.0.1.aar" | sha256sum --check
+
       - name: Clean, test, and rebuild APK without cached build outputs
         run: gradle clean lintDebug testDebugUnitTest assembleDebug --no-build-cache --rerun-tasks
+
+      - name: Run native KWS smoke test on Android emulator
+        if: github.ref == 'refs/heads/feature/sherpa-onnx-kws-spike'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          script: gradle connectedDebugAndroidTest --no-build-cache --rerun-tasks
 
       - name: Upload fresh debug APK
         uses: actions/upload-artifact@v4
