@@ -25,6 +25,7 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 - CI run: 43603948126 (success); workflow checks the archive digest, extracts the model, confirms required int8/float32 ONNX files, tokens and keywords, and prints the bundled README.
 - The bundled README identifies Apache License 2.0. The model documentation says it is trained on GigaSpeech XL and supports English only. This is not Hindi wake-word support.
 - Mobile archive includes int8 encoder and joiner with float32 decoder; total download is about 15 MiB. Do not bundle model files in the Git repository. The intended product flow is a user-visible one-time model download into app-private storage, followed by offline inference.
+- CI inspected the model BPE vocabulary: token IDs include `▁P` and `K`; the app's custom keyword file uses `▁P K` for the spoken letter sequence “P-K”. This is a token-level hypothesis, not a measured detection result; false accepts/rejects and Indian-accent performance still require audio evaluation on-device.
 - The KWS model is a separate asset from the sherpa-onnx Android AAR. Pin and verify both independently.
 
 ## Integration gates
