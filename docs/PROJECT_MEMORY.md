@@ -131,3 +131,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Do not claim an APK exists unless the workflow artifact or a local build has been verified.
 - Do not merge automatically. Keep the PR draft until validation criteria are met.
 - Update this file and the roadmap whenever scope or architecture changes.
+
+## Wake-word integration decision (2026-11-14)
+
+- Reviewed the upstream sherpa-onnx Android KWS sample and current KWS documentation. The official Android demo uses `AudioRecord` at 16 kHz mono PCM, a native `KeywordSpotter`, a streaming `OnlineStream`, and a worker thread; it is not a SpeechRecognizer retry loop.
+- sherpa-onnx documents open-vocabulary keyword lists, so custom phrases can be supplied without retraining. Its published KWS model families currently documented here are English GigaSpeech, Chinese Wenetspeech, and Chinese+English; none establishes Hindi wake-word support. The English GigaSpeech model is English-only. A phonetic English phrase for spoken “P-K” may be prototyped, but false accepts/rejects and Hindi-accent performance must be measured on the Redmi before enabling it by default.
+- Do not integrate an unofficial Maven mirror or copy native binaries/models from an unverified source. The upstream Android demo source tree packages native libraries and model assets directly; dependency, ABI, licence, model checksum, APK size, and offline-install behavior must be pinned and reviewed before adding it to this app.
+- A KWS foreground service is not yet implemented. Do not advertise screen-off/background wake detection until service lifecycle, Android 12+ microphone FGS rules, notification/consent, MIUI autostart/battery settings, and physical-device tests are complete.
+- Speaker verification is a separate capability from keyword spotting. It needs a supported embedding/verification model, explicit voice enrollment, locally protected templates, threshold evaluation, and replay/false-accept testing. No owner-only voice gate is implemented yet.
+- Automatic language resolution now prefers a supported recognizer language tag (hi/en), then falls back to transcript heuristics. Unit tests cover provider precedence, unsupported tags, and transcript fallback.
