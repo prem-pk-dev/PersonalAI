@@ -12,6 +12,7 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import android.util.Log
 import com.k2fsa.sherpa.onnx.KeywordSpotter
 import com.k2fsa.sherpa.onnx.OnlineStream
@@ -30,6 +31,7 @@ class KwsForegroundService : Service() {
     private var recorder: AudioRecord? = null
     private var spotter: KeywordSpotter? = null
     private var stream: OnlineStream? = null
+    private var cpuWakeLock: PowerManager.WakeLock? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -46,7 +48,9 @@ class KwsForegroundService : Service() {
                     stopSelf(startId)
                     return START_NOT_STICKY
                 }
+                createNotificationChannel()
                 startForegroundCompat(buildNotification(getString(R.string.kws_notification_listening)))
+                acquireCpuWakeLock()
                 if (!running.get()) startCapture()
             }
             else -> {
@@ -64,6 +68,25 @@ class KwsForegroundService : Service() {
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
+    }
+
+    private fun acquireCpuWakeLock() {
+        if (cpuWakeLock?.isHeld == true) return
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        cpuWakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "$packageName:PKWakeWord"
+        ).apply {
+            setReferenceCounted(false)
+            acquire()
+        }
+    }
+
+    private fun releaseCpuWakeLock() {
+        runCatching {
+            if (cpuWakeLock?.isHeld == true) cpuWakeLock?.release()
+        }
+        cpuWakeLock = null
     }
 
     private fun startCapture() {
@@ -127,6 +150,7 @@ class KwsForegroundService : Service() {
                 recorder = null
                 stream = null
                 spotter = null
+                releaseCpuWakeLock()
             }
         }
     }
@@ -141,7 +165,11 @@ class KwsForegroundService : Service() {
             this, 2, launch,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val notification = buildNotification(getString(R.string.kws_notification_detected), pending)
+        val notification = buildNotification(
+            getString(R.string.kws_notification_detected),
+            pending,
+            detected = true
+        )
         val manager = getSystemService(NotificationManager::class.java)
         manager.notify(NOTIFICATION_ID, notification)
         sendBroadcast(Intent(ACTION_WAKE_DETECTED).setPackage(packageName))
@@ -149,7 +177,7 @@ class KwsForegroundService : Service() {
         stopSelf()
     }
 
-    private fun buildNotification(message: String, contentIntent: PendingIntent? = mainPendingIntent()): Notification {
+    private fun buildNotification(message: String, contentIntent: PendingIntent? = mainPendingIntent(), detected: Boolean = false): Notification {
         val stopIntent = PendingIntent.getService(
             this, 3,
             Intent(this, KwsForegroundService::class.java).setAction(ACTION_STOP),
@@ -161,7 +189,9 @@ class KwsForegroundService : Service() {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setContentIntent(contentIntent)
-                .setOngoing(running.get())
+                .setOngoing(running.get() && !detected)
+                .setAutoCancel(detected)
+                .setCategory(Notification.CATEGORY_SERVICE)
                 .addAction(Notification.Action.Builder(null, getString(R.string.kws_notification_stop), stopIntent).build())
                 .build()
         } else {
@@ -171,7 +201,9 @@ class KwsForegroundService : Service() {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setContentIntent(contentIntent)
-                .setOngoing(running.get())
+                .setOngoing(running.get() && !detected)
+                .setAutoCancel(detected)
+                .setPriority(if (detected) Notification.PRIORITY_HIGH else Notification.PRIORITY_LOW)
                 .addAction(android.R.drawable.ic_media_pause, getString(R.string.kws_notification_stop), stopIntent)
                 .build()
         }
@@ -193,7 +225,7 @@ class KwsForegroundService : Service() {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(
                 CHANNEL_ID, getString(R.string.kws_notification_channel),
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_HIGH
             )
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
@@ -204,6 +236,7 @@ class KwsForegroundService : Service() {
         runCatching { recorder?.stop() }
         worker?.interrupt()
         worker = null
+        releaseCpuWakeLock()
     }
 
     override fun onDestroy() {
@@ -217,7 +250,7 @@ class KwsForegroundService : Service() {
         const val ACTION_WAKE_DETECTED = "com.prempk.personalai.action.WAKE_DETECTED"
         const val EXTRA_WAKE_DETECTED = "wake_detected"
         private const val TAG = "PK-KWS"
-        private const val CHANNEL_ID = "pk_wake_listener"
+        private const val CHANNEL_ID = "pk_wake_listener_v2"
         private const val NOTIFICATION_ID = 4201
         private const val SAMPLE_RATE = 16_000
     }
