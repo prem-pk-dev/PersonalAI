@@ -58,6 +58,10 @@ jobs:
           unzip -Z1 app/build/outputs/apk/debug/app-debug.apk > /tmp/apk-files.txt
           grep -Fx 'lib/arm64-v8a/libsherpa-onnx-jni.so' /tmp/apk-files.txt
           grep -Fx 'lib/armeabi-v7a/libsherpa-onnx-jni.so' /tmp/apk-files.txt
+          if grep -Eq '^lib/(x86|x86_64)/' /tmp/apk-files.txt; then
+            echo "Unexpected x86 native libraries found in ARM-only device APK" >&2
+            exit 1
+          fi
 
       - name: Verify APK signature and package metadata
         shell: bash
