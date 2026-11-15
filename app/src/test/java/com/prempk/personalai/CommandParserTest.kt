@@ -55,4 +55,11 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse("tell me a joke"))
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse(""))
     }
+    @Test fun extractsWhatsAppMessageBodyInEnglishAndHindi() {
+        assertEquals("hello Rahul", WhatsAppMessageParser.extractBody("Hey PK WhatsApp par message bhejo hello Rahul"))
+        assertEquals("नमस्ते राहुल", WhatsAppMessageParser.extractBody("व्हाट्सएप पर मैसेज भेजो नमस्ते राहुल"))
+        assertEquals("कल मिलते हैं", WhatsAppMessageParser.extractBody("व्हाट्सएप पर संदेश भेजो कल मिलते हैं"))
+        assertEquals("", WhatsAppMessageParser.extractBody("WhatsApp message bhejo"))
+    }
+
 }
