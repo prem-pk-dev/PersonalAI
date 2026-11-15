@@ -43,6 +43,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var kwsSetupStatus: TextView
     private var modelInstallInProgress = false
     private var restartKwsAfterSpeech = false
+    private var assistantRoleStatusView: TextView? = null
+    private var accessibilityStatusView: TextView? = null
 
     private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
@@ -317,6 +319,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 .setNegativeButton("Cancel", null).show()
         }.apply { isAllCaps = false; textSize = 12f; background = surface(0xFF1A2B43.toInt(), 15, 0x665A8AA7); setPadding(dp(8), dp(11), dp(8), dp(11)) }
         backgroundCard.addView(accessibilityButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)).apply { topMargin = dp(12) })
+        accessibilityStatusView = label("", 11f, muted).apply {
+            setPadding(dp(2), dp(8), 0, 0)
+        }
+        backgroundCard.addView(accessibilityStatusView)
 
         val assistantRoleButton = makeButton("Set PK as default assistant") {
             requestAssistantRole()
@@ -329,11 +335,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         backgroundCard.addView(assistantRoleButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, dp(48)
         ).apply { topMargin = dp(10) })
-        val assistantRoleStatus = label("", 11f, muted).apply {
+        assistantRoleStatusView = label("", 11f, muted).apply {
             setPadding(dp(2), dp(8), 0, 0)
         }
-        backgroundCard.addView(assistantRoleStatus)
-        refreshAssistantRoleStatus(assistantRoleStatus)
+        backgroundCard.addView(assistantRoleStatusView)
+        refreshAssistantRoleStatus(assistantRoleStatusView)
+        refreshAccessibilityStatus()
 
         val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
@@ -436,6 +443,26 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 "PK was not selected as the default assistant.",
                 "PK को default assistant के रूप में नहीं चुना गया।"
             ))
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshAssistantRoleStatus(assistantRoleStatusView)
+        refreshAccessibilityStatus()
+    }
+
+    private fun refreshAccessibilityStatus() {
+        val expected = android.content.ComponentName(this, PkAccessibilityService::class.java)
+            .flattenToString()
+        val enabled = Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ).orEmpty().split(':').any { it.equals(expected, ignoreCase = true) }
+        accessibilityStatusView?.text = if (enabled) {
+            "✓ PK cross-app controls are enabled"
+        } else {
+            "Cross-app controls are off · Enable PK in Accessibility Settings"
         }
     }
 
