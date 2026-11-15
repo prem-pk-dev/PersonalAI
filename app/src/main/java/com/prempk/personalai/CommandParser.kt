@@ -14,6 +14,7 @@ enum class AssistantCommandType {
     INFO_TIME,
     INFO_DATE,
     INFO_BATTERY,
+    GREETING,
     HELP,
     UNKNOWN
 }
@@ -34,6 +35,7 @@ object CommandParser {
             containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
             containsAny(command, "date", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
+            containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
             else -> AssistantCommandType.UNKNOWN
         }
