@@ -318,6 +318,23 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }.apply { isAllCaps = false; textSize = 12f; background = surface(0xFF1A2B43.toInt(), 15, 0x665A8AA7); setPadding(dp(8), dp(11), dp(8), dp(11)) }
         backgroundCard.addView(accessibilityButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)).apply { topMargin = dp(12) })
 
+        val assistantRoleButton = makeButton("Set PK as default assistant") {
+            requestAssistantRole()
+        }.apply {
+            isAllCaps = false
+            textSize = 12f
+            background = surface(0xFF173A50.toInt(), 15, 0x6657C9E8)
+            setPadding(dp(8), dp(11), dp(8), dp(11))
+        }
+        backgroundCard.addView(assistantRoleButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(48)
+        ).apply { topMargin = dp(10) })
+        val assistantRoleStatus = label("", 11f, muted).apply {
+            setPadding(dp(2), dp(8), 0, 0)
+        }
+        backgroundCard.addView(assistantRoleStatus)
+        refreshAssistantRoleStatus(assistantRoleStatus)
+
         val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
             letterSpacing = 0.08f
@@ -353,6 +370,65 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setBackgroundColor(0xFF087E91.toInt())
             setOnClickListener { action() }
         }
+
+    private fun requestAssistantRole() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            respond("Android assistant role selection requires Android 10 or later.")
+            return
+        }
+        val roleManager = getSystemService(android.app.role.RoleManager::class.java)
+        if (roleManager == null || !roleManager.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT)) {
+            respond(localized(
+                "This Android build does not expose the default assistant role.",
+                "इस Android version में default assistant चुनने की सुविधा उपलब्ध नहीं है।"
+            ))
+            return
+        }
+        if (roleManager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)) {
+            respond(localized("PK is already your default assistant.", "PK पहले से आपका default assistant है।"))
+            return
+        }
+        runCatching {
+            startActivityForResult(
+                roleManager.createRequestRoleIntent(android.app.role.RoleManager.ROLE_ASSISTANT),
+                REQUEST_ASSISTANT_ROLE
+            )
+        }.onFailure {
+            respond(localized(
+                "Android could not open assistant selection. You can choose PK in Settings > Default apps > Digital assistant app.",
+                "Assistant चयन नहीं खुल पाया। Settings > Default apps > Digital assistant app में PK चुनें।"
+            ))
+        }
+    }
+
+    private fun refreshAssistantRoleStatus(target: TextView? = null) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            target?.text = "Default assistant selection requires Android 10+."
+            return
+        }
+        val manager = getSystemService(android.app.role.RoleManager::class.java)
+        val held = manager?.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) == true &&
+            manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+        target?.text = if (held) "✓ PK is selected as the default assistant" else
+            "Not the default assistant yet · Android will ask you to confirm"
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_ASSISTANT_ROLE) {
+            val manager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                getSystemService(android.app.role.RoleManager::class.java) else null
+            val held = manager?.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) == true &&
+                manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+            respond(if (held) localized(
+                "PK is now selected as your default assistant.",
+                "अब PK आपका default assistant चुना गया है।"
+            ) else localized(
+                "PK was not selected as the default assistant.",
+                "PK को default assistant के रूप में नहीं चुना गया।"
+            ))
+        }
+    }
 
     private fun ensureAudioPermission() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -955,6 +1031,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         private const val REQUEST_AUDIO = 101
         private const val REQUEST_CONTACTS = 102
         private const val REQUEST_NOTIFICATIONS = 103
+        private const val REQUEST_ASSISTANT_ROLE = 104
         private const val PREFS_NAME = "pk_voice_preferences"
         private const val KEY_KWS_ENABLED = "background_kws_enabled"
     }
