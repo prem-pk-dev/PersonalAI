@@ -50,6 +50,13 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.GO_HOME, CommandParser.parse("home screen"))
     }
 
+    @Test fun recognizesMediaPlaybackCommands() {
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("play music"))
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("गाना चलाओ"))
+        assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("pause music"))
+        assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("गाना रोक दो"))
+    }
+
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
         assertEquals(AssistantCommandType.OPEN_SETTINGS, CommandParser.parse("  Settings kholo  "))
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse("tell me a joke"))
