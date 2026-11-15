@@ -724,6 +724,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 openApp(listOf("com.android.chrome"), "Chrome")
             AssistantCommandType.OPEN_SETTINGS ->
                 openIntent(Intent(Settings.ACTION_SETTINGS), localized("Opening Settings.", "सेटिंग्स खोल रहा हूँ।"))
+            AssistantCommandType.OPEN_INSTALLED_APP -> openInstalledApp(command)
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
@@ -770,6 +771,42 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 PkAccessibilityService.Action.HOME -> localized("Going to Home.", "होम स्क्रीन पर जा रहा हूँ।")
             }
             respond(message)
+        }
+    }
+
+    private fun openInstalledApp(command: String) {
+        val requestedName = InstalledAppCommandParser.extractAppName(command)
+        if (requestedName.isBlank()) {
+            respond(localized("Tell me which app to open.", "कौन-सा ऐप खोलना है, उसका नाम बताइए।"))
+            return
+        }
+        val launcherIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        val matches = packageManager.queryIntentActivities(launcherIntent, 0)
+            .mapNotNull { info ->
+                val label = info.loadLabel(packageManager)?.toString()?.trim().orEmpty()
+                val launch = packageManager.getLaunchIntentForPackage(info.activityInfo.packageName)
+                if (label.isBlank() || launch == null) null else Triple(label, launch, info.activityInfo.packageName)
+            }
+            .distinctBy { it.third }
+        val normalized = requestedName.trim().lowercase(Locale.ROOT)
+        val exact = matches.filter { it.first.lowercase(Locale.ROOT) == normalized }
+        val candidates = if (exact.isNotEmpty()) exact else matches.filter {
+            it.first.lowercase(Locale.ROOT).contains(normalized) ||
+                normalized.contains(it.first.lowercase(Locale.ROOT))
+        }
+        when (candidates.size) {
+            0 -> respond(localized("I couldn't find an installed app named $requestedName.", "$requestedName नाम का इंस्टॉल ऐप नहीं मिला।"))
+            1 -> openIntent(candidates.first().second, localized("Opening ${candidates.first().first}.", "${candidates.first().first} खोल रहा हूँ।"))
+            else -> {
+                val labels = candidates.map { it.first }.toTypedArray()
+                AlertDialog.Builder(this)
+                    .setTitle(localized("Choose an app", "ऐप चुनें"))
+                    .setItems(labels) { _, which ->
+                        openIntent(candidates[which].second, localized("Opening ${candidates[which].first}.", "${candidates[which].first} खोल रहा हूँ।"))
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
     }
 
