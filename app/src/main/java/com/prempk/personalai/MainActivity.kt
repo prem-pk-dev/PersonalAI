@@ -582,6 +582,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 val date = java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(java.util.Date())
                 respond(localized("Today is $date.", "आज $date है।"))
             }
+            AssistantCommandType.GREETING -> respond(TimeAwareGreeting.reply(responseLanguageTag == "hi-IN"))
             AssistantCommandType.INFO_BATTERY -> {
                 val batteryManager = getSystemService(BATTERY_SERVICE) as BatteryManager
                 val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
