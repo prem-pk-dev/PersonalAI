@@ -725,6 +725,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.OPEN_SETTINGS ->
                 openIntent(Intent(Settings.ACTION_SETTINGS), localized("Opening Settings.", "सेटिंग्स खोल रहा हूँ।"))
             AssistantCommandType.OPEN_INSTALLED_APP -> openInstalledApp(command)
+            AssistantCommandType.MEDIA_PLAY -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PLAY)
+            AssistantCommandType.MEDIA_PAUSE -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE)
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
@@ -772,6 +774,24 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             respond(message)
         }
+    }
+
+    private fun dispatchMediaKey(keyCode: Int) {
+        val audio = getSystemService(android.media.AudioManager::class.java)
+        if (audio == null) {
+            respond(localized("Media controls are unavailable on this device.", "इस फोन पर मीडिया कंट्रोल उपलब्ध नहीं हैं।"))
+            return
+        }
+        val down = android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, keyCode)
+        val up = android.view.KeyEvent(android.view.KeyEvent.ACTION_UP, keyCode)
+        val delivered = runCatching {
+            audio.dispatchMediaKeyEvent(down)
+            audio.dispatchMediaKeyEvent(up)
+        }.isSuccess
+        respond(if (delivered) localized(
+            if (keyCode == android.view.KeyEvent.KEYCODE_MEDIA_PLAY) "Play command sent to the active media app." else "Pause command sent to the active media app.",
+            if (keyCode == android.view.KeyEvent.KEYCODE_MEDIA_PLAY) "चलाने का command active media app को भेजा गया।" else "रोकने का command active media app को भेजा गया।"
+        ) else localized("The active media app did not accept the media command.", "Active media app ने media command स्वीकार नहीं किया।"))
     }
 
     private fun openInstalledApp(command: String) {
