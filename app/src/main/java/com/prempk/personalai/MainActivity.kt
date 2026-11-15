@@ -717,6 +717,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         when (commandType) {
             AssistantCommandType.OPEN_WHATSAPP ->
                 openApp(listOf("com.whatsapp", "com.whatsapp.w4b"), "WhatsApp")
+            AssistantCommandType.COMPOSE_WHATSAPP -> composeWhatsApp(command)
             AssistantCommandType.OPEN_YOUTUBE ->
                 openApp(listOf("com.google.android.youtube"), "YouTube")
             AssistantCommandType.OPEN_CHROME ->
@@ -962,6 +963,34 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         findContactMatches(contactName) { contact ->
             openSmsComposer(contact.number, request.body)
         }
+    }
+
+    private fun composeWhatsApp(command: String) {
+        val body = command
+            .replace(Regex("(?i)\\b(hey\\s+pk|whatsapp|message|msg|text|send|please)\\b"), " ")
+            .replace(Regex("(?i)\\b(bhejo|bhej do|karo|kar do|par|pe)\\b"), " ")
+            .replace(Regex("(व्हाट्सएप|व्हाट्सऐप|मैसेज|संदेश|भेजो|भेज दो|करो|कर दो)"), " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+        if (body.isBlank()) {
+            openApp(listOf("com.whatsapp", "com.whatsapp.w4b"), "WhatsApp")
+            return
+        }
+        val packages = listOf("com.whatsapp", "com.whatsapp.w4b")
+        val targetPackage = packages.firstOrNull { packageManager.getLaunchIntentForPackage(it) != null }
+        if (targetPackage == null) {
+            respond(localized("WhatsApp is not installed.", "WhatsApp इंस्टॉल नहीं है।"))
+            return
+        }
+        val share = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, body)
+            setPackage(targetPackage)
+        }
+        openIntent(
+            Intent.createChooser(share, localized("Choose a WhatsApp chat", "WhatsApp चैट चुनें")),
+            localized("Message prepared. Choose a chat, review it, and send it yourself.", "संदेश तैयार है। चैट चुनें, जाँचें और स्वयं भेजें।")
+        )
     }
 
     private fun openSmsComposer(number: String, body: String) {
