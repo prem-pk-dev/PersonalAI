@@ -6,4 +6,5 @@
     <string name="kws_notification_detected">PK detected. Tap to continue with your command.</string>
     <string name="kws_notification_error">Wake-word listening stopped. Open PK to review.</string>
     <string name="kws_notification_stop">Stop listening</string>
+    <string name="pk_accessibility_description">Optional PK controls for scrolling and Back or Home actions in the current app. Screen content is not read.</string>
 </resources>
