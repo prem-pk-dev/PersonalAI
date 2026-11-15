@@ -141,8 +141,8 @@ object KwsModelInstaller {
                 provider = "cpu"
             ),
             keywordsFile = "$modelPath/pk-keywords.txt",
-            keywordsScore = 1.5f,
-            keywordsThreshold = 0.25f
+            keywordsScore = 3.0f,
+            keywordsThreshold = 0.10f
         )
         return KeywordSpotter(assetManager = null, config = config)
     }
