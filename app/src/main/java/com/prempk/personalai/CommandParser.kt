@@ -60,7 +60,6 @@ object CommandParser {
             containsAny(command, "youtube", "यूट्यूब") -> AssistantCommandType.OPEN_YOUTUBE
             containsAny(command, "chrome", "क्रोम", "browser", "ब्राउज़र") -> AssistantCommandType.OPEN_CHROME
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
-            containsAny(command, "open ", "launch ", "start ", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
             containsAny(command, "remind me", "reminder", "याद दिला", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
@@ -77,6 +76,7 @@ object CommandParser {
             containsAny(command, "go home", "home screen", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
             containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
+            containsAny(command, "open ", "launch ", "start ", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
             else -> AssistantCommandType.UNKNOWN
         }
     }
