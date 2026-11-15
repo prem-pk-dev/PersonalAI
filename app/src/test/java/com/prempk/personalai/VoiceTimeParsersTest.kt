@@ -19,7 +19,7 @@ class VoiceTimeParsersTest {
         assertEquals(300, TimerDurationParser.parseSeconds("set timer for 5 minutes"))
         assertEquals(3600, TimerDurationParser.parseSeconds("1 hour timer"))
         assertEquals(45, TimerDurationParser.parseSeconds("45 seconds"))
-        assertNull(TimerDurationParser.parseSeconds("90000 hours"))
+        assertNull(TimerDurationParser.parseSeconds("90000 hours"))\n        assertNull(TimerDurationParser.parseSeconds("2562047788015215 hours"))
         assertNull(TimerDurationParser.parseSeconds("timer please"))
     }
 }
