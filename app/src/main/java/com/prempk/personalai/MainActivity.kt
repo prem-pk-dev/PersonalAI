@@ -681,17 +681,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
      * Try the standard list intent first, then the standard set-alarm
      * intent, and finally known Clock app launch activities.
      */
-    private fun spokenTimeMinutes(command: String): Int? {
-        val match = Regex("(?:at\\s*)?(\\d{1,2})(?::(\\d{2}))?\\s*(?:a\\.?m\\.?|p\\.?m\\.?|बजे)?", RegexOption.IGNORE_CASE)
-            .find(command) ?: return null
-        var hour = match.groupValues[1].toIntOrNull() ?: return null
-        val minute = match.groupValues[2].ifBlank { "0" }.toIntOrNull() ?: return null
-        if (minute !in 0..59 || hour !in 0..23) return null
-        val suffix = command.lowercase(Locale.ROOT)
-        if (suffix.contains("pm") && hour in 1..11) hour += 12
-        if (suffix.contains("am") && hour == 12) hour = 0
-        return hour * 60 + minute
-    }
+    private fun spokenTimeMinutes(command: String): Int? = AlarmTimeParser.parseMinutes(command)
 
     private fun setAlarmFromCommand(command: String) {
         val minutes = spokenTimeMinutes(command)
@@ -709,16 +699,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun setTimerFromCommand(command: String) {
-        val amount = Regex("(\\d+)").find(command)?.groupValues?.get(1)?.toIntOrNull()
-        val lower = command.lowercase(Locale.ROOT)
-        val seconds = when {
-            amount == null -> null
-            lower.contains("hour") || lower.contains("घंटा") -> amount * 3600
-            lower.contains("minute") || lower.contains("मिनट") -> amount * 60
-            lower.contains("second") || lower.contains("सेकंड") -> amount
-            else -> amount * 60
-        }
-        if (seconds == null || seconds <= 0 || seconds > 86400) {
+        val seconds = TimerDurationParser.parseSeconds(command)
+        if (seconds == null) {
             respond(localized("Say a timer duration, for example: set timer for 5 minutes.", "टाइमर की अवधि बोलें, जैसे: 5 मिनट का टाइमर लगाओ।"))
             return
         }
