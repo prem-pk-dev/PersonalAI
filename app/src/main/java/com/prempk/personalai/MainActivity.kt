@@ -16,6 +16,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.view.Gravity
 import android.view.View
 import android.graphics.Color
@@ -41,6 +42,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var orb: SiriOrbView
     private lateinit var kwsSetupStatus: TextView
     private var modelInstallInProgress = false
+    private var restartKwsAfterSpeech = false
 
     private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
@@ -562,13 +564,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
         val command = raw.trim()
         responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(command)
-        // Restart KWS while this Activity is still foreground; Android 12+ restricts
-        // starting a microphone foreground service after launching another app.
-        if (getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
-            startKwsService()
-        }
+        val commandType = CommandParser.parse(command)
+        // Avoid loading the native KWS model while TTS is speaking. This reduces
+        // memory and CPU contention on lower-memory phones.
+        val speaksAnswer = commandType in setOf(
+            AssistantCommandType.INFO_TIME, AssistantCommandType.INFO_DATE,
+            AssistantCommandType.GREETING, AssistantCommandType.INFO_BATTERY,
+            AssistantCommandType.HELP, AssistantCommandType.UNKNOWN,
+            AssistantCommandType.SCROLL_UP, AssistantCommandType.SCROLL_DOWN,
+            AssistantCommandType.GO_BACK, AssistantCommandType.GO_HOME
+        )
+        restartKwsAfterSpeech = speaksAnswer &&
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)
+        if (!speaksAnswer && getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getBoolean(KEY_KWS_ENABLED, false)) startKwsService()
 
-        when (CommandParser.parse(command)) {
+        when (commandType) {
             AssistantCommandType.OPEN_WHATSAPP ->
                 openApp(listOf("com.whatsapp", "com.whatsapp.w4b"), "WhatsApp")
             AssistantCommandType.OPEN_YOUTUBE ->
@@ -789,17 +800,43 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun speak(message: String) {
+        val engine = tts ?: return
         val spokenLanguage = VoiceLanguage.detect(message)
-        val languageResult = tts?.setLanguage(Locale.forLanguageTag(spokenLanguage))
+        val languageResult = engine.setLanguage(Locale.forLanguageTag(spokenLanguage))
         if (languageResult == TextToSpeech.LANG_MISSING_DATA ||
             languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-            tts?.setLanguage(Locale.ENGLISH)
+            engine.setLanguage(Locale.ENGLISH)
         }
-        tts?.speak(message, TextToSpeech.QUEUE_FLUSH, null, "assistant_reply")
+        val result = engine.speak(message, TextToSpeech.QUEUE_FLUSH, null, "assistant_reply")
+        if (result == TextToSpeech.ERROR) resumeKwsAfterSpeech()
+    }
+
+    private fun resumeKwsAfterSpeech() {
+        if (!restartKwsAfterSpeech) return
+        restartKwsAfterSpeech = false
+        if (!isFinishing && getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getBoolean(KEY_KWS_ENABLED, false)) {
+            window.decorView.postDelayed({ if (!isFinishing) startKwsService() }, 350)
+        }
     }
 
     override fun onInit(statusCode: Int) {
-        if (statusCode == TextToSpeech.SUCCESS) tts?.language = Locale.ENGLISH
+        if (statusCode == TextToSpeech.SUCCESS) {
+            tts?.language = Locale.ENGLISH
+            tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) = Unit
+                override fun onDone(utteranceId: String?) {
+                    if (utteranceId == "assistant_reply") runOnUiThread { resumeKwsAfterSpeech() }
+                }
+                @Deprecated("Deprecated in Java")
+                override fun onError(utteranceId: String?) {
+                    if (utteranceId == "assistant_reply") runOnUiThread { resumeKwsAfterSpeech() }
+                }
+                override fun onError(utteranceId: String?, errorCode: Int) {
+                    if (utteranceId == "assistant_reply") runOnUiThread { resumeKwsAfterSpeech() }
+                }
+            })
+        }
     }
 
     override fun onRequestPermissionsResult(
