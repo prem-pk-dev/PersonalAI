@@ -966,12 +966,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun composeWhatsApp(command: String) {
-        val body = command
-            .replace(Regex("(?i)\\b(hey\\s+pk|whatsapp|message|msg|text|send|please)\\b"), " ")
-            .replace(Regex("(?i)\\b(bhejo|bhej do|karo|kar do|par|pe)\\b"), " ")
-            .replace(Regex("(व्हाट्सएप|व्हाट्सऐप|मैसेज|संदेश|भेजो|भेज दो|करो|कर दो)"), " ")
-            .replace(Regex("\\s+"), " ")
-            .trim()
+        val body = WhatsAppMessageParser.extractBody(command)
         if (body.isBlank()) {
             openApp(listOf("com.whatsapp", "com.whatsapp.w4b"), "WhatsApp")
             return
