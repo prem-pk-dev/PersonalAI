@@ -31,12 +31,13 @@ object TimerDurationParser {
     fun parseSeconds(command: String): Int? {
         val amount = Regex("(\\d+)").find(command)?.groupValues?.get(1)?.toLongOrNull() ?: return null
         val lower = command.lowercase(Locale.ROOT)
-        val seconds = when {
-            lower.contains("hour") || lower.contains("घंटा") -> amount * 3600L
-            lower.contains("minute") || lower.contains("मिनट") -> amount * 60L
-            lower.contains("second") || lower.contains("सेकंड") -> amount
-            else -> amount * 60L
+        val multiplier = when {
+            lower.contains("hour") || lower.contains("घंटा") -> 3600L
+            lower.contains("minute") || lower.contains("मिनट") -> 60L
+            lower.contains("second") || lower.contains("सेकंड") -> 1L
+            else -> 60L
         }
-        return seconds.takeIf { it in 1L..86400L }?.toInt()
+        if (amount > 86400L / multiplier) return null
+        return (amount * multiplier).toInt().takeIf { it > 0 }
     }
 }
