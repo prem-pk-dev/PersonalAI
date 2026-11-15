@@ -614,6 +614,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
+            AssistantCommandType.SET_ALARM -> setAlarmFromCommand(command)
+            AssistantCommandType.SET_TIMER -> setTimerFromCommand(command)
             AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), localized("Opening Maps.", "Maps खोल रहा हूँ।"))
             AssistantCommandType.INFO_TIME -> {
                 val time = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date())
@@ -679,6 +681,55 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
      * Try the standard list intent first, then the standard set-alarm
      * intent, and finally known Clock app launch activities.
      */
+    private fun spokenTimeMinutes(command: String): Int? {
+        val match = Regex("(?:at\\s*)?(\\d{1,2})(?::(\\d{2}))?\\s*(?:a\\.?m\\.?|p\\.?m\\.?|बजे)?", RegexOption.IGNORE_CASE)
+            .find(command) ?: return null
+        var hour = match.groupValues[1].toIntOrNull() ?: return null
+        val minute = match.groupValues[2].ifBlank { "0" }.toIntOrNull() ?: return null
+        if (minute !in 0..59 || hour !in 0..23) return null
+        val suffix = command.lowercase(Locale.ROOT)
+        if (suffix.contains("pm") && hour in 1..11) hour += 12
+        if (suffix.contains("am") && hour == 12) hour = 0
+        return hour * 60 + minute
+    }
+
+    private fun setAlarmFromCommand(command: String) {
+        val minutes = spokenTimeMinutes(command)
+        if (minutes == null) {
+            respond(localized("Please say a time, for example: set alarm at 7:30 AM.", "कृपया समय बोलें, जैसे: सुबह 7:30 बजे अलार्म लगाओ।"))
+            return
+        }
+        val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
+            putExtra(AlarmClock.EXTRA_HOUR, minutes / 60)
+            putExtra(AlarmClock.EXTRA_MINUTES, minutes % 60)
+            putExtra(AlarmClock.EXTRA_MESSAGE, "PK alarm")
+            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
+        }
+        openIntent(intent, localized("Opening the Clock app to confirm your alarm.", "अलार्म की पुष्टि के लिए Clock ऐप खोल रहा हूँ।"))
+    }
+
+    private fun setTimerFromCommand(command: String) {
+        val amount = Regex("(\\d+)").find(command)?.groupValues?.get(1)?.toIntOrNull()
+        val lower = command.lowercase(Locale.ROOT)
+        val seconds = when {
+            amount == null -> null
+            lower.contains("hour") || lower.contains("घंटा") -> amount * 3600
+            lower.contains("minute") || lower.contains("मिनट") -> amount * 60
+            lower.contains("second") || lower.contains("सेकंड") -> amount
+            else -> amount * 60
+        }
+        if (seconds == null || seconds <= 0 || seconds > 86400) {
+            respond(localized("Say a timer duration, for example: set timer for 5 minutes.", "टाइमर की अवधि बोलें, जैसे: 5 मिनट का टाइमर लगाओ।"))
+            return
+        }
+        val intent = Intent(AlarmClock.ACTION_SET_TIMER).apply {
+            putExtra(AlarmClock.EXTRA_LENGTH, seconds)
+            putExtra(AlarmClock.EXTRA_MESSAGE, "PK timer")
+            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
+        }
+        openIntent(intent, localized("Opening the Clock app to confirm your timer.", "टाइमर की पुष्टि के लिए Clock ऐप खोल रहा हूँ।"))
+    }
+
     private fun openAlarms() {
         val intents = listOf(
             Intent(AlarmClock.ACTION_SHOW_ALARMS),
