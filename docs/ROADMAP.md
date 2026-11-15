@@ -12,7 +12,7 @@
 - [x] Native Kotlin Android project, CI workflow, debug APK artifact.
 - [x] Premium dark PK home UI.
 - [x] WAKE_LOCK manifest permission added for the partial WakeLock implementation.
-- [x] CI lint, unit tests, APK assembly, ARM JNI packaging checks for build #217.
+- [x] CI lint, unit tests, APK assembly, ARM JNI packaging checks for build #217.\n- [x] Build #237 CI passed with APK artifact tied to commit `f278858`; this artifact is retained for diagnostics, not final delivery.\n- [ ] Validate APK install/signature on Redmi Note 9; prior install attempt reported “App not installed” and Play Protect warning.\n- [ ] Verify new ARM-only package, APK signature, manifest package/minSdk and installability before final APK handoff.
 - [ ] Install build #217 on Redmi Note 9 and record UI, launch, crash, permissions, model-install, and command test results.
 - [ ] Validate wake-word false accepts/rejects and microphone lifecycle on device.
 
@@ -50,7 +50,7 @@
 - [x] Call preparation through Android dialer; SMS composition with manual send.
 - [ ] Expand installed-app discovery and safe launch aliases.
 - [ ] Add user-confirmed WhatsApp share/deep-link composition; never silently send.
-- [ ] Parse and create alarms and timers using Android AlarmClock intents.
+- [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; CI verification pending for current revision; Redmi device confirmation pending).
 - [ ] Add reminders/calendar only with explicit user-visible confirmation and suitable Android intents.
 - [ ] Add media controls where Android media-session/platform APIs permit.
 - [ ] Add explicit unsupported-action responses for commands that cannot be completed.
