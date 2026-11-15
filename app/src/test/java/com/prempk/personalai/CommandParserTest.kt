@@ -30,6 +30,13 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.HELP, CommandParser.parse("help"))
     }
 
+    @Test fun recognizesCrossAppAccessibilityCommands() {
+        assertEquals(AssistantCommandType.SCROLL_UP, CommandParser.parse("scroll up"))
+        assertEquals(AssistantCommandType.SCROLL_DOWN, CommandParser.parse("नीचे स्क्रॉल करो"))
+        assertEquals(AssistantCommandType.GO_BACK, CommandParser.parse("go back"))
+        assertEquals(AssistantCommandType.GO_HOME, CommandParser.parse("home screen"))
+    }
+
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
         assertEquals(AssistantCommandType.OPEN_SETTINGS, CommandParser.parse("  Settings kholo  "))
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse("tell me a joke"))
