@@ -62,4 +62,13 @@ class CommandParserTest {
         assertEquals("", WhatsAppMessageParser.extractBody("WhatsApp message bhejo"))
     }
 
+    @Test fun recognizesGenericInstalledAppLaunchCommands() {
+        assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("open calculator"))
+        assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("launch Spotify"))
+        assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("कैलकुलेटर खोलो"))
+        assertEquals("calculator", InstalledAppCommandParser.extractAppName("open calculator"))
+        assertEquals("Spotify", InstalledAppCommandParser.extractAppName("Hey PK launch Spotify"))
+        assertEquals("कैलकुलेटर", InstalledAppCommandParser.extractAppName("कैलकुलेटर खोलो"))
+    }
+
 }
