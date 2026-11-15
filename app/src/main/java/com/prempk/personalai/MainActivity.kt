@@ -163,18 +163,44 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
         orb = SiriOrbView(this).apply { contentDescription = "PK animated voice assistant orb" }
         val orbFrame = FrameLayout(this).apply {
-            addView(orb, FrameLayout.LayoutParams(dp(224), dp(224), Gravity.CENTER))
+            addView(orb, FrameLayout.LayoutParams(dp(250), dp(250), Gravity.CENTER))
         }
 
         status = label("●  READY", 11f, 0xFF7BE8F2.toInt(), true).apply {
             gravity = Gravity.CENTER
-            letterSpacing = 0.06f
-            setPadding(dp(17), dp(10), dp(17), dp(10))
+            letterSpacing = 0.08f
+            setPadding(dp(19), dp(11), dp(19), dp(11))
             background = surface(0x3324C6D8, 30, 0x5543D9E8)
         }
         val statusWrap = LinearLayout(this).apply {
             gravity = Gravity.CENTER
             addView(status)
+        }
+        val heroCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER_HORIZONTAL
+            setPadding(dp(14), dp(12), dp(14), dp(16))
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0xCC10243B.toInt(), 0xAA0A1A30.toInt())
+            ).apply {
+                cornerRadius = dp(28).toFloat()
+                setStroke(dp(1), 0x443B8FB7)
+            }
+        }
+        listOf<View>(heroEyebrow, greeting, subtitle, orbFrame, statusWrap).forEachIndexed { index, view ->
+            heroCard.addView(view, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                if (index == 3) dp(250) else LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = when (index) {
+                    0 -> dp(2)
+                    1 -> dp(5)
+                    2 -> dp(5)
+                    3 -> dp(0)
+                    else -> dp(0)
+                }
+            })
         }
 
         // Conversation preview
@@ -299,19 +325,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         val views = listOf<View>(
-            header, heroEyebrow, greeting, subtitle, orbFrame, statusWrap,
-            conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, footer
+            header, heroCard, conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, footer
         )
         views.forEachIndexed { index, view ->
             val top = when (index) {
-                1 -> dp(10)
-                4 -> dp(0)
+                1 -> dp(18)
+                2 -> dp(16)
+                3 -> dp(12)
+                4 -> dp(20)
                 5 -> dp(0)
-                6 -> dp(13)
-                7 -> dp(10)
-                8 -> dp(17)
-                9 -> dp(0)
-                10 -> dp(15)
+                6 -> dp(16)
                 else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
