@@ -9,6 +9,8 @@ enum class AssistantCommandType {
     OPEN_CHROME,
     OPEN_SETTINGS,
     OPEN_INSTALLED_APP,
+    MEDIA_PLAY,
+    MEDIA_PAUSE,
     CALL_CONTACT,
     COMPOSE_SMS,
     OPEN_ALARMS,
@@ -70,6 +72,8 @@ object CommandParser {
             containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
             containsAny(command, "date", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
+            containsAny(command, "pause music", "pause song", "music pause", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
+            containsAny(command, "play music", "play song", "resume music", "गाना चलाओ", "म्यूजिक चलाओ", "फिर से चलाओ") -> AssistantCommandType.MEDIA_PLAY
             containsAny(command, "scroll up", "page up", "ऊपर स्क्रोल", "ऊपर स्क्रॉल", "ऊपर करो") -> AssistantCommandType.SCROLL_UP
             containsAny(command, "scroll down", "page down", "नीचे स्क्रोल", "नीचे स्क्रॉल", "नीचे करो") -> AssistantCommandType.SCROLL_DOWN
             containsAny(command, "go back", "back", "पीछे जाओ", "वापस जाओ") -> AssistantCommandType.GO_BACK
