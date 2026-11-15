@@ -54,7 +54,7 @@
 - [x] Contact lookup with exact-first matching and ambiguity chooser.
 - [x] Call preparation through Android dialer; SMS composition with manual send.
 - [ ] Expand installed-app discovery and safe launch aliases.
-- [ ] Add user-confirmed WhatsApp share/deep-link composition; never silently send.
+- [x] Add Hindi/English WhatsApp message-body extraction and user-confirmed Android share chooser; automated parser tests and CI build #264 passed. Physical WhatsApp handoff test remains pending; never silently send.
 - [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; CI verification pending for current revision; Redmi device confirmation pending).
 - [x] Add Calendar event/reminder composer intent with user review; date/time scheduling is completed in Calendar, not silently by PK.
 - [ ] Add media controls where Android media-session/platform APIs permit.
