@@ -27,6 +27,16 @@ enum class AssistantCommandType {
     UNKNOWN
 }
 
+/** Extracts the user-authored message body from a WhatsApp compose command. */
+object WhatsAppMessageParser {
+    fun extractBody(raw: String): String = raw
+        .replace(Regex("(?i)\\b(hey\\s+pk|whatsapp|message|msg|text|send|please)\\b"), " ")
+        .replace(Regex("(?i)\\b(bhejo|bhej do|karo|kar do|par|pe)\\b"), " ")
+        .replace(Regex("(व्हाट्सएप|व्हाट्सऐप|मैसेज|संदेश|भेजो|भेज दो|करो|कर दो|पर|पे)"), " ")
+        .replace(Regex("\\s+"), " ")
+        .trim()
+}
+
 /** Deterministic, Android-independent command classification for the MVP. */
 object CommandParser {
     fun parse(raw: String): AssistantCommandType {
