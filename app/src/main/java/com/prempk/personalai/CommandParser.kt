@@ -4,6 +4,7 @@ import java.util.Locale
 
 enum class AssistantCommandType {
     OPEN_WHATSAPP,
+    COMPOSE_WHATSAPP,
     OPEN_YOUTUBE,
     OPEN_CHROME,
     OPEN_SETTINGS,
@@ -31,6 +32,9 @@ object CommandParser {
     fun parse(raw: String): AssistantCommandType {
         val command = raw.trim().lowercase(Locale.ROOT)
         return when {
+            containsAny(command, "whatsapp", "व्हाट्सएप") &&
+                containsAny(command, "message", "msg", "text", "send", "bhejo", "भेजो", "मैसेज", "संदेश") ->
+                AssistantCommandType.COMPOSE_WHATSAPP
             containsAny(command, "whatsapp", "व्हाट्सएप") -> AssistantCommandType.OPEN_WHATSAPP
             containsAny(command, "youtube", "यूट्यूब") -> AssistantCommandType.OPEN_YOUTUBE
             containsAny(command, "chrome", "क्रोम", "browser", "ब्राउज़र") -> AssistantCommandType.OPEN_CHROME
