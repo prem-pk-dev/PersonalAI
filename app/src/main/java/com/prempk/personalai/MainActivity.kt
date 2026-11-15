@@ -86,132 +86,224 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 textSize = size
                 setTextColor(color)
                 if (bold) setTypeface(typeface, android.graphics.Typeface.BOLD)
+                includeFontPadding = true
             }
+        fun sectionTitle(value: String) = label(value, 11f, 0xFF7F9BB8.toInt(), true).apply {
+            letterSpacing = 0.12f
+            setPadding(dp(2), dp(2), 0, dp(9))
+        }
+        fun panelCard() = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(15), dp(16), dp(15))
+            background = surface(0xE6122035.toInt(), 22, 0x333D6385)
+        }
 
         window.statusBarColor = Color.rgb(5, 10, 22)
         window.navigationBarColor = Color.rgb(5, 10, 22)
         window.decorView.systemUiVisibility = 0
+
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(12), dp(20), dp(22))
+            setPadding(dp(20), dp(14), dp(20), dp(24))
             background = GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(0xFF050A16.toInt(), 0xFF0B1730.toInt(), 0xFF07101F.toInt())
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0xFF050A16.toInt(), 0xFF0B1930.toInt(), 0xFF07101F.toInt())
             )
         }
-        val scroll = ScrollView(this).apply { isFillViewport = true; clipToPadding = false }
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            clipToPadding = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+        }
+
+        // Premium brand header
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
         }
+        val brandMark = TextView(this).apply {
+            text = "PK"
+            textSize = 19f
+            setTextColor(0xFF071321.toInt())
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            gravity = Gravity.CENTER
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0xFF61E4F0.toInt(), 0xFF8D83FF.toInt())
+            ).apply { cornerRadius = dp(15).toFloat() }
+        }
+        header.addView(brandMark, LinearLayout.LayoutParams(dp(48), dp(48)).apply { marginEnd = dp(12) })
         val brand = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        brand.addView(label("PK", 22f, white, true))
-        brand.addView(label("YOUR PERSONAL VOICE ASSISTANT", 9f, muted, true))
-        val languageButton = makeButton("AUTO LANGUAGE") { }
-        languageButton.textSize = 11f
-        languageButton.isAllCaps = false
-        languageButton.isClickable = false
-        languageButton.background = surface(0x332F9DCE, 22, 0x6658D8F2)
-        languageButton.setPadding(dp(14), dp(9), dp(14), dp(9))
+        brand.addView(label("PK", 23f, white, true))
+        brand.addView(label("PERSONAL VOICE ASSISTANT", 9f, muted, true))
         header.addView(brand, LinearLayout.LayoutParams(0, dp(52), 1f))
+        val languageButton = makeButton("AUTO · HI / EN") { }.apply {
+            textSize = 10f
+            isAllCaps = false
+            isClickable = false
+            background = surface(0x332D9FC1, 18, 0x6658D8F2)
+            setPadding(dp(12), dp(8), dp(12), dp(8))
+        }
         header.addView(languageButton)
 
+        val heroEyebrow = label("YOUR DAY, HANDS-FREE", 10f, 0xFF64D8E8.toInt(), true).apply {
+            gravity = Gravity.CENTER
+            letterSpacing = 0.18f
+            setPadding(0, dp(24), 0, dp(5))
+        }
         val greeting = label("Hello. How can I help?", 25f, white, true).apply {
             gravity = Gravity.CENTER
-            setPadding(0, dp(24), 0, dp(4))
+            setPadding(0, 0, 0, dp(5))
         }
-        val subtitle = label("Say “PK” to wake me  •  Hindi + English", 13f, muted).apply {
+        val subtitle = label("Say “PK” to wake me  ·  Hindi + English", 13f, muted).apply {
             gravity = Gravity.CENTER
         }
-        orb = SiriOrbView(this).apply { contentDescription = "PK voice assistant" }
+
+        orb = SiriOrbView(this).apply { contentDescription = "PK animated voice assistant orb" }
         val orbFrame = FrameLayout(this).apply {
             addView(orb, FrameLayout.LayoutParams(dp(224), dp(224), Gravity.CENTER))
         }
-        status = label("●  READY", 12f, 0xFF72E8F4.toInt(), true).apply {
+
+        status = label("●  READY", 11f, 0xFF7BE8F2.toInt(), true).apply {
             gravity = Gravity.CENTER
-            setPadding(dp(18), dp(10), dp(18), dp(10))
+            letterSpacing = 0.06f
+            setPadding(dp(17), dp(10), dp(17), dp(10))
             background = surface(0x3324C6D8, 30, 0x5543D9E8)
         }
         val statusWrap = LinearLayout(this).apply {
             gravity = Gravity.CENTER
             addView(status)
         }
-        transcript = label("I’m here. Ask me to open an app, call a contact, or prepare a message.", 15f, white).apply {
-            gravity = Gravity.CENTER
-            setPadding(dp(18), dp(18), dp(18), dp(18))
-            background = surface(0xCC111F35.toInt(), 22, 0x553D628A)
+
+        // Conversation preview
+        val conversationCard = panelCard()
+        conversationCard.addView(sectionTitle("ASSISTANT"))
+        transcript = label(
+            "I’m here. Ask me to open an app, call a contact, or prepare a message.",
+            15f, white
+        ).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setLineSpacing(dp(3).toFloat(), 1f)
         }
+        conversationCard.addView(transcript)
+
+        // Message composer
+        val inputCard = panelCard().apply { setPadding(dp(12), dp(10), dp(12), dp(10)) }
         commandInput = EditText(this).apply {
             hint = "Message PK…"
             setHintTextColor(0xFF8295B0.toInt())
             setTextColor(white)
             textSize = 15f
             isSingleLine = true
-            setPadding(dp(16), dp(13), dp(16), dp(13))
-            background = surface(0xFF15243A.toInt(), 26, 0x6654AFC7)
+            background = null
+            setPadding(dp(8), dp(8), dp(8), dp(8))
         }
         val sendButton = makeButton("➤") {
             val command = commandInput.text.toString().trim()
             if (command.isNotEmpty()) { handleCommand(command); commandInput.text.clear() }
         }.apply {
-            background = surface(0xFF168FA7.toInt(), 24)
-            setPadding(dp(18), dp(12), dp(18), dp(12))
+            textSize = 20f
+            background = surface(0xFF1599B2.toInt(), 18)
+            setPadding(dp(14), dp(8), dp(14), dp(8))
+            contentDescription = "Send command"
         }
         val inputRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            addView(commandInput, LinearLayout.LayoutParams(0, dp(54), 1f).apply { marginEnd = dp(8) })
-            addView(sendButton, LinearLayout.LayoutParams(dp(56), dp(54)))
+            addView(commandInput, LinearLayout.LayoutParams(0, dp(50), 1f))
+            addView(sendButton, LinearLayout.LayoutParams(dp(52), dp(50)))
         }
+        inputCard.addView(inputRow)
+
+        // Primary voice controls
+        val voiceHeading = sectionTitle("VOICE CONTROLS")
         val listenRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
         }
         val listenButton = makeButton("🎙  Start listening") { startWakeListening() }.apply {
-            background = surface(0xFF187FAE.toInt(), 26)
-            setPadding(dp(18), dp(13), dp(18), dp(13))
+            background = surface(0xFF147FAE.toInt(), 18, 0x6657C9E8)
+            setPadding(dp(12), dp(13), dp(12), dp(13))
             isAllCaps = false
+            textSize = 14f
         }
         val stopButton = makeButton("Stop") { stopListening(); stopKwsService() }.apply {
-            background = surface(0xFF1A2940.toInt(), 26, 0x665B7897)
-            setPadding(dp(18), dp(13), dp(18), dp(13))
+            background = surface(0xFF1B2A40.toInt(), 18, 0x665B7897)
+            setPadding(dp(12), dp(13), dp(12), dp(13))
             isAllCaps = false
+            textSize = 14f
         }
-        listenRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
-        listenRow.addView(stopButton, LinearLayout.LayoutParams(dp(90), dp(50)))
+        listenRow.addView(listenButton, LinearLayout.LayoutParams(0, dp(52), 1f).apply { marginEnd = dp(9) })
+        listenRow.addView(stopButton, LinearLayout.LayoutParams(dp(88), dp(52)))
+
+        // Background wake-word setup
+        val backgroundCard = panelCard()
+        val backgroundHeader = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        val backgroundTitle = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        backgroundTitle.addView(label("BACKGROUND LISTENER", 11f, 0xFF70DCEB.toInt(), true))
+        backgroundTitle.addView(label("Wake word detection while you use other apps", 12f, muted))
+        backgroundHeader.addView(backgroundTitle, LinearLayout.LayoutParams(0, -2, 1f))
+        val livePill = label("ON DEVICE", 9f, 0xFF8FE8D2.toInt(), true).apply {
+            setPadding(dp(9), dp(6), dp(9), dp(6))
+            background = surface(0x2228C99D, 20, 0x5543CDAA)
+        }
+        backgroundHeader.addView(livePill)
+        backgroundCard.addView(backgroundHeader)
 
         val kwsSetupRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
+            setPadding(0, dp(14), 0, 0)
         }
-        val installModelButton = makeButton("Download offline PK model") { installOfflineModel() }.apply {
+        val installModelButton = makeButton("Install offline model") { installOfflineModel() }.apply {
             isAllCaps = false
-            textSize = 12f
-            setPadding(dp(8), dp(12), dp(8), dp(12))
+            textSize = 11f
+            background = surface(0xFF1A2B43.toInt(), 15, 0x665A8AA7)
+            setPadding(dp(7), dp(12), dp(7), dp(12))
         }
-        val startKwsButton = makeButton("Enable background PK") { requestStartKwsSession() }.apply {
+        val startKwsButton = makeButton("Enable listener") { requestStartKwsSession() }.apply {
             isAllCaps = false
-            textSize = 12f
-            setPadding(dp(8), dp(12), dp(8), dp(12))
+            textSize = 11f
+            background = surface(0xFF087F91.toInt(), 15, 0x6654D5E5)
+            setPadding(dp(7), dp(12), dp(7), dp(12))
         }
-        kwsSetupRow.addView(installModelButton, LinearLayout.LayoutParams(0, dp(50), 1f).apply { marginEnd = dp(8) })
-        kwsSetupRow.addView(startKwsButton, LinearLayout.LayoutParams(0, dp(50), 1f))
+        kwsSetupRow.addView(installModelButton, LinearLayout.LayoutParams(0, dp(48), 1f).apply { marginEnd = dp(8) })
+        kwsSetupRow.addView(startKwsButton, LinearLayout.LayoutParams(0, dp(48), 1f))
+        backgroundCard.addView(kwsSetupRow)
 
         kwsSetupStatus = label(
-            if (KwsModelInstaller.isInstalled(this)) "Offline model installed" else "Offline wake-word model not installed",
+            if (KwsModelInstaller.isInstalled(this)) "✓  Offline model installed" else "Offline wake-word model not installed",
             11f, muted
-        ).apply { gravity = Gravity.CENTER; setPadding(0, dp(8), 0, 0) }
+        ).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(2), dp(11), 0, 0)
+        }
+        backgroundCard.addView(kwsSetupStatus)
 
-        val footer = label("Private by design  •  Actions stay under your control", 10f, 0xFF7387A4.toInt()).apply {
+        val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
-            setPadding(0, dp(18), 0, 0)
+            letterSpacing = 0.08f
+            setPadding(0, dp(20), 0, 0)
         }
 
-        listOf<View>(header, greeting, subtitle, orbFrame, statusWrap, transcript,
-            inputRow, listenRow, kwsSetupRow, kwsSetupStatus, footer).forEachIndexed { index, view ->
+        val views = listOf<View>(
+            header, heroEyebrow, greeting, subtitle, orbFrame, statusWrap,
+            conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, footer
+        )
+        views.forEachIndexed { index, view ->
             val top = when (index) {
-                1 -> dp(10); 3 -> dp(4); 4 -> dp(0); 5 -> dp(16)
-                6 -> dp(10); 7 -> dp(10); 8 -> dp(10); 9 -> dp(4); else -> dp(0)
+                1 -> dp(10)
+                4 -> dp(0)
+                5 -> dp(0)
+                6 -> dp(13)
+                7 -> dp(10)
+                8 -> dp(17)
+                9 -> dp(0)
+                10 -> dp(15)
+                else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
