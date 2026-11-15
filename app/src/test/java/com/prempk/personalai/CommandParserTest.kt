@@ -30,6 +30,12 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.HELP, CommandParser.parse("help"))
     }
 
+    @Test fun recognizesAlarmAndTimerCommands() {
+        assertEquals(AssistantCommandType.SET_ALARM, CommandParser.parse("set alarm at 7:30"))
+        assertEquals(AssistantCommandType.SET_TIMER, CommandParser.parse("set timer for 5 minutes"))
+        assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("open alarms"))
+    }
+
     @Test fun recognizesCrossAppAccessibilityCommands() {
         assertEquals(AssistantCommandType.SCROLL_UP, CommandParser.parse("scroll up"))
         assertEquals(AssistantCommandType.SCROLL_DOWN, CommandParser.parse("नीचे स्क्रॉल करो"))
