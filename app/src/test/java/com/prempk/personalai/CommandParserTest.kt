@@ -36,6 +36,11 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("open alarms"))
     }
 
+    @Test fun recognizesReminderCommands() {
+        assertEquals(AssistantCommandType.CREATE_REMINDER, CommandParser.parse("remind me to call Rahul"))
+        assertEquals(AssistantCommandType.CREATE_REMINDER, CommandParser.parse("मुझे दवाई याद दिलाना"))
+    }
+
     @Test fun recognizesCrossAppAccessibilityCommands() {
         assertEquals(AssistantCommandType.SCROLL_UP, CommandParser.parse("scroll up"))
         assertEquals(AssistantCommandType.SCROLL_DOWN, CommandParser.parse("नीचे स्क्रॉल करो"))
