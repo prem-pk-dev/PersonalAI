@@ -10,6 +10,8 @@ enum class AssistantCommandType {
     CALL_CONTACT,
     COMPOSE_SMS,
     OPEN_ALARMS,
+    SET_ALARM,
+    SET_TIMER,
     OPEN_MAPS,
     INFO_TIME,
     INFO_DATE,
@@ -34,6 +36,8 @@ object CommandParser {
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
             containsAny(command, "call", "कॉल", "फोन लगाओ", "फोन करो") -> AssistantCommandType.CALL_CONTACT
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
+            containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
+            containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "लगाओ", "लगाना", "बजा", "बजे") -> AssistantCommandType.SET_ALARM
             containsAny(command, "alarm", "अलार्म") -> AssistantCommandType.OPEN_ALARMS
             containsAny(command, "map", "maps", "नक्शा", "मैप") -> AssistantCommandType.OPEN_MAPS
             containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
