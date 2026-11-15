@@ -727,6 +727,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.OPEN_INSTALLED_APP -> openInstalledApp(command)
             AssistantCommandType.MEDIA_PLAY -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PLAY)
             AssistantCommandType.MEDIA_PAUSE -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE)
+            AssistantCommandType.MEDIA_NEXT -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_NEXT)
+            AssistantCommandType.MEDIA_PREVIOUS -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS)
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
@@ -789,8 +791,18 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             audio.dispatchMediaKeyEvent(up)
         }.isSuccess
         respond(if (delivered) localized(
-            if (keyCode == android.view.KeyEvent.KEYCODE_MEDIA_PLAY) "Play command sent to the active media app." else "Pause command sent to the active media app.",
-            if (keyCode == android.view.KeyEvent.KEYCODE_MEDIA_PLAY) "चलाने का command active media app को भेजा गया।" else "रोकने का command active media app को भेजा गया।"
+            when (keyCode) {
+                android.view.KeyEvent.KEYCODE_MEDIA_PLAY -> "Play command sent to the active media app."
+                android.view.KeyEvent.KEYCODE_MEDIA_PAUSE -> "Pause command sent to the active media app."
+                android.view.KeyEvent.KEYCODE_MEDIA_NEXT -> "Next-track command sent to the active media app."
+                else -> "Previous-track command sent to the active media app."
+            },
+            when (keyCode) {
+                android.view.KeyEvent.KEYCODE_MEDIA_PLAY -> "चलाने का command active media app को भेजा गया।"
+                android.view.KeyEvent.KEYCODE_MEDIA_PAUSE -> "रोकने का command active media app को भेजा गया।"
+                android.view.KeyEvent.KEYCODE_MEDIA_NEXT -> "अगले गाने का command active media app को भेजा गया।"
+                else -> "पिछले गाने का command active media app को भेजा गया।"
+            }
         ) else localized("The active media app did not accept the media command.", "Active media app ने media command स्वीकार नहीं किया।"))
     }
 
