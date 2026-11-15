@@ -616,6 +616,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
             AssistantCommandType.SET_ALARM -> setAlarmFromCommand(command)
             AssistantCommandType.SET_TIMER -> setTimerFromCommand(command)
+            AssistantCommandType.CREATE_REMINDER -> createReminder(command)
             AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), localized("Opening Maps.", "Maps खोल रहा हूँ।"))
             AssistantCommandType.INFO_TIME -> {
                 val time = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date())
@@ -710,6 +711,23 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             putExtra(AlarmClock.EXTRA_SKIP_UI, false)
         }
         openIntent(intent, localized("Opening the Clock app to confirm your timer.", "टाइमर की पुष्टि के लिए Clock ऐप खोल रहा हूँ।"))
+    }
+
+    private fun createReminder(command: String) {
+        val title = command
+            .replace(Regex("(?i)^\\s*(hey pk[, ]*)?(remind me to|remind me|create reminder|set reminder)\\s*"), "")
+            .replace(Regex("^(मुझे|मुझको)?\\s*(याद दिलाना|याद दिला दो|रिमाइंडर लगाओ|रिमाइंडर बनाओ)\\s*"), "")
+            .trim()
+            .ifBlank { "PK reminder" }
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = android.provider.CalendarContract.Events.CONTENT_URI
+            putExtra(android.provider.CalendarContract.Events.TITLE, title)
+            putExtra(android.provider.CalendarContract.Events.DESCRIPTION, "Created with PK PersonalAI")
+        }
+        openIntent(intent, localized(
+            "Opening Calendar to review and set the reminder date and time.",
+            "रिमाइंडर की तारीख और समय तय करने के लिए Calendar खोल रहा हूँ।"
+        ))
     }
 
     private fun openAlarms() {
