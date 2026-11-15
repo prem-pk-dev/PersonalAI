@@ -282,6 +282,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(dp(2), dp(11), 0, 0)
         }
         backgroundCard.addView(kwsSetupStatus)
+        val accessibilityButton = makeButton("Enable cross-app controls") {
+            AlertDialog.Builder(this).setTitle("Allow PK accessibility controls?")
+                .setMessage("PK uses Accessibility only after you enable it in Android Settings. It can scroll the current app and use Back/Home. It does not read screen text or send messages.")
+                .setPositiveButton("Open Settings") { _, _ -> startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+                .setNegativeButton("Cancel", null).show()
+        }.apply { isAllCaps = false; textSize = 12f; background = surface(0xFF1A2B43.toInt(), 15, 0x665A8AA7); setPadding(dp(8), dp(11), dp(8), dp(11)) }
+        backgroundCard.addView(accessibilityButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)).apply { topMargin = dp(12) })
 
         val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
@@ -583,6 +590,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 respond(localized("Today is $date.", "आज $date है।"))
             }
             AssistantCommandType.GREETING -> respond(TimeAwareGreeting.reply(responseLanguageTag == "hi-IN"))
+            AssistantCommandType.SCROLL_UP -> runAccessibilityAction(PkAccessibilityService.Action.SCROLL_BACKWARD)
+            AssistantCommandType.SCROLL_DOWN -> runAccessibilityAction(PkAccessibilityService.Action.SCROLL_FORWARD)
+            AssistantCommandType.GO_BACK -> runAccessibilityAction(PkAccessibilityService.Action.BACK)
+            AssistantCommandType.GO_HOME -> runAccessibilityAction(PkAccessibilityService.Action.HOME)
             AssistantCommandType.INFO_BATTERY -> {
                 val batteryManager = getSystemService(BATTERY_SERVICE) as BatteryManager
                 val level = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
@@ -595,6 +606,20 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             ))
             AssistantCommandType.UNKNOWN ->
                 respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
+        }
+    }
+
+    private fun runAccessibilityAction(action: PkAccessibilityService.Action) {
+        if (!PkAccessibilityService.perform(action)) {
+            respond(localized("Cross-app controls are not enabled, or this screen cannot scroll.", "दूसरे ऐप के नियंत्रण चालू नहीं हैं या यह स्क्रीन स्क्रॉल नहीं हो सकती।"))
+        } else {
+            val message = when (action) {
+                PkAccessibilityService.Action.SCROLL_BACKWARD -> localized("Scrolling up.", "ऊपर स्क्रॉल कर रहा हूँ।")
+                PkAccessibilityService.Action.SCROLL_FORWARD -> localized("Scrolling down.", "नीचे स्क्रॉल कर रहा हूँ।")
+                PkAccessibilityService.Action.BACK -> localized("Going back.", "पीछे जा रहा हूँ।")
+                PkAccessibilityService.Action.HOME -> localized("Going to Home.", "होम स्क्रीन पर जा रहा हूँ।")
+            }
+            respond(message)
         }
     }
 
