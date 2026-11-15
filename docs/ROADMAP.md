@@ -13,8 +13,10 @@
 - [x] Premium dark PK home UI.
 - [x] WAKE_LOCK manifest permission added for the partial WakeLock implementation.
 - [x] CI lint, unit tests, clean APK assembly, ARM JNI packaging checks and APK signature/package metadata verification.
-- [x] Build #255 passed all workflow steps for commit `e3d05498fc28b6619e11ce137e7c02d1e7c480f9`; artifact uploaded for physical-device validation, not final release.\n- [ ] Validate APK install/signature on Redmi Note 9; prior install attempt reported “App not installed” and Play Protect warning.\n- [ ] Verify new ARM-only package, APK signature, manifest package/minSdk and installability before final APK handoff.
-- [ ] Install build #217 on Redmi Note 9 and record UI, launch, crash, permissions, model-install, and command test results.
+- [x] Build #255 passed all workflow steps for commit `e3d05498fc28b6619e11ce137e7c02d1e7c480f9`; artifact uploaded for physical-device validation, not final release.
+- [ ] Validate APK install/signature on Redmi Note 9; prior install attempt reported “App not installed” and Play Protect warning.
+- [ ] Verify new ARM-only package, APK signature, manifest package/minSdk and installability before final APK handoff.
+- [ ] Install a current branch build on Redmi Note 9 and record UI, launch, crash, permissions, model-install, and command test results.
 - [ ] Validate wake-word false accepts/rejects and microphone lifecycle on device.
 
 ## Milestone 1 — Time-aware assistant behavior
@@ -35,10 +37,8 @@
 - [ ] Test screen-off operation under Android 12 / MIUI 13; document OS/OEM limitations.
 - [ ] Add a user-visible setting to resume the listener after reboot only where Android policy and foreground-start rules permit.
 - [x] Add user-consented Android `ROLE_ASSISTANT` request flow and `ACTION_ASSIST` activity entry point; CI lint/build verified in #254.
-- [ ] Implement a real `VoiceInteractionService` plus session service and metadata; validate eligibility on Android 12 / MIUI 13. ROLE_ASSISTANT request alone is not a full always-on assistant.
-- [ ] Fix lifecycle so after wake detection the user can speak a command, then return to KWS without illegal background microphone-service starts.
-- [ ] Support a robust one-utterance wake + command handoff where feasible.
-- [ ] Validate KWS tokenization, Indian accent performance, false accepts/rejects, CPU/battery cost and screen-off behavior on device.
+- [ ] Implement a real `VoiceInteractionService` plus session service and metadata; validate eligibility on Android 12 / MIUI 13.
+- [ ] Validate wake-to-command handoff, KWS tokenization, Indian accent performance, false accepts/rejects, CPU/battery cost and screen-off behavior on device.
 
 ## Milestone 3 — Cross-app accessibility actions
 - [x] Implement a dedicated AccessibilityService with no event-content processing and limited scroll/back/home actions.
@@ -51,11 +51,11 @@
 
 ## Milestone 4 — Phone, apps and productivity
 - [x] Launch WhatsApp, YouTube, Chrome, Settings and Maps.
+- [x] Generic installed-app discovery and safe launch for English/Hindi commands; parser unit tests, clean CI build, ARM JNI, APK signature/metadata and artifact upload passed in build #270 (commit `bf8b93c34d5ef8400f46ad5b0e181b22e3864f8b`). Physical Redmi app-launch verification remains pending.
 - [x] Contact lookup with exact-first matching and ambiguity chooser.
 - [x] Call preparation through Android dialer; SMS composition with manual send.
-- [ ] Expand installed-app discovery and safe launch aliases.
 - [x] Add Hindi/English WhatsApp message-body extraction and user-confirmed Android share chooser; automated parser tests and CI build #264 passed. Physical WhatsApp handoff test remains pending; never silently send.
-- [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; CI verification pending for current revision; Redmi device confirmation pending).
+- [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; current revision CI verified; Redmi device confirmation pending).
 - [x] Add Calendar event/reminder composer intent with user review; date/time scheduling is completed in Calendar, not silently by PK.
 - [ ] Add media controls where Android media-session/platform APIs permit.
 - [ ] Add explicit unsupported-action responses for commands that cannot be completed.
