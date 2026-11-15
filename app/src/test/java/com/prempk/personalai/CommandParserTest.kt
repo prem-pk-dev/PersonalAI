@@ -7,6 +7,8 @@ class CommandParserTest {
     @Test fun recognizesEnglishAndHindiAppCommands() {
         assertEquals(AssistantCommandType.OPEN_WHATSAPP, CommandParser.parse("WhatsApp kholo"))
         assertEquals(AssistantCommandType.OPEN_WHATSAPP, CommandParser.parse("व्हाट्सएप खोलो"))
+        assertEquals(AssistantCommandType.COMPOSE_WHATSAPP, CommandParser.parse("WhatsApp par message bhejo hello"))
+        assertEquals(AssistantCommandType.COMPOSE_WHATSAPP, CommandParser.parse("व्हाट्सएप पर मैसेज भेजो नमस्ते"))
         assertEquals(AssistantCommandType.OPEN_YOUTUBE, CommandParser.parse("YouTube kholo"))
         assertEquals(AssistantCommandType.OPEN_YOUTUBE, CommandParser.parse("यूट्यूब खोलो"))
         assertEquals(AssistantCommandType.OPEN_CHROME, CommandParser.parse("Chrome kholo"))
