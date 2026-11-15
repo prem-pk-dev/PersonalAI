@@ -15,6 +15,10 @@ enum class AssistantCommandType {
     INFO_DATE,
     INFO_BATTERY,
     GREETING,
+    SCROLL_UP,
+    SCROLL_DOWN,
+    GO_BACK,
+    GO_HOME,
     HELP,
     UNKNOWN
 }
@@ -35,6 +39,10 @@ object CommandParser {
             containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
             containsAny(command, "date", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
+            containsAny(command, "scroll up", "page up", "ऊपर स्क्रोल", "ऊपर स्क्रॉल", "ऊपर करो") -> AssistantCommandType.SCROLL_UP
+            containsAny(command, "scroll down", "page down", "नीचे स्क्रोल", "नीचे स्क्रॉल", "नीचे करो") -> AssistantCommandType.SCROLL_DOWN
+            containsAny(command, "go back", "back", "पीछे जाओ", "वापस जाओ") -> AssistantCommandType.GO_BACK
+            containsAny(command, "go home", "home screen", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
             containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
             else -> AssistantCommandType.UNKNOWN
