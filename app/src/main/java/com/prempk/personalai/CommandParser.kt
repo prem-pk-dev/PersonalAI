@@ -35,10 +35,10 @@ object CommandParser {
             containsAny(command, "youtube", "यूट्यूब") -> AssistantCommandType.OPEN_YOUTUBE
             containsAny(command, "chrome", "क्रोम", "browser", "ब्राउज़र") -> AssistantCommandType.OPEN_CHROME
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
-            containsAny(command, "call", "कॉल", "फोन लगाओ", "फोन करो") -> AssistantCommandType.CALL_CONTACT
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
             containsAny(command, "remind me", "reminder", "याद दिला", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
+            containsAny(command, "call", "कॉल", "फोन लगाओ", "फोन करो") -> AssistantCommandType.CALL_CONTACT
             containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "लगाओ", "लगाना", "बजा", "बजे") -> AssistantCommandType.SET_ALARM
             containsAny(command, "alarm", "अलार्म") -> AssistantCommandType.OPEN_ALARMS
             containsAny(command, "map", "maps", "नक्शा", "मैप") -> AssistantCommandType.OPEN_MAPS
