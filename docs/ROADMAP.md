@@ -45,7 +45,8 @@
 - [x] Provide in-app disclosure and a button that opens Android Accessibility Settings; user must explicitly enable PK.
 - [x] Detect enabled/disabled service state when the app resumes and display its current status.
 - [ ] Add app allowlist controls before expanding the action surface.
-- [ ] Add media controls only through supported media-session/platform APIs and explicit user opt-in.
+- [x] Add Hindi/English voice commands for play, pause, next track, and previous track using Android media-key dispatch; parser unit tests added and CI verification pending.
+- [ ] Validate media-key delivery against active media sessions on Redmi Note 9 and improve provider-specific behavior if needed.
 - [ ] Test scroll/back/home behavior in YouTube, WhatsApp, Chrome and Settings on the physical device.
 - [ ] Respect secure windows, protected screens, and apps that block accessibility gestures.
 
