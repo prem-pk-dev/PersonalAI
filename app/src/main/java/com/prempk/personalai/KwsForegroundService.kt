@@ -38,12 +38,20 @@ class KwsForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP -> {
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                    .putBoolean(KEY_KWS_ENABLED, false).apply()
                 stopCapture()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 return START_NOT_STICKY
             }
-            ACTION_START -> {
+            ACTION_START, null -> {
+                val explicitlyEnabled = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    .getBoolean(KEY_KWS_ENABLED, false)
+                if (intent == null && !explicitlyEnabled) {
+                    stopSelf(startId)
+                    return START_NOT_STICKY
+                }
                 if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                     stopSelf(startId)
                     return START_NOT_STICKY
@@ -58,7 +66,10 @@ class KwsForegroundService : Service() {
                 return START_NOT_STICKY
             }
         }
-        return START_NOT_STICKY
+        // The listener is user-enabled and notification-visible. Sticky restart lets
+        // Android recreate it after reclaiming the process; a null restart intent is
+        // accepted only while the user's persisted opt-in remains enabled.
+        return START_STICKY
     }
 
     private fun startForegroundCompat(notification: Notification) {
@@ -245,6 +256,8 @@ class KwsForegroundService : Service() {
     }
 
     companion object {
+        private const val PREFS_NAME = "pk_voice_preferences"
+        private const val KEY_KWS_ENABLED = "background_kws_enabled"
         const val ACTION_START = "com.prempk.personalai.action.START_KWS"
         const val ACTION_STOP = "com.prempk.personalai.action.STOP_KWS"
         const val ACTION_WAKE_DETECTED = "com.prempk.personalai.action.WAKE_DETECTED"
