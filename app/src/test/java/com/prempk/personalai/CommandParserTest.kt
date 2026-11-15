@@ -57,8 +57,11 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("गाना रोक दो"))
         assertEquals(AssistantCommandType.MEDIA_NEXT, CommandParser.parse("next song"))
         assertEquals(AssistantCommandType.MEDIA_NEXT, CommandParser.parse("अगला गाना चलाओ"))
+        assertEquals(AssistantCommandType.MEDIA_NEXT, CommandParser.parse("अगला ट्रैक"))
         assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("previous track"))
+        assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("पिछला गाना"))
         assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("पिछला गाना चलाओ"))
+        assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("पिछला ट्रैक"))
     }
 
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
