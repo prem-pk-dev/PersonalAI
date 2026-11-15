@@ -8,6 +8,7 @@ enum class AssistantCommandType {
     OPEN_YOUTUBE,
     OPEN_CHROME,
     OPEN_SETTINGS,
+    OPEN_INSTALLED_APP,
     CALL_CONTACT,
     COMPOSE_SMS,
     OPEN_ALARMS,
@@ -37,6 +38,16 @@ object WhatsAppMessageParser {
         .trim()
 }
 
+/** Extracts an installed app's spoken display name from a launch command. */
+object InstalledAppCommandParser {
+    fun extractAppName(raw: String): String = raw.trim()
+        .replace(Regex("(?i)^\\s*(hey\\s+pk\\s+)?(please\\s+)?(open|launch|start)\\s+"), "")
+        .replace(Regex("(?i)\\s+(app\\s+)?(please\\s+)?(open|launch|start)$"), "")
+        .replace(Regex("^(कृपया\\s*)?"), "")
+        .replace(Regex("(\\s+ऐप)?\\s*(को\\s*)?(खोलो|खोलना|चलाओ|शुरू करो)$"), "")
+        .trim()
+}
+
 /** Deterministic, Android-independent command classification for the MVP. */
 object CommandParser {
     fun parse(raw: String): AssistantCommandType {
@@ -49,6 +60,7 @@ object CommandParser {
             containsAny(command, "youtube", "यूट्यूब") -> AssistantCommandType.OPEN_YOUTUBE
             containsAny(command, "chrome", "क्रोम", "browser", "ब्राउज़र") -> AssistantCommandType.OPEN_CHROME
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
+            containsAny(command, "open ", "launch ", "start ", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
             containsAny(command, "remind me", "reminder", "याद दिला", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
