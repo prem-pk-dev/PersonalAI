@@ -406,9 +406,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             target?.text = "Default assistant selection requires Android 10+."
             return
         }
-        val manager = getSystemService(android.app.role.RoleManager::class.java)
-        val held = manager?.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) == true &&
-            manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+        val held = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val manager = getSystemService(android.app.role.RoleManager::class.java)
+            manager != null &&
+                manager.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) &&
+                manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+        } else {
+            false
+        }
         target?.text = if (held) "✓ PK is selected as the default assistant" else
             "Not the default assistant yet · Android will ask you to confirm"
     }
@@ -416,10 +421,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_ASSISTANT_ROLE) {
-            val manager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                getSystemService(android.app.role.RoleManager::class.java) else null
-            val held = manager?.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) == true &&
-                manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+            val held = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val manager = getSystemService(android.app.role.RoleManager::class.java)
+                manager != null &&
+                    manager.isRoleAvailable(android.app.role.RoleManager.ROLE_ASSISTANT) &&
+                    manager.isRoleHeld(android.app.role.RoleManager.ROLE_ASSISTANT)
+            } else {
+                false
+            }
             respond(if (held) localized(
                 "PK is now selected as your default assistant.",
                 "अब PK आपका default assistant चुना गया है।"
