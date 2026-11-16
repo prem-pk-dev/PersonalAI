@@ -229,3 +229,10 @@
 - [x] Align the command contract documentation with the spoken help response.
 - [x] Verify exact branch-head CI, unit tests, lint and clean APK assembly (run #393, commit `a078a10958cd52cbd537f224b0894166d5967309`).
 - [ ] Review spoken Hindi/English clarity and discoverability on Redmi Note 9.
+
+
+## KWS startup permission gate (2026-11-16)
+- [x] Centralize microphone, model-installation and Android 13+ notification permission prerequisites in a deterministic startup gate.
+- [x] Add JVM regression tests for missing microphone permission, missing model, Android 12 notification-permission exemption, Android 13+ notification requirement, and ready state.
+- [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
+- [ ] Verify permission grant/denial and KWS startup behavior on Redmi Note 9 / Android 12 MIUI 13.
