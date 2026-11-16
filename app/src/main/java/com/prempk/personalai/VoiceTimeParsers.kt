@@ -50,16 +50,28 @@ object AlarmTimeParser {
 }
 
 object TimerDurationParser {
+    private val amountToken = Regex("(\\\\d+)")
+    private val unitAfterAmount = Regex(
+        "^\\\\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?|घंटा|घंटे|घंटों|मिनट|सेकंड)",
+        RegexOption.IGNORE_CASE
+    )
+
     fun parseSeconds(command: String): Int? {
-        val amount = Regex("(\\d+)").find(command)?.groupValues?.get(1)?.toLongOrNull() ?: return null
-        val lower = command.lowercase(Locale.ROOT)
-        val multiplier = when {
-            lower.contains("hour") || lower.contains("घंटा") -> 3600L
-            lower.contains("minute") || lower.contains("मिनट") -> 60L
-            lower.contains("second") || lower.contains("सेकंड") -> 1L
-            else -> 60L
+        val amounts = amountToken.findAll(command).toList()
+        // Multi-part durations need explicit support; never silently drop later values.
+        if (amounts.size != 1) return null
+        val match = amounts.single()
+        val amount = match.groupValues[1].toLongOrNull() ?: return null
+        val suffix = command.substring(match.range.last + 1)
+        val unit = unitAfterAmount.find(suffix)?.value?.trim()?.lowercase(Locale.ROOT)
+        val multiplier = when (unit) {
+            "hour", "hours", "hr", "hrs", "घंटा", "घंटे", "घंटों" -> 3600L
+            "second", "seconds", "sec", "secs", "सेकंड" -> 1L
+            "minute", "minutes", "min", "mins", "मिनट" -> 60L
+            null -> 60L
+            else -> return null
         }
-        if (amount > 86400L / multiplier) return null
-        return (amount * multiplier).toInt().takeIf { it > 0 }
+        if (amount <= 0L || amount > 86400L / multiplier) return null
+        return (amount * multiplier).toInt()
     }
 }
