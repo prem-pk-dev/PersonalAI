@@ -17,26 +17,10 @@ internal object KwsSpeechLifecycle {
         microphonePermissionGranted: Boolean
     ): Boolean = restartRequested && listenerEnabled && microphonePermissionGranted
 
-    fun shouldResumeAfterSpeech(commandType: AssistantCommandType, listenerEnabled: Boolean): Boolean {
-        if (!listenerEnabled) return false
-        return commandType in setOf(
-            AssistantCommandType.INFO_TIME,
-            AssistantCommandType.INFO_DATE,
-            AssistantCommandType.GREETING,
-            AssistantCommandType.INFO_BATTERY,
-            AssistantCommandType.HELP,
-            AssistantCommandType.UNKNOWN,
-            AssistantCommandType.SCROLL_UP,
-            AssistantCommandType.SCROLL_DOWN,
-            AssistantCommandType.GO_BACK,
-            AssistantCommandType.GO_HOME,
-            AssistantCommandType.MEDIA_PLAY,
-            AssistantCommandType.MEDIA_PAUSE,
-            AssistantCommandType.MEDIA_NEXT,
-            AssistantCommandType.MEDIA_PREVIOUS,
-            AssistantCommandType.VOLUME_UP,
-            AssistantCommandType.VOLUME_DOWN,
-            AssistantCommandType.VOLUME_MUTE
-        )
-    }
+    /**
+     * Every dispatched command currently produces a spoken confirmation or error.
+     * Keep the microphone stopped until that utterance completes, regardless of command type.
+     */
+    fun shouldResumeAfterSpeech(commandType: AssistantCommandType, listenerEnabled: Boolean): Boolean =
+        listenerEnabled
 }
