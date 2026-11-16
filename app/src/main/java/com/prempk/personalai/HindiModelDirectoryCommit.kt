@@ -8,9 +8,18 @@ import java.io.File
  */
 internal object HindiModelDirectoryCommit {
     fun promote(staging: File, destination: File): Boolean {
-        if (!staging.isDirectory) return false
         val backup = File(destination.parentFile, "${destination.name}.previous")
-        if (backup.exists() && !backup.deleteRecursively()) return false
+
+        // Recover an interrupted prior promotion before attempting another install.
+        if (backup.exists()) {
+            if (!destination.exists()) {
+                if (!backup.renameTo(destination)) return false
+            } else if (!backup.deleteRecursively()) {
+                return false
+            }
+        }
+
+        if (!staging.isDirectory) return false
 
         val hadDestination = destination.exists()
         if (hadDestination && !destination.renameTo(backup)) return false
@@ -20,10 +29,8 @@ internal object HindiModelDirectoryCommit {
             return false
         }
 
-        if (backup.exists() && !backup.deleteRecursively()) {
-            // The new install is valid and active; stale backup cleanup can be retried.
-            return true
-        }
+        // The new directory is active; a stale backup can be cleaned up later.
+        if (backup.exists()) backup.deleteRecursively()
         return true
     }
 }
