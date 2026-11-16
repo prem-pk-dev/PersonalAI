@@ -1078,8 +1078,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                     else localized("I cannot read the battery level right now.", "अभी बैटरी का स्तर नहीं पढ़ पा रहा हूँ।"))
             }
             AssistantCommandType.HELP -> respond(localized(
-                "I can open apps, prepare calls and SMS, show time, date and battery level, open Maps and Settings.",
-                "मैं ऐप खोल सकता हूँ, कॉल और SMS तैयार कर सकता हूँ, समय, तारीख और बैटरी बता सकता हूँ तथा Maps और Settings खोल सकता हूँ।"
+                "I can open installed apps, prepare calls, SMS and WhatsApp messages for your review, control active media playback and system media volume, scroll or navigate when Accessibility is enabled, set up alarms and timers in Clock, prepare Calendar reminders, and tell you the time, date and battery level. Some controls depend on Android permissions and app support.",
+                "मैं इंस्टॉल ऐप खोल सकता हूँ, कॉल, SMS और WhatsApp संदेश आपके जाँचने के लिए तैयार कर सकता हूँ, चल रहे मीडिया और सिस्टम मीडिया आवाज़ को नियंत्रित कर सकता हूँ, Accessibility चालू होने पर स्क्रॉल और नेविगेशन कर सकता हूँ, Clock में अलार्म और टाइमर सेट करने में मदद कर सकता हूँ, Calendar में रिमाइंडर तैयार कर सकता हूँ और समय, तारीख तथा बैटरी बता सकता हूँ। कुछ सुविधाओं के लिए Android अनुमति और ऐप का समर्थन ज़रूरी है।"
             ))
             AssistantCommandType.UNKNOWN ->
                 respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
