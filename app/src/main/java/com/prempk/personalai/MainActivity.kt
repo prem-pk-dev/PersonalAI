@@ -888,12 +888,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val commandType = CommandParser.parse(command)
         // Avoid loading the native KWS model while TTS is speaking. This reduces
         // memory and CPU contention on lower-memory phones.
-        val speaksAnswer = commandType in setOf(
-            AssistantCommandType.INFO_TIME, AssistantCommandType.INFO_DATE,
-            AssistantCommandType.GREETING, AssistantCommandType.INFO_BATTERY,
-            AssistantCommandType.HELP, AssistantCommandType.UNKNOWN,
-            AssistantCommandType.SCROLL_UP, AssistantCommandType.SCROLL_DOWN,
-            AssistantCommandType.GO_BACK, AssistantCommandType.GO_HOME
+        val speaksAnswer = KwsSpeechLifecycle.shouldResumeAfterSpeech(
+            commandType,
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)
         )
         restartKwsAfterSpeech = speaksAnswer &&
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)
