@@ -53,6 +53,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var hindiAsrStatus: TextView
     private lateinit var cancelHindiButton: Button
     private var restartKwsAfterSpeech = false
+    private var restartRecognitionAfterSpeech = false
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
 
@@ -835,6 +836,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun startCommandListeningAfterWake() {
         consecutiveRecognitionErrors = 0
+        restartRecognitionAfterSpeech = false
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ensureAudioPermission()
             return
@@ -854,6 +856,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun startWakeListening() {
         consecutiveRecognitionErrors = 0
+        restartRecognitionAfterSpeech = false
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ensureAudioPermission()
             speak("Please allow microphone permission first.")
@@ -912,7 +915,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                         ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         ?.firstOrNull()
                     if (!spoken.isNullOrBlank()) processVoice(spoken)
-                    if (wakeMode) transcript.postDelayed({
+                    if (wakeMode && !restartRecognitionAfterSpeech) transcript.postDelayed({
                         if (wakeMode && !isFinishing && !isDestroyed) startRecognition()
                     }, 500)
                 }
@@ -1403,6 +1406,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun speak(message: String) {
+        restartRecognitionAfterSpeech = KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(
+            wakeMode, awaitingCommand
+        )
         val engine = tts
         if (engine == null) {
             // TTS may still be initializing (or unavailable); do not strand an opted-in
@@ -1429,6 +1435,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             restartKwsAfterSpeech, listenerEnabled, microphoneGranted
         )
         restartKwsAfterSpeech = false
+        val shouldRestartRecognition = restartRecognitionAfterSpeech &&
+            KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(wakeMode, awaitingCommand)
+        restartRecognitionAfterSpeech = false
+        if (shouldRestartRecognition && !isFinishing && !isDestroyed) {
+            window.decorView.postDelayed({
+                if (!isFinishing && !isDestroyed && wakeMode && awaitingCommand) startRecognition()
+            }, 350)
+        }
         if (shouldResume && !isFinishing && !isDestroyed) {
             window.decorView.postDelayed({
                 if (!isFinishing && !isDestroyed && !hindiAsrInProgress &&
