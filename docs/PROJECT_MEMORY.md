@@ -246,3 +246,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 - Corrected the foreground notification builder so a user-started active KWS session is explicitly marked ongoing at the moment the service enters foreground mode. Previously, the notification was constructed before the capture worker set its running flag, so it could be created as dismissible even though the service remained foreground.
 - Detection and error notifications retain non-ongoing behavior after capture stops. Redmi Note 9 notification shade behavior and exact-head CI remain to be verified.
+
+
+## Alarm time parser ambiguity guard (2026-11-16)
+
+- Hardened `AlarmTimeParser`: it no longer interprets an arbitrary number as a clock time. A candidate must have an explicit AM/PM or बजे suffix, an at/around cue, an alarm prefix, or a Hindi daypart cue.
+- Relative durations such as "set alarm in 5 minutes" and "set alarm at 5 minutes" are rejected. Multiple explicit clock times are rejected as ambiguous instead of silently choosing the first.
+- Added deterministic English/Hindi regression cases including 12 AM, afternoon/evening conversion, duration rejection and multiple-time ambiguity. CI and physical Redmi Note 9 alarm behavior remain pending.
