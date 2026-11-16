@@ -12,6 +12,8 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.IBinder
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.util.Log
 import com.k2fsa.sherpa.onnx.KeywordSpotter
@@ -106,6 +108,7 @@ class KwsForegroundService : Service() {
             var localSpotter: KeywordSpotter? = null
             var localStream: OnlineStream? = null
             var localRecorder: AudioRecord? = null
+            var captureFailed = false
             try {
                 val modelDir = KwsModelInstaller.modelDirectory(this)
                 check(KwsModelInstaller.isInstalled(this)) { "Offline wake-word model is not installed." }
@@ -150,8 +153,12 @@ class KwsForegroundService : Service() {
                     }
                 }
             } catch (error: Exception) {
-                Log.e(TAG, "Offline wake-word listener stopped", error)
-                updateNotification(getString(R.string.kws_notification_error))
+                if (running.get()) {
+                    captureFailed = true
+                    Log.e(TAG, "Offline wake-word listener stopped", error)
+                } else {
+                    Log.d(TAG, "Wake-word capture stopped by request", error)
+                }
             } finally {
                 running.set(false)
                 runCatching { localRecorder?.stop() }
@@ -162,6 +169,17 @@ class KwsForegroundService : Service() {
                 stream = null
                 spotter = null
                 releaseCpuWakeLock()
+                if (captureFailed) {
+                    // A failed capture must not leave an idle foreground microphone service
+                    // or a persisted opt-in that falsely claims the listener is active.
+                    Handler(Looper.getMainLooper()).post {
+                        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                            .putBoolean(KEY_KWS_ENABLED, false).apply()
+                        updateNotification(getString(R.string.kws_notification_error))
+                        stopForeground(STOP_FOREGROUND_DETACH)
+                        stopSelf()
+                    }
+                }
             }
         }
     }
