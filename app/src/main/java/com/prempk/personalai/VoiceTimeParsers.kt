@@ -8,15 +8,15 @@ import java.util.Locale
  */
 object AlarmTimeParser {
     private val timeToken = Regex(
-        "(\\\\d{1,2})(?::(\\\\d{2}))?\\\\s*(a\\\\.?m\\\\.?|p\\\\.?m\\\\.?|बजे)?",
+        "(\\d{1,2})(?::(\\d{2}))?\\s*(a\\.?m\\.?|p\\.?m\\.?|बजे)?",
         RegexOption.IGNORE_CASE
     )
     private val timePrefix = Regex(
-        "(?:\\\\b(?:at|around)\\\\s*|\\\\b(?:alarm)\\\\s*(?:at\\\\s*)?|अलार्म\\\\s*(?:पर\\\\s*)?|(?:सुबह|सवेरे|भोर|दोपहर|शाम|रात)\\\\s*)$",
+        "(?:\\b(?:at|around)\\s*|\\b(?:alarm)\\s*(?:at\\s*)?|अलार्म\\s*(?:पर\\s*)?|(?:सुबह|सवेरे|भोर|दोपहर|शाम|रात)\\s*)$",
         RegexOption.IGNORE_CASE
     )
     private val durationSuffix = Regex(
-        "^\\\\s*(?:minutes?|mins?|hours?|hrs?|seconds?|secs?|मिनट|घंटे?|सेकंड)",
+        "^\\s*(?:minutes?|mins?|hours?|hrs?|seconds?|secs?|मिनट|घंटे?|सेकंड)",
         RegexOption.IGNORE_CASE
     )
 
@@ -51,9 +51,9 @@ object AlarmTimeParser {
 }
 
 object TimerDurationParser {
-    private val amountToken = Regex("(\\\\d+)")
+    private val amountToken = Regex("(\\d+)")
     private val unitAfterAmount = Regex(
-        "^\\\\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?|घंटा|घंटे|घंटों|मिनट|सेकंड)",
+        "^\\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?|घंटा|घंटे|घंटों|मिनट|सेकंड)",
         RegexOption.IGNORE_CASE
     )
 
