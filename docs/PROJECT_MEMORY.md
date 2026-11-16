@@ -192,3 +192,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - The worker now distinguishes a requested stop from a real capture failure. After releasing recorder, stream, spotter, and CPU WakeLock resources, it posts main-thread cleanup that clears the persisted opt-in, updates a non-ongoing error notification, detaches foreground state, and stops the service.
 - This is code-level lifecycle hardening only. Android 12 / MIUI service restart, permission revocation, and notification behavior remain physical-device checks; latest CI is not yet verified.
 - Commit: `affe477eba8557b29c1511d3aaac6e0b7703eca5`.
+
+
+## Wake-to-command failure recovery (2026-11-16)
+
+- Review found a handoff edge case: after KWS detects the keyword, its foreground service stops. If command speech recognition is unavailable or fails to start, the listener could remain opted-in but stopped.
+- Added a pure KWS handoff failure policy. The Activity now schedules listener restoration after its spoken error response only when KWS remains opted-in and RECORD_AUDIO permission is granted. If microphone permission is granted through the permission prompt, listener restoration is likewise deferred until the permission response TTS completes. If permission is denied, persisted KWS opt-in is cleared.
+- Added a unit test covering all opt-in / microphone permission combinations.
+- Device behavior and exact-head CI remain unverified.
+- Commits: policy `ac695bfc8e9fcfcef6007d9bd250b5c56e8a2319`; test `924e3f7652e3aeb4004086bc30efc0817e3733fc`; Activity integration `35cf3b6f77a04b583f5e779e05bbb15b638c17ca`.
