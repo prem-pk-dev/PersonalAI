@@ -204,3 +204,11 @@
 - [x] Add an exhaustive enum-based unit test so newly added command types also require the TTS handoff.
 - [ ] Verify microphone non-overlap for app launch, media, navigation, alarm and error responses on Redmi Note 9.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+
+
+## Timer duration ambiguity guard (2026-11-16)
+- [x] Require exactly one numeric duration component; reject multi-part inputs such as "5 minutes and 10 seconds" rather than silently ignoring later values.
+- [x] Parse explicit English/Hindi hour, minute and second units; preserve the existing single-number default-to-minutes behavior.
+- [x] Reject zero, overflow and durations above 24 hours with regression tests.
+- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [ ] Verify timer handoff and confirmation on Redmi Note 9 / Android 12 MIUI 13.
