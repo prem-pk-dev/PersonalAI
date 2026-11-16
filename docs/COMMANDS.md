@@ -18,6 +18,13 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "Aaj ki date batao" | INFO_DATE | Speak current device date offline |
 | "Battery kitni hai" | INFO_BATTERY | Read battery percentage offline |
 | "Maps kholo" | OPEN_MAPS | Open a Maps handler |
+| "gaana chalao" / "गाना चलाओ" | MEDIA_PLAY | Resume the active media session where supported |
+| "music roko" / "गाना रोक दो" | MEDIA_PAUSE | Pause the active media session where supported |
+| "agla gaana" / "अगला गाना" | MEDIA_NEXT | Skip to the next active-session track |
+| "pichla gana" / "पिछला गाना" | MEDIA_PREVIOUS | Return to the previous active-session track |
+| "volume badhao" / "आवाज बढ़ा दो" | VOLUME_UP | Increase system music-stream volume |
+| "awaz kam karo" / "आवाज कम करो" | VOLUME_DOWN | Decrease system music-stream volume |
+| "awaz band" / "आवाज बंद" | VOLUME_MUTE | Mute system music-stream volume where supported |
 | "Help" / "मदद" | HELP | Explain supported assistant actions |
 
 ## Wake-word behavior\n\n- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
@@ -47,7 +54,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 
 - Normalize case and extra whitespace for intent matching.
 - Preserve the original recognized transcript when returning text after the wake phrase.
-- Recognize supported English and Hindi command variants.
+- Recognize supported English, Devanagari Hindi, and explicitly tested Romanized-Hinglish aliases (including media, volume, navigation, time, and date intents). Romanized-Hinglish coverage is intentionally finite, not general speech understanding.
 - Strip only known filler words; do not remove contact-name tokens unnecessarily.
 - Ask one focused question when a required value is missing.
 - Never send SMS or WhatsApp messages silently.
