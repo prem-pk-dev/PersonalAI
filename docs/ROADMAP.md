@@ -178,3 +178,12 @@
 - [x] Keep detected and error notifications dismissible/non-ongoing after capture has stopped.
 - [ ] Verify notification visibility, stop action and dismissal behavior on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI and APK assembly.
+
+
+## Alarm time parser ambiguity guard (2026-11-16)
+- [x] Require an explicit time cue (AM/PM, बजे, at/around, alarm prefix, or Hindi daypart) instead of treating any number as an alarm time.
+- [x] Reject relative duration phrases such as "set alarm in 5 minutes" rather than interpreting the duration as a wall-clock time.
+- [x] Reject multiple explicit clock times rather than silently selecting the first.
+- [x] Add English/Hindi regression tests for explicit cues, duration rejection, ambiguity, 12 AM and daypart conversion.
+- [ ] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions.
+- [ ] Verify alarm launch and spoken time interpretation on Redmi Note 9 / Android 12 MIUI 13.
