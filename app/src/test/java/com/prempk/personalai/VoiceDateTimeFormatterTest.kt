@@ -1,6 +1,7 @@
 package com.prempk.personalai
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.text.DateFormat
@@ -44,8 +45,8 @@ class VoiceDateTimeFormatterTest {
         val india = VoiceDateTimeFormatter.format(
             fixedInstant, "en-IN", TimeZone.getTimeZone("Asia/Kolkata")
         )
-        assertTrue(utc.time != india.time || utc.date != india.date)
-        assertTrue(india.date.contains("17") || india.date.contains("17"))
+        assertNotEquals(utc.time, india.time)
+        assertNotEquals(utc.date, india.date)
     }
 
     @Test fun unsupportedLanguageTagsFallBackToEnglishIndia() {
