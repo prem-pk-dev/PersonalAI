@@ -244,3 +244,10 @@
 - [x] Add JVM tests for frame ordering, partial frames, capacity truncation, defensive snapshots and invalid input.
 - [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
 - [ ] Measure Hindi ASR peak memory, latency and thermal behavior on Redmi Note 9; this code change alone is not a device benchmark.
+
+
+## Hindi ASR input validation (2026-11-16)
+- [x] Validate 16 kHz mono input, non-empty audio, finite samples and normalized PCM range before passing audio to Sherpa-ONNX.
+- [x] Add JVM regression tests for valid input, incorrect sample rate, empty audio, NaN/infinity and out-of-range values.
+- [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [ ] Confirm real microphone input and Hindi transcription quality on Redmi Note 9.
