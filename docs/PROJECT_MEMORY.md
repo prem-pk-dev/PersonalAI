@@ -210,3 +210,11 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - On cancellation or failed capture, microphone/native resources are released before an opted-in KWS listener is scheduled to resume. Activity teardown is checked before touching UI or restarting the service.
 - Device cancellation and native-transcription interruption behavior remain unverified; Sherpa decode itself is not forcibly interrupted mid-call.
 - Commits: UI and lifecycle `db7eabfc43e332800dad3f9077b1239382e78833`; teardown guard `5599ebb9ffb77f2ac33894df21c9bf5a09cfdf87`; cancel race guard `94edfb967a031565c91dac67bb0c864987011d45`.
+
+
+## TTS failure recovery for KWS handoff (2026-11-16)
+
+- Fixed a wake-to-command edge case where a missing/uninitialized Android TextToSpeech engine returned early from `speak()`, potentially leaving an opted-in KWS listener stopped after keyword detection. TTS initialization failure now also triggers the pending handoff recovery.
+- KWS restart is now gated by an explicit pending restart request, persisted listener opt-in, and RECORD_AUDIO permission; permission and opt-in are checked again immediately before delayed service start, and a destroyed/finishing Activity or active Hindi ASR blocks restart.
+- Added unit coverage for the TTS failure policy. Android TTS-disabled / missing voice-data behavior remains a device test.
+- Commits: TTS recovery `5c805d8f3d700752f83c7c007c5c7a384a0d917b`; policy `8f8ace288c3509644e0bee67b56ceca7476a8f76`; Activity integration `b247839c51ba675e64d65f3dc0799f4a11c31ffa`; test `5621411deac604aae751967766cfcef9533b8181`.
