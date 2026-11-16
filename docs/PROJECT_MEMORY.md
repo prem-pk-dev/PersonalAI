@@ -240,3 +240,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Review found that a wake-only SpeechRecognizer result ("PK") spoke an acknowledgement but the result callback still scheduled another recognizer start after 500 ms. That could reopen the microphone while TTS was speaking.
 - The Activity now marks a pending recognition restart only when both wake mode and awaiting-command are active, suppresses the immediate result-loop restart, and starts command recognition after the assistant utterance completes. Missing/failed TTS uses the same guarded recovery path.
 - Added a unit-testable lifecycle predicate. Redmi Note 9 microphone/TTS overlap behavior and exact-head CI remain unverified.
+
+
+## KWS foreground notification persistence (2026-11-16)
+
+- Corrected the foreground notification builder so a user-started active KWS session is explicitly marked ongoing at the moment the service enters foreground mode. Previously, the notification was constructed before the capture worker set its running flag, so it could be created as dismissible even though the service remained foreground.
+- Detection and error notifications retain non-ongoing behavior after capture stops. Redmi Note 9 notification shade behavior and exact-head CI remain to be verified.
