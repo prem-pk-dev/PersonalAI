@@ -6,6 +6,9 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Build
 import android.os.BatteryManager
@@ -42,6 +45,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private lateinit var orb: SiriOrbView
     private lateinit var kwsSetupStatus: TextView
     private var modelInstallInProgress = false
+    @Volatile private var hindiModelInstallInProgress = false
+    @Volatile private var hindiAsrInProgress = false
+    @Volatile private var hindiAsrCancelled = false
+    private lateinit var hindiAsrStatus: TextView
     private var restartKwsAfterSpeech = false
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
@@ -312,6 +319,40 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setPadding(dp(2), dp(11), 0, 0)
         }
         backgroundCard.addView(kwsSetupStatus)
+
+        val hindiAsrRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(0, dp(12), 0, 0)
+        }
+        val installHindiButton = makeButton("Install Hindi ASR · 198 MB") {
+            installHindiOfflineModel()
+        }.apply {
+            isAllCaps = false
+            textSize = 10f
+            background = surface(0xFF26334B.toInt(), 15, 0x665A8AA7)
+            setPadding(dp(7), dp(11), dp(7), dp(11))
+        }
+        val listenHindiButton = makeButton("Speak Hindi offline") {
+            startHindiOfflineListening()
+        }.apply {
+            isAllCaps = false
+            textSize = 10f
+            background = surface(0xFF087F91.toInt(), 15, 0x6654D5E5)
+            setPadding(dp(7), dp(11), dp(7), dp(11))
+        }
+        hindiAsrRow.addView(installHindiButton, LinearLayout.LayoutParams(0, dp(48), 1f).apply { marginEnd = dp(8) })
+        hindiAsrRow.addView(listenHindiButton, LinearLayout.LayoutParams(0, dp(48), 1f))
+        backgroundCard.addView(hindiAsrRow)
+        hindiAsrStatus = label(
+            if (HindiOfflineModelInstaller.isInstalled(this)) "✓ Hindi offline model installed · runs on device"
+            else "Hindi offline ASR not installed · optional 198 MB download",
+            11f, muted
+        ).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(2), dp(9), 0, 0)
+        }
+        backgroundCard.addView(hindiAsrStatus)
         val accessibilityButton = makeButton("Enable cross-app controls") {
             AlertDialog.Builder(this).setTitle("Allow PK accessibility controls?")
                 .setMessage("PK uses Accessibility only after you enable it in Android Settings. It can scroll the current app and use Back/Home. It does not read screen text or send messages.")
@@ -515,6 +556,130 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                     modelInstallInProgress = false
                     kwsSetupStatus.text = "Model setup failed: " + (error.localizedMessage ?: "unknown error")
                 }
+            }
+        }.start()
+    }
+
+    private fun installHindiOfflineModel() {
+        if (hindiModelInstallInProgress) return
+        if (HindiOfflineModelInstaller.isInstalled(this)) {
+            hindiAsrStatus.text = "Hindi offline model is already installed."
+            return
+        }
+        hindiModelInstallInProgress = true
+        hindiAsrStatus.text = "Starting optional Hindi model download (about 198 MB)…"
+        Thread {
+            try {
+                HindiOfflineModelInstaller.install(this) { message, percent ->
+                    runOnUiThread {
+                        if (!isFinishing) hindiAsrStatus.text = "$message $percent%"
+                    }
+                }
+                runOnUiThread {
+                    hindiModelInstallInProgress = false
+                    if (!isFinishing) hindiAsrStatus.text =
+                        "✓ Hindi offline model installed and SHA-256 verified. Internet is not needed for transcription."
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    hindiModelInstallInProgress = false
+                    if (!isFinishing) hindiAsrStatus.text =
+                        "Hindi model install failed: ${error.localizedMessage ?: "unknown error"}"
+                }
+            }
+        }.start()
+    }
+
+    /** Captures mono 16 kHz audio and transcribes locally without sharing the microphone with KWS. */
+    private fun startHindiOfflineListening() {
+        if (hindiAsrInProgress) return
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ensureAudioPermission()
+            hindiAsrStatus.text = "Allow microphone access, then tap Speak Hindi offline again."
+            return
+        }
+        if (!HindiOfflineModelInstaller.isInstalled(this)) {
+            hindiAsrStatus.text = "Install the Hindi offline model first (about 198 MB)."
+            return
+        }
+        hindiAsrCancelled = false
+        hindiAsrInProgress = true
+        stopListening()
+        // Stop KWS without clearing the enabled preference; handleCommand resumes it afterwards.
+        stopService(Intent(this, KwsForegroundService::class.java))
+        status.text = "●  Hindi offline · preparing microphone"
+        hindiAsrStatus.text = "Listening… speak one Hindi command (up to 9 seconds)."
+        Thread {
+            var recorder: AudioRecord? = null
+            var engine: HindiOfflineAsrEngine? = null
+            try {
+                Thread.sleep(250)
+                val sampleRate = HindiOfflineAsrEngine.SAMPLE_RATE
+                val minBuffer = AudioRecord.getMinBufferSize(
+                    sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT
+                )
+                check(minBuffer > 0) { "This device cannot create a 16 kHz microphone stream." }
+                recorder = AudioRecord(
+                    MediaRecorder.AudioSource.MIC,
+                    sampleRate,
+                    AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    maxOf(minBuffer, 8192)
+                )
+                check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Microphone could not be initialized." }
+                val chunk = ShortArray(2048)
+                val captured = ArrayList<Short>(sampleRate * 6)
+                recorder.startRecording()
+                val startedAt = System.currentTimeMillis()
+                var speechStartedAt = 0L
+                var lastVoiceAt = 0L
+                while (!hindiAsrCancelled && System.currentTimeMillis() - startedAt < 9_000L) {
+                    val count = recorder.read(chunk, 0, chunk.size)
+                    if (count == AudioRecord.ERROR_INVALID_OPERATION || count == AudioRecord.ERROR_BAD_VALUE || count < 0) {
+                        throw IllegalStateException("Microphone read failed ($count).")
+                    }
+                    if (count == 0) continue
+                    val now = System.currentTimeMillis()
+                    if (HindiPcmAudio.rms(chunk, count) >= 0.012f) {
+                        if (speechStartedAt == 0L) speechStartedAt = now
+                        lastVoiceAt = now
+                    }
+                    for (i in 0 until count) captured.add(chunk[i])
+                    if (speechStartedAt == 0L && now - startedAt >= 4_000L) break
+                    if (speechStartedAt > 0L && now - lastVoiceAt >= 1_200L) break
+                }
+                check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
+                check(speechStartedAt > 0L && captured.size >= 3_200) {
+                    "No clear speech was detected. Please try again closer to the microphone."
+                }
+                recorder.stop()
+                recorder.release()
+                recorder = null
+                val pcm = ShortArray(captured.size) { captured[it] }
+                engine = HindiOfflineAsrEngine(HindiOfflineModelInstaller.modelDirectory(this))
+                val recognized = engine.transcribe(HindiPcmAudio.toFloatSamples(pcm), sampleRate)
+                check(recognized.isNotBlank()) { "Hindi speech was not recognized. Please repeat the command." }
+                runOnUiThread {
+                    hindiAsrInProgress = false
+                    if (!isFinishing && !hindiAsrCancelled) {
+                        hindiAsrStatus.text = "Recognized offline: $recognized"
+                        recognitionDetectedLanguageTag = "hi-IN"
+                        handleCommand(recognized)
+                    }
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    hindiAsrInProgress = false
+                    if (!isFinishing) {
+                        hindiAsrStatus.text = error.localizedMessage ?: "Hindi offline recognition failed."
+                        status.text = "●  Ready when you are"
+                    }
+                }
+            } finally {
+                runCatching { recorder?.stop() }
+                runCatching { recorder?.release() }
+                runCatching { engine?.close() }
+                hindiAsrInProgress = false
             }
         }.start()
     }
@@ -1151,6 +1316,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     override fun onDestroy() {
+        hindiAsrCancelled = true
         wakeMode = false
         recognizer?.destroy()
         tts?.stop()
