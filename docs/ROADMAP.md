@@ -90,3 +90,9 @@
 3. Device test results are recorded; never infer them from CI.
 4. README, command contract and project memory are current.
 5. Android and third-party app limitations are documented.
+
+
+## Milestone 3 — KWS speech handoff correction (2026-11-16)
+- [x] Add a testable KWS speech lifecycle policy so media and volume command TTS replies complete before the microphone listener resumes.
+- [x] Add unit tests for deferred resume, opt-out behavior, and app-launch behavior.
+- [ ] Verify the exact branch-head CI run for this change; do not mark tests/build as passed until the matching run is confirmed.
