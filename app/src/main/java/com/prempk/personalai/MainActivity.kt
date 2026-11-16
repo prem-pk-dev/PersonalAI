@@ -782,6 +782,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun startCommandListeningAfterWake() {
+        consecutiveRecognitionErrors = 0
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ensureAudioPermission()
             return
@@ -800,6 +801,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun startWakeListening() {
+        consecutiveRecognitionErrors = 0
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ensureAudioPermission()
             speak("Please allow microphone permission first.")
@@ -829,7 +831,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             recognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
-                    consecutiveRecognitionErrors = 0
                     status.text = "●  Listening… speak now"
                     orb.setListening(true)
                 }
