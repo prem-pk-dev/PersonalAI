@@ -74,20 +74,20 @@ object CommandParser {
             containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "लगाओ", "लगाना", "बजा", "बजे") -> AssistantCommandType.SET_ALARM
             containsAny(command, "alarm", "अलार्म") -> AssistantCommandType.OPEN_ALARMS
             containsAny(command, "map", "maps", "नक्शा", "मैप") -> AssistantCommandType.OPEN_MAPS
-            containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
-            containsAny(command, "date", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
+            containsAny(command, "time", "समय", "samay", "kitne baje", "कितने बजे") -> AssistantCommandType.INFO_TIME
+            containsAny(command, "date", "tareekh", "tarikh", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
-            containsAny(command, "volume up", "increase volume", "turn volume up", "आवाज बढ़ा", "वॉल्यूम बढ़ा", "आवाज़ तेज", "आवाज तेज") -> AssistantCommandType.VOLUME_UP
-            containsAny(command, "volume down", "decrease volume", "turn volume down", "आवाज कम", "वॉल्यूम कम", "आवाज़ धीमी", "आवाज धीमी") -> AssistantCommandType.VOLUME_DOWN
-            containsAny(command, "mute volume", "mute sound", "आवाज म्यूट", "वॉल्यूम म्यूट", "आवाज बंद") -> AssistantCommandType.VOLUME_MUTE
-            containsAny(command, "next song", "next track", "skip song", "अगला गाना", "अगला ट्रैक", "नेक्स्ट गाना", "नेक्स्ट ट्रैक") -> AssistantCommandType.MEDIA_NEXT
-            containsAny(command, "previous song", "previous track", "पिछला गाना", "पिछला ट्रैक", "प्रिवियस गाना", "पिछला") -> AssistantCommandType.MEDIA_PREVIOUS
-            containsAny(command, "pause music", "pause song", "music pause", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
-            containsAny(command, "play music", "play song", "resume music", "गाना चलाओ", "म्यूजिक चलाओ", "फिर से चलाओ") -> AssistantCommandType.MEDIA_PLAY
-            containsAny(command, "scroll up", "page up", "ऊपर स्क्रोल", "ऊपर स्क्रॉल", "ऊपर करो") -> AssistantCommandType.SCROLL_UP
-            containsAny(command, "scroll down", "page down", "नीचे स्क्रोल", "नीचे स्क्रॉल", "नीचे करो") -> AssistantCommandType.SCROLL_DOWN
-            containsAny(command, "go back", "back", "पीछे जाओ", "वापस जाओ") -> AssistantCommandType.GO_BACK
-            containsAny(command, "go home", "home screen", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
+            containsAny(command, "volume up", "increase volume", "turn volume up", "volume badhao", "volume badha", "awaz badhao", "awaaz badhao", "आवाज बढ़ा", "वॉल्यूम बढ़ा", "आवाज़ तेज", "आवाज तेज") -> AssistantCommandType.VOLUME_UP
+            containsAny(command, "volume down", "decrease volume", "turn volume down", "volume kam", "awaz kam", "awaaz kam", "आवाज कम", "वॉल्यूम कम", "आवाज़ धीमी", "आवाज धीमी") -> AssistantCommandType.VOLUME_DOWN
+            containsAny(command, "mute volume", "mute sound", "awaz band", "awaaz band", "आवाज म्यूट", "वॉल्यूम म्यूट", "आवाज बंद") -> AssistantCommandType.VOLUME_MUTE
+            containsAny(command, "next song", "next track", "skip song", "agla gana", "agla gaana", "अगला गाना", "अगला ट्रैक", "नेक्स्ट गाना", "नेक्स्ट ट्रैक") -> AssistantCommandType.MEDIA_NEXT
+            containsAny(command, "previous song", "previous track", "pichla gana", "pichla gaana", "पिछला गाना", "पिछला ट्रैक", "प्रिवियस गाना", "पिछला") -> AssistantCommandType.MEDIA_PREVIOUS
+            containsAny(command, "pause music", "pause song", "music pause", "gana roko", "gaana roko", "music roko", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
+            containsAny(command, "play music", "play song", "resume music", "gana chalao", "gaana chalao", "music chalao", "गाना चलाओ", "म्यूजिक चलाओ", "फिर से चलाओ") -> AssistantCommandType.MEDIA_PLAY
+            containsAny(command, "scroll up", "page up", "upar scroll", "upar scrol", "ऊपर स्क्रोल", "ऊपर स्क्रॉल", "ऊपर करो") -> AssistantCommandType.SCROLL_UP
+            containsAny(command, "scroll down", "page down", "neeche scroll", "neeche scrol", "नीचे स्क्रोल", "नीचे स्क्रॉल", "नीचे करो") -> AssistantCommandType.SCROLL_DOWN
+            containsAny(command, "go back", "back", "peeche jao", "wapas jao", "पीछे जाओ", "वापस जाओ") -> AssistantCommandType.GO_BACK
+            containsAny(command, "go home", "home screen", "home jao", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
             containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
             containsAny(command, "open ", "launch ", "start ", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
