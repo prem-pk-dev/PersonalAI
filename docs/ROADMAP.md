@@ -219,7 +219,7 @@
 - [x] Add explicit Romanized-Hinglish aliases for common media playback, volume, scroll/navigation, time and date commands.
 - [x] Add deterministic unit tests for the new aliases; keep matching finite and intent-based rather than implying general Hinglish understanding.
 - [x] Document the tested examples and their bounded behavior in the command contract.
-- [ ] Verify the exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [x] Verify the exact branch-head unit tests, lint and clean APK assembly in GitHub Actions (run #393, commit `a078a10958cd52cbd537f224b0894166d5967309`).
 - [ ] Validate recognition transcript quality and command execution on Redmi Note 9; parser tests do not validate microphone ASR accuracy.
 
 
@@ -227,5 +227,5 @@
 - [x] Expand spoken English/Hindi help to cover implemented app, communication, media, volume, accessibility, alarm/timer, reminder and device-information actions.
 - [x] State that Android permissions and target-app support can limit some controls.
 - [x] Align the command contract documentation with the spoken help response.
-- [ ] Verify exact branch-head CI, unit tests, lint and clean APK assembly.
+- [x] Verify exact branch-head CI, unit tests, lint and clean APK assembly (run #393, commit `a078a10958cd52cbd537f224b0894166d5967309`).
 - [ ] Review spoken Hindi/English clarity and discoverability on Redmi Note 9.
