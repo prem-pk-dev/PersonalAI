@@ -267,3 +267,11 @@
 - [x] Remove the unconditional microphone permission prompt from initial Activity launch; voice features continue to request permission at their point of use, and explicit Android ASSIST launches retain the voice-start path.
 - [x] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions (run #414, exact commit `9240b409a8f6cbd4fbc8ab076ef02a70f6d4fcb8`; clean build/test/rebuild, ARM native packaging and APK signature/metadata checks all passed).
 - [ ] Verify first launch without granting microphone permission, then permission grant/denial and voice-feature startup on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Wi-Fi and Bluetooth settings voice intents (2026-11-16)
+- [x] Add explicit English/Hindi parser intents for opening Wi-Fi and Bluetooth settings screens.
+- [x] Route these intents to Android's system settings screens; PK does not silently toggle radios or bypass user confirmation.
+- [x] Add deterministic parser regression tests and document the supported phrases.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Verify settings screens open correctly on Redmi Note 9 / Android 12 MIUI 13; user performs any radio change.
