@@ -226,3 +226,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - A failed wake-to-command handoff schedules KWS recovery through the existing opt-in and microphone-permission gate. Ordinary foreground listening failures do not silently enable background listening.
 - Delayed callbacks re-check that the Activity is alive and wake mode remains active. The failure counter resets for a new listening session and after a results callback, not merely when the provider says it is ready.
 - Added JVM tests for the retry sequence, exhaustion boundary, and invalid counts. Exact-head CI and Redmi Note 9 behavior remain unverified.
+
+
+## Accessibility scroll app allowlist (2026-11-16)
+
+- Added an explicit in-app multi-select allowlist for scroll gestures in installed YouTube, WhatsApp, WhatsApp Business and Chrome packages. The default is deny-all; users must select each app before PK can scroll it.
+- Accessibility service reads only the active window package identifier to enforce the allowlist, then traverses scrollable nodes without reading node text. Back/Home remain separately disclosed global navigation actions.
+- Added JVM tests for default deny, allowed package, unselected package and missing active package. Exact-head CI and Redmi Note 9 interaction checks remain pending.
