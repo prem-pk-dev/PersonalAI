@@ -118,3 +118,12 @@
 - [x] On unexpected failure, release audio/native resources and the CPU WakeLock, clear the persisted listener opt-in, publish a non-ongoing error notification, detach foreground state, and stop the failed service on the main thread.
 - [ ] Verify service restart/error notification behavior and permission-revocation paths on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head lint, unit tests, and APK assembly in GitHub Actions.
+
+
+## Wake-to-command failure recovery (2026-11-16)
+- [x] Add a testable policy for restoring an opted-in KWS listener after a wake-to-command speech-recognition failure, but only when microphone permission remains granted.
+- [x] Restore KWS after TTS reports speech recognition unavailable or SpeechRecognizer startup throws.
+- [x] After microphone permission is granted, defer KWS restart until the permission response finishes speaking; clear stale KWS opt-in when permission is denied.
+- [x] Add regression coverage for opt-in and microphone-permission combinations.
+- [ ] Verify wake detection, permission prompts, SpeechRecognizer failures, and listener restart on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head CI and APK assembly.
