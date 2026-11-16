@@ -221,3 +221,11 @@
 - [x] Document the tested examples and their bounded behavior in the command contract.
 - [ ] Verify the exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
 - [ ] Validate recognition transcript quality and command execution on Redmi Note 9; parser tests do not validate microphone ASR accuracy.
+
+
+## Help command capability accuracy (2026-11-16)
+- [x] Expand spoken English/Hindi help to cover implemented app, communication, media, volume, accessibility, alarm/timer, reminder and device-information actions.
+- [x] State that Android permissions and target-app support can limit some controls.
+- [x] Align the command contract documentation with the spoken help response.
+- [ ] Verify exact branch-head CI, unit tests, lint and clean APK assembly.
+- [ ] Review spoken Hindi/English clarity and discoverability on Redmi Note 9.
