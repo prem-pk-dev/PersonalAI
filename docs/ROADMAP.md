@@ -154,3 +154,12 @@
 - [x] Add JVM tests for backoff sequence, retry exhaustion, and invalid failure counts.
 - [ ] Verify SpeechRecognizer error codes, recovery and KWS handoff on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions.
+
+
+## Accessibility scroll app allowlist (2026-11-16)
+- [x] Add an explicit user-managed allowlist for scroll gestures in supported installed apps (YouTube, WhatsApp, WhatsApp Business, Chrome).
+- [x] Deny scroll gestures by default when no app is selected; enforce the allowlist against the active window package before traversing scrollable nodes.
+- [x] Keep Back/Home as explicit global navigation actions and disclose the distinction in the Accessibility setup prompt.
+- [x] Add unit tests for default-deny, selected-app allow, unselected-app deny, and missing active package.
+- [ ] Verify app switching, package identification, scroll gestures and Back/Home on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
