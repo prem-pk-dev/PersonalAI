@@ -790,21 +790,25 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun requestStartKwsSession() {
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ensureAudioPermission()
-            kwsSetupStatus.text = "Allow microphone permission, then tap Enable background PK."
-            return
+        val decision = KwsStartGate.evaluate(
+            sdkInt = Build.VERSION.SDK_INT,
+            microphonePermissionGranted =
+                checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED,
+            modelInstalled = KwsModelInstaller.isInstalled(this),
+            notificationsPermissionGranted = Build.VERSION.SDK_INT < 33 ||
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        )
+        when (decision) {
+            KwsStartGate.Decision.MICROPHONE_PERMISSION_REQUIRED -> {
+                ensureAudioPermission()
+                kwsSetupStatus.text = "Allow microphone permission, then tap Enable background PK."
+            }
+            KwsStartGate.Decision.MODEL_REQUIRED ->
+                kwsSetupStatus.text = "Download the offline model first."
+            KwsStartGate.Decision.NOTIFICATION_PERMISSION_REQUIRED ->
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
+            KwsStartGate.Decision.READY -> startKwsService()
         }
-        if (!KwsModelInstaller.isInstalled(this)) {
-            kwsSetupStatus.text = "Download the offline model first."
-            return
-        }
-        if (Build.VERSION.SDK_INT >= 33 &&
-            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
-            return
-        }
-        startKwsService()
     }
 
     private fun startKwsService() {
