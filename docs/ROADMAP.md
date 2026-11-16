@@ -25,7 +25,8 @@
 - [x] Recognize Hindi and English greeting phrases and answer using the current device time and timezone.
 - [x] Add unit tests for hour boundaries and greeting phrase classification.
 - [ ] Verify TTS pronunciation and locale formatting on Redmi Note 9.
-- [ ] Add robust date/time formatting and explicit unsupported response for unavailable speech providers.
+- [x] Format spoken time/date using the detected response language and the device timezone, with deterministic locale/timezone regression tests.
+- [ ] Provide an explicit spoken response when the requested Android speech-recognition provider is unavailable (the current startup status message is visual only).
 
 ## Milestone 2 — Reliable wake-word and command handoff
 - [x] Sherpa-ONNX Android runtime and pinned English mobile KWS model installer.
