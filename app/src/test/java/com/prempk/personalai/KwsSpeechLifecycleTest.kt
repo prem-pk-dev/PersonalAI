@@ -43,4 +43,11 @@ class KwsSpeechLifecycleTest {
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.OPEN_YOUTUBE, true))
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.OPEN_WHATSAPP, true))
     }
+    @Test fun wakeHandoffFailureResumesOnlyWhenOptedInAndPermissionGranted() {
+        assertTrue(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(true, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(false, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(true, false))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(false, false))
+    }
+
 }
