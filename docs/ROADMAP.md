@@ -13,6 +13,7 @@
 - [x] Premium dark PK home UI.
 - [x] WAKE_LOCK manifest permission added for the partial WakeLock implementation.
 - [x] CI lint, unit tests, clean APK assembly, ARM JNI packaging checks and APK signature/package metadata verification.
+- [x] Build #284 passed for exact branch head `acdd9fd9f800d2bda39ec47a36fd4787b3261712`; artifact `personalai-debug-apk-device-test` (ID `14204122024`, SHA-256 `c242bdf1c00c3931cbb1b882e4bbf645f98fdcd41f1b9ba1f4799736e9bd44a0`) is a device-test build only, not a final release.
 - [x] Build #255 passed all workflow steps for commit `e3d05498fc28b6619e11ce137e7c02d1e7c480f9`; artifact uploaded for physical-device validation, not final release.
 - [ ] Validate APK install/signature on Redmi Note 9; prior install attempt reported “App not installed” and Play Protect warning.
 - [ ] Verify new ARM-only package, APK signature, manifest package/minSdk and installability before final APK handoff.
@@ -45,8 +46,9 @@
 - [x] Provide in-app disclosure and a button that opens Android Accessibility Settings; user must explicitly enable PK.
 - [x] Detect enabled/disabled service state when the app resumes and display its current status.
 - [ ] Add app allowlist controls before expanding the action surface.
-- [x] Add Hindi/English voice commands for play, pause, next track, and previous track using Android media-key dispatch; parser unit tests added and CI verification pending.
-- [ ] Validate media-key delivery against active media sessions on Redmi Note 9 and improve provider-specific behavior if needed.
+- [x] Add Hindi/English voice commands for play, pause, next track, and previous track through Android `MediaSessionManager` / `MediaController`; Notification Access is explicitly required, and unsupported/no-session cases are reported.
+- [x] CI verification of active-media-session integration passed in Builds #283 and #284 (including clean build, lint, unit tests, ARM native packaging and APK metadata checks).
+- [ ] Validate play/pause/next/previous against real media apps on Redmi Note 9; app-specific support and playback-state behavior remain device tests.
 - [ ] Test scroll/back/home behavior in YouTube, WhatsApp, Chrome and Settings on the physical device.
 - [ ] Respect secure windows, protected screens, and apps that block accessibility gestures.
 
@@ -58,11 +60,12 @@
 - [x] Add Hindi/English WhatsApp message-body extraction and user-confirmed Android share chooser; automated parser tests and CI build #264 passed. Physical WhatsApp handoff test remains pending; never silently send.
 - [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; current revision CI verified; Redmi device confirmation pending).
 - [x] Add Calendar event/reminder composer intent with user review; date/time scheduling is completed in Calendar, not silently by PK.
-- [ ] Add media controls where Android media-session/platform APIs permit.
+- [x] Add media controls where Android media-session/platform APIs permit: play/pause/next/previous route to the active session; Notification Access is user-granted; no-session and unsupported-action responses are implemented and CI verified.
+- [ ] Add volume commands where Android system-volume APIs and user intent permit; per-app volume is not generally exposed by MediaSession.
 - [ ] Add explicit unsupported-action responses for commands that cannot be completed.
 
 ## Milestone 5 — Offline language and local intelligence
-- [ ] Evaluate an Apache-2.0 or otherwise compatible Hindi/English offline speech recognition model for ARM64 and Redmi memory/CPU constraints.
+- [ ] Integrate and benchmark an offline Hindi + Hinglish/English speech-recognition model on ARM64 and Redmi memory/CPU constraints. Research identified Sherpa-ONNX 2.0.1 `OfflineRecognizer` support, a 198 MB int8 Hindi CTC model and a separate ~150 MB Hinglish Swift Whisper option; no model has been downloaded, integrated or device-tested yet.
 - [ ] Keep wake-word recognition and command speech recognition as separate documented subsystems.
 - [ ] Add deterministic Hindi, Hinglish and English intent coverage with unit tests.
 - [ ] Add a lightweight local conversation context for follow-up commands; do not execute arbitrary generated code.
