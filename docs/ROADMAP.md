@@ -145,3 +145,12 @@
 - [x] Add JVM regression tests for TTS-failure recovery policy.
 - [ ] Verify no microphone overlap and correct listener restart with Android TTS disabled / voice data missing on Redmi Note 9.
 - [ ] Verify exact branch-head CI and APK assembly.
+
+
+## SpeechRecognizer retry-loop protection (2026-11-16)
+- [x] Replace unbounded wake-mode SpeechRecognizer error restarts with a finite four-attempt retry policy (700 ms, 1.4 s, 2.8 s, 5 s).
+- [x] Stop recognition safely after repeated provider failures, show a visible status, and restore an opted-in KWS listener after a failed wake-to-command handoff.
+- [x] Reset the consecutive-failure counter for a new listening session and after a successful recognition result; delayed retries re-check Activity and listening state.
+- [x] Add JVM tests for backoff sequence, retry exhaustion, and invalid failure counts.
+- [ ] Verify SpeechRecognizer error codes, recovery and KWS handoff on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions.
