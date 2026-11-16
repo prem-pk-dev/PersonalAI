@@ -7,6 +7,8 @@ import org.junit.Test
 class VoiceTimeParsersTest {
     @Test fun parsesEnglishAndHindiAlarmTimes() {
         assertEquals(450, AlarmTimeParser.parseMinutes("set alarm at 7:30 AM"))
+        assertEquals(450, AlarmTimeParser.parseMinutes("set alarm at 7:30 a.m."))
+        assertEquals(1_170, AlarmTimeParser.parseMinutes("set alarm at 7:30 p.m."))
         assertEquals(1200, AlarmTimeParser.parseMinutes("रात 8 बजे अलार्म लगाओ"))
         assertEquals(1155, AlarmTimeParser.parseMinutes("शाम 7:15 का अलार्म"))
         assertEquals(780, AlarmTimeParser.parseMinutes("दोपहर 1 बजे"))
