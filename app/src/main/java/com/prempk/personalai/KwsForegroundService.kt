@@ -59,7 +59,7 @@ class KwsForegroundService : Service() {
                     return START_NOT_STICKY
                 }
                 createNotificationChannel()
-                startForegroundCompat(buildNotification(getString(R.string.kws_notification_listening)))
+                startForegroundCompat(buildNotification(getString(R.string.kws_notification_listening), ongoing = true))
                 acquireCpuWakeLock()
                 if (!running.get()) startCapture()
             }
@@ -206,7 +206,12 @@ class KwsForegroundService : Service() {
         stopSelf()
     }
 
-    private fun buildNotification(message: String, contentIntent: PendingIntent? = mainPendingIntent(), detected: Boolean = false): Notification {
+    private fun buildNotification(
+        message: String,
+        contentIntent: PendingIntent? = mainPendingIntent(),
+        detected: Boolean = false,
+        ongoing: Boolean = running.get() && !detected
+    ): Notification {
         val stopIntent = PendingIntent.getService(
             this, 3,
             Intent(this, KwsForegroundService::class.java).setAction(ACTION_STOP),
@@ -218,7 +223,7 @@ class KwsForegroundService : Service() {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setContentIntent(contentIntent)
-                .setOngoing(running.get() && !detected)
+                .setOngoing(ongoing)
                 .setAutoCancel(detected)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .addAction(Notification.Action.Builder(null, getString(R.string.kws_notification_stop), stopIntent).build())
@@ -230,7 +235,7 @@ class KwsForegroundService : Service() {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(message)
                 .setContentIntent(contentIntent)
-                .setOngoing(running.get() && !detected)
+                .setOngoing(ongoing)
                 .setAutoCancel(detected)
                 .setPriority(if (detected) Notification.PRIORITY_HIGH else Notification.PRIORITY_LOW)
                 .addAction(android.R.drawable.ic_media_pause, getString(R.string.kws_notification_stop), stopIntent)
