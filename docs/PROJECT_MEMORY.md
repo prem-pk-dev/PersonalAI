@@ -159,3 +159,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Installed-app discovery, user-confirmed WhatsApp share composition, alarm/timer parsing, call/SMS composers, calendar composer and limited AccessibilityService actions are implemented; several app handoffs and gestures remain device tests.
 - Remaining major work: real VoiceInteractionService/session integration; seamless KWS-to-command handoff and automatic KWS resume; Redmi Note 9 tests for Hindi model install/transcription, wake word, media, accessibility, permissions, battery/thermal/memory; broader Hinglish offline recognition; regression coverage for all commands; privacy review; signed release build.
 - Do not report a numeric overall progress percentage unless it is calculated from a defined feature checklist. Keep CI-verified and physical-device-verified status separate.
+
+
+## KWS speech lifecycle correction (2026-11-16)
+
+- Source review found that media play/pause/next/previous and volume up/down/mute commands speak a TTS response but were omitted from the deferred-KWS-resume command set. The app could restart microphone KWS before the reply finished, risking self-capture and unnecessary CPU/microphone contention.
+- Added `KwsSpeechLifecycle.shouldResumeAfterSpeech` and wired it into `MainActivity.handleCommand`. The policy defers listener restart until TTS completion for the media/volume commands and preserves the existing spoken-command behavior; it does not schedule a restart when the user opt-in is off.
+- Added `KwsSpeechLifecycleTest` covering media/volume, existing spoken commands, opt-out, and app-launch behavior.
+- Commits: helper `bce97d3d5b5f13fb7f70531746904966bf5d1f30`; tests `8b54e079a77b20d5e084d908b0e37cac2d11d01c`; Activity integration / current head `52e0c5824806c2ab6a25183da1567b77f41215e1`.
+- CI for the new head is pending verification. Do not count the new tests as passed until a matching GitHub Actions run confirms them.
