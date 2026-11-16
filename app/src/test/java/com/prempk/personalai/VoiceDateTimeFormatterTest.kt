@@ -8,7 +8,7 @@ import java.util.Date
 import java.util.TimeZone
 
 class VoiceDateTimeFormatterTest {
-    private val fixedInstant = Date(1_794_868_200_000L) // 2026-11-16T12:30:00Z
+    private val fixedInstant = Date(1_794_868_200_000L) // 2026-11-16T22:30:00Z
 
     @Test fun formatsTimeUsingTheRequestedLanguageLocale() {
         val english = VoiceDateTimeFormatter.format(
