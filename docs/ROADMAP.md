@@ -251,3 +251,8 @@
 - [x] Add JVM regression tests for valid input, incorrect sample rate, empty audio, NaN/infinity and out-of-range values.
 - [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
 - [ ] Confirm real microphone input and Hindi transcription quality on Redmi Note 9.
+
+## Independent native audio resource cleanup (2026-11-16)
+- [x] Guard AudioRecord, Sherpa stream and keyword spotter releases independently so one native cleanup exception cannot skip later releases or WakeLock cleanup.
+- [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [ ] Exercise KWS stop, wake detection and forced service shutdown on Redmi Note 9 / Android 12 MIUI 13.
