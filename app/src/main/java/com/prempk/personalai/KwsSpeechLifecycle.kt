@@ -8,6 +8,9 @@ internal object KwsSpeechLifecycle {
     fun shouldResumeAfterHandoffFailure(listenerEnabled: Boolean, microphonePermissionGranted: Boolean): Boolean =
         listenerEnabled && microphonePermissionGranted
 
+    fun shouldResumeSpeechRecognitionAfterPrompt(wakeMode: Boolean, awaitingCommand: Boolean): Boolean =
+        wakeMode && awaitingCommand
+
     fun shouldResumeAfterTtsFailure(
         restartRequested: Boolean,
         listenerEnabled: Boolean,
