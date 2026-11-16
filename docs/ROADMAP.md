@@ -262,3 +262,8 @@
 - [x] Add regression tests proving a failed release does not skip later AudioRecord, Sherpa stream or spotter cleanup actions.
 - [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
 - [ ] Validate KWS stop/wake-detection teardown on Redmi Note 9 / Android 12 MIUI 13.
+
+## Just-in-time microphone permission request (2026-11-16)
+- [x] Remove the unconditional microphone permission prompt from initial Activity launch; voice features continue to request permission at their point of use, and explicit Android ASSIST launches retain the voice-start path.
+- [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
+- [ ] Verify first launch without granting microphone permission, then permission grant/denial and voice-feature startup on Redmi Note 9 / Android 12 MIUI 13.
