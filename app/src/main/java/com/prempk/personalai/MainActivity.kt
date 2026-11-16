@@ -368,11 +368,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         backgroundCard.addView(hindiAsrStatus)
         val accessibilityButton = makeButton("Enable cross-app controls") {
             AlertDialog.Builder(this).setTitle("Allow PK accessibility controls?")
-                .setMessage("PK uses Accessibility only after you enable it in Android Settings. It can scroll the current app and use Back/Home. It does not read screen text or send messages.")
+                .setMessage("PK uses Accessibility only after you enable it in Android Settings. Scroll gestures work only in apps you explicitly allow below. Back/Home are global navigation actions. PK does not read screen text or send messages.")
                 .setPositiveButton("Open Settings") { _, _ -> startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
                 .setNegativeButton("Cancel", null).show()
         }.apply { isAllCaps = false; textSize = 12f; background = surface(0xFF1A2B43.toInt(), 15, 0x665A8AA7); setPadding(dp(8), dp(11), dp(8), dp(11)) }
         backgroundCard.addView(accessibilityButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(48)).apply { topMargin = dp(12) })
+        val accessibilityAllowlistButton = makeButton("Choose apps allowed to scroll") {
+            showAccessibilityScrollAllowlistDialog()
+        }.apply {
+            isAllCaps = false
+            textSize = 11f
+            background = surface(0xFF26334B.toInt(), 15, 0x665A8AA7)
+            setPadding(dp(8), dp(10), dp(8), dp(10))
+        }
+        backgroundCard.addView(accessibilityAllowlistButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(44)
+        ).apply { topMargin = dp(8) })
         accessibilityStatusView = label("", 11f, muted).apply {
             setPadding(dp(2), dp(8), 0, 0)
         }
@@ -513,11 +524,52 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ).orEmpty().split(':').any { it.equals(expected, ignoreCase = true) }
+        val allowedCount = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getStringSet(KEY_ACCESSIBILITY_SCROLL_ALLOWLIST, emptySet()).orEmpty().size
         accessibilityStatusView?.text = if (enabled) {
-            "✓ PK cross-app controls are enabled"
+            "✓ PK controls enabled · scrolling allowed in $allowedCount selected app(s)"
         } else {
             "Cross-app controls are off · Enable PK in Accessibility Settings"
         }
+    }
+
+    private fun showAccessibilityScrollAllowlistDialog() {
+        val candidates = listOf(
+            "com.google.android.youtube" to "YouTube",
+            "com.whatsapp" to "WhatsApp",
+            "com.whatsapp.w4b" to "WhatsApp Business",
+            "com.android.chrome" to "Chrome"
+        )
+        val installed = candidates.filter { (packageName, _) ->
+            runCatching { packageManager.getApplicationInfo(packageName, 0) }.isSuccess
+        }
+        if (installed.isEmpty()) {
+            respond(localized(
+                "None of the supported apps are installed yet.",
+                "अभी समर्थित ऐप्स में से कोई इंस्टॉल नहीं है।"
+            ))
+            return
+        }
+        val preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val selected = preferences.getStringSet(KEY_ACCESSIBILITY_SCROLL_ALLOWLIST, emptySet())
+            .orEmpty().toMutableSet()
+        val checked = installed.map { it.first in selected }.toBooleanArray()
+        AlertDialog.Builder(this)
+            .setTitle("Allow scrolling in selected apps")
+            .setMultiChoiceItems(installed.map { it.second }.toTypedArray(), checked) { _, which, isChecked ->
+                val packageName = installed[which].first
+                if (isChecked) selected.add(packageName) else selected.remove(packageName)
+            }
+            .setPositiveButton("Save") { _, _ ->
+                preferences.edit().putStringSet(KEY_ACCESSIBILITY_SCROLL_ALLOWLIST, selected.toSet()).apply()
+                refreshAccessibilityStatus()
+            }
+            .setNegativeButton("Cancel", null)
+            .setNeutralButton("Clear all") { _, _ ->
+                preferences.edit().putStringSet(KEY_ACCESSIBILITY_SCROLL_ALLOWLIST, emptySet()).apply()
+                refreshAccessibilityStatus()
+            }
+            .show()
     }
 
     private fun ensureAudioPermission() {
@@ -1460,5 +1512,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         private const val REQUEST_ASSISTANT_ROLE = 104
         private const val PREFS_NAME = "pk_voice_preferences"
         private const val KEY_KWS_ENABLED = "background_kws_enabled"
+        private const val KEY_ACCESSIBILITY_SCROLL_ALLOWLIST = "accessibility_scroll_allowed_packages"
     }
 }
