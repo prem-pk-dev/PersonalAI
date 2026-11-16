@@ -29,6 +29,12 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("time kya hua"))
         assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("आज की तारीख बताओ"))
         assertEquals(AssistantCommandType.INFO_BATTERY, CommandParser.parse("battery kitni hai"))
+        assertEquals(AssistantCommandType.VOLUME_UP, CommandParser.parse("volume up"))
+        assertEquals(AssistantCommandType.VOLUME_UP, CommandParser.parse("आवाज बढ़ा दो"))
+        assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("volume down"))
+        assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("आवाज कम करो"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("mute volume"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("आवाज म्यूट करो"))
         assertEquals(AssistantCommandType.HELP, CommandParser.parse("help"))
     }
 
