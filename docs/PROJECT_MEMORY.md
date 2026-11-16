@@ -201,3 +201,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Added a unit test covering all opt-in / microphone permission combinations.
 - Device behavior and exact-head CI remain unverified.
 - Commits: policy `ac695bfc8e9fcfcef6007d9bd250b5c56e8a2319`; test `924e3f7652e3aeb4004086bc30efc0817e3733fc`; Activity integration `35cf3b6f77a04b583f5e779e05bbb15b638c17ca`.
+
+
+## Hindi offline listening cancellation (2026-11-16)
+
+- Added a visible Cancel button to the Hindi offline ASR controls. It marks the one-shot capture cancelled; the worker checks the flag during capture, before native recognizer creation/transcription, and after transcription so a cancelled result is not sent to command handling.
+- The cancel window closes immediately before a completed transcript is posted to the UI thread, preventing a last-moment cancel from suppressing command dispatch while also blocking KWS restoration.
+- On cancellation or failed capture, microphone/native resources are released before an opted-in KWS listener is scheduled to resume. Activity teardown is checked before touching UI or restarting the service.
+- Device cancellation and native-transcription interruption behavior remain unverified; Sherpa decode itself is not forcibly interrupted mid-call.
+- Commits: UI and lifecycle `db7eabfc43e332800dad3f9077b1239382e78833`; teardown guard `5599ebb9ffb77f2ac33894df21c9bf5a09cfdf87`; cancel race guard `94edfb967a031565c91dac67bb0c864987011d45`.
