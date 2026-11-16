@@ -273,3 +273,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 - Hardened `TimerDurationParser` to require exactly one numeric component and to read its unit from the text immediately following that amount. Multi-part durations such as "5 minutes and 10 seconds" or "1 hour 30 minutes" are rejected rather than silently interpreted as only the first component.
 - Supports explicit English/Hindi hour, minute and second units, preserves the single-number default-to-minutes behavior, and rejects zero, overflow and durations over 24 hours. Added JVM regression tests. CI and physical-device timer handoff remain pending.
+
+
+## Locale-aware spoken date and time (2026-11-16)
+- Added a deterministic formatter for time and full-date responses that uses the detected Hindi/English response locale and the device timezone.
+- Integrated the formatter into INFO_TIME and INFO_DATE commands; unsupported locale tags safely fall back to en-IN.
+- Added JVM tests for Hindi/English locale output, timezone conversion and date rollover, and fallback behavior.
+- Physical-device TTS pronunciation and locale formatting remain pending on Redmi Note 9 / Android 12 MIUI 13.
