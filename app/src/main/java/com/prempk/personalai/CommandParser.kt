@@ -50,7 +50,9 @@ object WhatsAppMessageParser {
 /** Extracts an installed app's spoken display name from a launch command. */
 object InstalledAppCommandParser {
     fun extractAppName(raw: String): String = raw.trim()
-        .replace(Regex("(?i)^\\s*(hey\\s+pk\\s+)?(please\\s+)?(open|launch|start)\\s+"), "")
+        .replace(Regex("(?i)^\\s*(hey\\s+pk|pk)\\s+"), "")
+        .replace(Regex("^(पीके|पी\\s+के)\\s*"), "")
+        .replace(Regex("(?i)^\\s*(please\\s+)?(open|launch|start)\\s+"), "")
         .replace(Regex("(?i)\\s+(app\\s+)?(please\\s+)?(open|launch|start)$"), "")
         .replace(Regex("^(कृपया\\s*)?"), "")
         .replace(Regex("(\\s+ऐप)?\\s*(को\\s*)?(खोलो|खोलना|चलाओ|शुरू करो)$"), "")
@@ -61,6 +63,9 @@ object InstalledAppCommandParser {
 object CommandParser {
     fun parse(raw: String): AssistantCommandType {
         val command = raw.trim().lowercase(Locale.ROOT)
+            .replace(Regex("(?i)^\\s*(hey\\s+pk|pk)\\s+"), "")
+            .replace(Regex("^(पीके|पी\\s+के)\\s*"), "")
+            .trim()
         return when {
             containsAny(command, "whatsapp", "व्हाट्सएप") &&
                 containsAny(command, "message", "msg", "text", "send", "bhejo", "भेजो", "मैसेज", "संदेश") ->
@@ -87,7 +92,7 @@ object CommandParser {
             containsAny(command, "next song", "next track", "skip song", "agla gana", "agla gaana", "अगला गाना", "अगला ट्रैक", "नेक्स्ट गाना", "नेक्स्ट ट्रैक") -> AssistantCommandType.MEDIA_NEXT
             containsAny(command, "previous song", "previous track", "pichla gana", "pichla gaana", "पिछला गाना", "पिछला ट्रैक", "प्रिवियस गाना", "पिछला") -> AssistantCommandType.MEDIA_PREVIOUS
             containsAny(command, "pause music", "pause song", "music pause", "gana roko", "gaana roko", "music roko", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
-            containsAny(command, "play music", "play song", "resume music", "gana chalao", "gaana chalao", "music chalao", "गाना चलाओ", "म्यूजिक चलाओ", "फिर से चलाओ") -> AssistantCommandType.MEDIA_PLAY
+            containsAny(command, "play music", "play song", "resume music", "music play", "music play karo", "play music karo", "gana chalao", "gaana chalao", "music chalao", "गाना चलाओ", "म्यूजिक चलाओ", "फिर से चलाओ") -> AssistantCommandType.MEDIA_PLAY
             containsAny(command, "scroll up", "page up", "upar scroll", "upar scrol", "ऊपर स्क्रोल", "ऊपर स्क्रॉल", "ऊपर करो") -> AssistantCommandType.SCROLL_UP
             containsAny(command, "scroll down", "page down", "neeche scroll", "neeche scrol", "नीचे स्क्रोल", "नीचे स्क्रॉल", "नीचे करो") -> AssistantCommandType.SCROLL_DOWN
             containsAny(command, "go back", "back", "peeche jao", "wapas jao", "पीछे जाओ", "वापस जाओ") -> AssistantCommandType.GO_BACK
