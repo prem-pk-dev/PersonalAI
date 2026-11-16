@@ -111,3 +111,10 @@
 - [x] Add JVM tests for replacement, empty destination, missing staging, and interrupted-promotion recovery.
 - [ ] Verify the new tests and clean APK build in CI for the exact branch head.
 - [ ] Validate interrupted download/install behavior and available storage on Redmi Note 9.
+
+
+## KWS capture failure shutdown (2026-11-16)
+- [x] Distinguish an unexpected capture failure from an intentional user stop.
+- [x] On unexpected failure, release audio/native resources and the CPU WakeLock, clear the persisted listener opt-in, publish a non-ongoing error notification, detach foreground state, and stop the failed service on the main thread.
+- [ ] Verify service restart/error notification behavior and permission-revocation paths on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head lint, unit tests, and APK assembly in GitHub Actions.
