@@ -175,3 +175,12 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Strengthened `HindiPcmAudioTest` to assert exact PCM16 normalization at signed extrema and half-scale values, requested-length truncation, invalid lengths for both conversion and RMS helpers, silence RMS, and a known-signal RMS value.
 - These tests exercise deterministic audio-frame preprocessing used before offline Hindi transcription; they do not claim microphone capture or model inference has been physically verified.
 - Commit: `31bc2f8bd4007b9e55c46fcb25264f3ed3075d95`. CI for the exact current head remains pending.
+
+
+## Hindi offline model installation safety (2026-11-16)
+
+- Code review found the Hindi model installer deleted the current destination directory immediately before renaming the verified staging directory. A rename failure at that point could leave the user with no working model.
+- Added `HindiModelDirectoryCommit` to promote the verified staging directory while preserving the previous model as a temporary backup. It rolls back on promotion failure and restores the backup if a previous process was interrupted after moving the destination.
+- Added JVM tests for successful replacement, first installation, missing staging preservation, and interrupted-promotion recovery.
+- The tests are committed but not yet CI-verified; this is filesystem transaction coverage, not a physical-device download test.
+- Code commits: installer integration `0731d176cb30043bedcdc237ebf277b317fdccbd`; helper `e6172a6474f68759f66b9c17219203cf12992510`; tests `eeec301dc696406a8bf9948ce99b58e0c4b7a1e4`, recovery fix `79dfe428818ee2b08462474746f4f6c4a3910988`, recovery test `2ccdd62176f82e8df9c9efe3f049ce041a64ff69`.
