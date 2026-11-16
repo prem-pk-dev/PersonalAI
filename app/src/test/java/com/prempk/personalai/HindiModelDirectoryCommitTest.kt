@@ -43,4 +43,16 @@ class HindiModelDirectoryCommitTest {
         assertTrue(HindiModelDirectoryCommit.promote(staging, destination))
         assertEquals("tokens", File(destination, "tokens.txt").readText())
     }
+    @Test fun restoresPreviousModelAfterInterruptedPromotion() {
+        val root = temporaryFolder.newFolder("models")
+        val staging = File(root, "hindi.installing")
+        val destination = File(root, "hindi")
+        val backup = File(root, "hindi.previous").apply { mkdirs() }
+        File(backup, "model.int8.onnx").writeText("recoverable-model")
+
+        assertFalse(HindiModelDirectoryCommit.promote(staging, destination))
+        assertEquals("recoverable-model", File(destination, "model.int8.onnx").readText())
+        assertFalse(backup.exists())
+    }
+
 }
