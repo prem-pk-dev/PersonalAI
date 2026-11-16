@@ -218,3 +218,11 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - KWS restart is now gated by an explicit pending restart request, persisted listener opt-in, and RECORD_AUDIO permission; permission and opt-in are checked again immediately before delayed service start, and a destroyed/finishing Activity or active Hindi ASR blocks restart.
 - Added unit coverage for the TTS failure policy. Android TTS-disabled / missing voice-data behavior remains a device test.
 - Commits: TTS recovery `5c805d8f3d700752f83c7c007c5c7a384a0d917b`; policy `8f8ace288c3509644e0bee67b56ceca7476a8f76`; Activity integration `b247839c51ba675e64d65f3dc0799f4a11c31ffa`; test `5621411deac604aae751967766cfcef9533b8181`.
+
+
+## SpeechRecognizer retry-loop protection (2026-11-16)
+
+- Replaced the unbounded wake-mode SpeechRecognizer.onError restart with a finite four-retry backoff: 700 ms, 1.4 s, 2.8 s, and 5 s. A fifth consecutive error stops the recognizer, turns off the listening orb, and displays a clear retry instruction.
+- A failed wake-to-command handoff schedules KWS recovery through the existing opt-in and microphone-permission gate. Ordinary foreground listening failures do not silently enable background listening.
+- Delayed callbacks re-check that the Activity is alive and wake mode remains active. The failure counter resets for a new listening session and after a results callback, not merely when the provider says it is ready.
+- Added JVM tests for the retry sequence, exhaustion boundary, and invalid counts. Exact-head CI and Redmi Note 9 behavior remain unverified.
