@@ -8,6 +8,12 @@ internal object KwsSpeechLifecycle {
     fun shouldResumeAfterHandoffFailure(listenerEnabled: Boolean, microphonePermissionGranted: Boolean): Boolean =
         listenerEnabled && microphonePermissionGranted
 
+    fun shouldResumeAfterTtsFailure(
+        restartRequested: Boolean,
+        listenerEnabled: Boolean,
+        microphonePermissionGranted: Boolean
+    ): Boolean = restartRequested && listenerEnabled && microphonePermissionGranted
+
     fun shouldResumeAfterSpeech(commandType: AssistantCommandType, listenerEnabled: Boolean): Boolean {
         if (!listenerEnabled) return false
         return commandType in setOf(
