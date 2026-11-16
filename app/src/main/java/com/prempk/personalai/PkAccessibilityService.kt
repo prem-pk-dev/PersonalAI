@@ -22,7 +22,18 @@ class PkAccessibilityService : AccessibilityService() {
 
     private fun scroll(action: Int): Boolean {
         val root = rootInActiveWindow ?: return false
-        return try { findScrollable(root, action) } finally { root.recycle() }
+        return try {
+            // Read only the active package identifier; never inspect screen text.
+            val allowedPackages = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getStringSet(KEY_SCROLL_ALLOWLIST, emptySet()).orEmpty()
+            if (!AccessibilityAppAllowlist.isScrollAllowed(root.packageName?.toString(), allowedPackages)) {
+                false
+            } else {
+                findScrollable(root, action)
+            }
+        } finally {
+            root.recycle()
+        }
     }
 
     private fun findScrollable(node: AccessibilityNodeInfo, action: Int): Boolean {
@@ -37,6 +48,8 @@ class PkAccessibilityService : AccessibilityService() {
     }
 
     companion object {
+        private const val PREFS_NAME = "pk_voice_preferences"
+        private const val KEY_SCROLL_ALLOWLIST = "accessibility_scroll_allowed_packages"
         @Volatile private var instance: PkAccessibilityService? = null
         fun perform(action: Action): Boolean = instance?.execute(action) ?: false
     }
