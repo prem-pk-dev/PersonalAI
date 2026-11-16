@@ -187,3 +187,12 @@
 - [x] Add English/Hindi regression tests for explicit cues, duration rejection, ambiguity, 12 AM and daypart conversion.
 - [ ] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions.
 - [ ] Verify alarm launch and spoken time interpretation on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Constrained local conversation context (2026-11-16)
+- [x] Remember the last successfully launched app label in Activity memory only.
+- [x] Resolve explicit English, Hindi and Hinglish "open it again / वही ऐप खोलो" follow-ups to that app.
+- [x] Reject follow-up resolution without a recent app, with an invalid label, or for unrelated free-form requests; never execute generated instructions.
+- [x] Add unit tests for supported phrases, missing context and unrelated action rejection.
+- [ ] Verify follow-up app relaunch and context lifecycle on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
