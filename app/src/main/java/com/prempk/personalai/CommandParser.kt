@@ -69,7 +69,7 @@ object CommandParser {
             containsAny(command, "youtube", "यूट्यूब") -> AssistantCommandType.OPEN_YOUTUBE
             containsAny(command, "chrome", "क्रोम", "browser", "ब्राउज़र") -> AssistantCommandType.OPEN_CHROME
             containsAny(command, "wifi settings", "wi-fi settings", "wireless settings", "वाईफाई सेटिंग", "वाई-फाई सेटिंग", "वाइफाइ सेटिंग") -> AssistantCommandType.OPEN_WIFI_SETTINGS
-            containsAny(command, "bluetooth settings", "ब्लूटूथ सेटिंग", "ब्लूटूथ चालू", "bluetooth options") -> AssistantCommandType.OPEN_BLUETOOTH_SETTINGS
+            containsAny(command, "bluetooth settings", "ब्लूटूथ सेटिंग", "bluetooth options") -> AssistantCommandType.OPEN_BLUETOOTH_SETTINGS
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
