@@ -136,3 +136,12 @@
 - [x] Close the cancel window before posting a completed transcript to avoid a cancel/dispatch race.
 - [ ] Verify cancellation during capture and transcription, microphone release, and KWS restart on Redmi Note 9.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+
+
+## TTS failure recovery for KWS handoff (2026-11-16)
+- [x] Resume an opted-in KWS listener if Android TextToSpeech is not initialized when a response is requested.
+- [x] Resume after TextToSpeech initialization reports failure.
+- [x] Gate recovery on the pending restart request, current KWS opt-in, and microphone permission; re-check permission/opt-in before delayed service start.
+- [x] Add JVM regression tests for TTS-failure recovery policy.
+- [ ] Verify no microphone overlap and correct listener restart with Android TTS disabled / voice data missing on Redmi Note 9.
+- [ ] Verify exact branch-head CI and APK assembly.
