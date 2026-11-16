@@ -5,6 +5,9 @@ package com.prempk.personalai
  * Only commands with an audible response need this speech-completion handoff.
  */
 internal object KwsSpeechLifecycle {
+    fun shouldResumeAfterHandoffFailure(listenerEnabled: Boolean, microphonePermissionGranted: Boolean): Boolean =
+        listenerEnabled && microphonePermissionGranted
+
     fun shouldResumeAfterSpeech(commandType: AssistantCommandType, listenerEnabled: Boolean): Boolean {
         if (!listenerEnabled) return false
         return commandType in setOf(
