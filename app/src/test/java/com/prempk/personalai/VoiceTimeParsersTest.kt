@@ -15,6 +15,23 @@ class VoiceTimeParsersTest {
         assertNull(AlarmTimeParser.parseMinutes("set alarm"))
     }
 
+    @Test fun alarmParserRequiresAnExplicitTimeCue() {
+        assertEquals(450, AlarmTimeParser.parseMinutes("set alarm at 7:30"))
+        assertEquals(450, AlarmTimeParser.parseMinutes("alarm 7:30"))
+        assertEquals(450, AlarmTimeParser.parseMinutes("tomorrow 12 March at 7:30 AM"))
+        assertEquals(420, AlarmTimeParser.parseMinutes("सुबह 7 बजे अलार्म लगाओ"))
+        assertNull(AlarmTimeParser.parseMinutes("set alarm in 5 minutes"))
+        assertNull(AlarmTimeParser.parseMinutes("set alarm for 5 minutes"))
+        assertNull(AlarmTimeParser.parseMinutes("set alarm at 5 minutes"))
+    }
+
+    @Test fun rejectsMultipleExplicitAlarmTimesInsteadOfGuessing() {
+        assertNull(AlarmTimeParser.parseMinutes("set alarm at 7:30 or 8:30"))
+        assertEquals(1_200, AlarmTimeParser.parseMinutes("रात 8 बजे अलार्म लगाओ"))
+        assertEquals(0, AlarmTimeParser.parseMinutes("सुबह 12 बजे अलार्म लगाओ"))
+        assertEquals(780, AlarmTimeParser.parseMinutes("दोपहर 1 बजे अलार्म लगाओ"))
+    }
+
     @Test fun parsesTimerDurationsWithoutIntegerOverflow() {
         assertEquals(300, TimerDurationParser.parseSeconds("set timer for 5 minutes"))
         assertEquals(3600, TimerDurationParser.parseSeconds("1 hour timer"))
