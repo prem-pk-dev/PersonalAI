@@ -168,3 +168,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Added `KwsSpeechLifecycleTest` covering media/volume, existing spoken commands, opt-out, and app-launch behavior.
 - Commits: helper `bce97d3d5b5f13fb7f70531746904966bf5d1f30`; tests `8b54e079a77b20d5e084d908b0e37cac2d11d01c`; Activity integration / current head `52e0c5824806c2ab6a25183da1567b77f41215e1`.
 - CI for the new head is pending verification. Do not count the new tests as passed until a matching GitHub Actions run confirms them.
+
+
+## Hindi PCM / voice-activity regression coverage (2026-11-16)
+
+- Strengthened `HindiPcmAudioTest` to assert exact PCM16 normalization at signed extrema and half-scale values, requested-length truncation, invalid lengths for both conversion and RMS helpers, silence RMS, and a known-signal RMS value.
+- These tests exercise deterministic audio-frame preprocessing used before offline Hindi transcription; they do not claim microphone capture or model inference has been physically verified.
+- Commit: `31bc2f8bd4007b9e55c46fcb25264f3ed3075d95`. CI for the exact current head remains pending.
