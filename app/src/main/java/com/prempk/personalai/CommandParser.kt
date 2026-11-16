@@ -13,6 +13,9 @@ enum class AssistantCommandType {
     MEDIA_PAUSE,
     MEDIA_NEXT,
     MEDIA_PREVIOUS,
+    VOLUME_UP,
+    VOLUME_DOWN,
+    VOLUME_MUTE,
     CALL_CONTACT,
     COMPOSE_SMS,
     OPEN_ALARMS,
@@ -74,6 +77,9 @@ object CommandParser {
             containsAny(command, "time", "समय", "कितने बजे") -> AssistantCommandType.INFO_TIME
             containsAny(command, "date", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
+            containsAny(command, "volume up", "increase volume", "turn volume up", "आवाज बढ़ा", "वॉल्यूम बढ़ा", "आवाज़ तेज", "आवाज तेज") -> AssistantCommandType.VOLUME_UP
+            containsAny(command, "volume down", "decrease volume", "turn volume down", "आवाज कम", "वॉल्यूम कम", "आवाज़ धीमी", "आवाज धीमी") -> AssistantCommandType.VOLUME_DOWN
+            containsAny(command, "mute volume", "mute sound", "आवाज म्यूट", "वॉल्यूम म्यूट", "आवाज बंद") -> AssistantCommandType.VOLUME_MUTE
             containsAny(command, "next song", "next track", "skip song", "अगला गाना", "अगला ट्रैक", "नेक्स्ट गाना", "नेक्स्ट ट्रैक") -> AssistantCommandType.MEDIA_NEXT
             containsAny(command, "previous song", "previous track", "पिछला गाना", "पिछला ट्रैक", "प्रिवियस गाना", "पिछला") -> AssistantCommandType.MEDIA_PREVIOUS
             containsAny(command, "pause music", "pause song", "music pause", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
