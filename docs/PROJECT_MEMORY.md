@@ -253,3 +253,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Hardened `AlarmTimeParser`: it no longer interprets an arbitrary number as a clock time. A candidate must have an explicit AM/PM or बजे suffix, an at/around cue, an alarm prefix, or a Hindi daypart cue.
 - Relative durations such as "set alarm in 5 minutes" and "set alarm at 5 minutes" are rejected. Multiple explicit clock times are rejected as ambiguous instead of silently choosing the first.
 - Added deterministic English/Hindi regression cases including 12 AM, afternoon/evening conversion, duration rejection and multiple-time ambiguity. CI and physical Redmi Note 9 alarm behavior remain pending.
+
+
+## Constrained local conversation context (2026-11-16)
+
+- Added a narrow in-memory follow-up resolver for explicit reopen phrases in English, Hindi and Hinglish. It remembers only the label of the last successfully launched app for the current Activity session.
+- Phrases such as "open it again", "reopen it", "उसे फिर से खोलो", "वही ऐप खोलो" and "same app kholo" resolve to a normal app-launch command only when a valid recent app label exists.
+- Unrelated instructions, destructive phrases, missing context and oversized labels are rejected. No generated text or arbitrary prior conversation is executed. Added JVM tests. Physical Redmi Note 9 verification and exact-head CI remain pending.
