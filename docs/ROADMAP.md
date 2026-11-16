@@ -256,3 +256,9 @@
 - [x] Guard AudioRecord, Sherpa stream and keyword spotter releases independently so one native cleanup exception cannot skip later releases or WakeLock cleanup.
 - [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
 - [ ] Exercise KWS stop, wake detection and forced service shutdown on Redmi Note 9 / Android 12 MIUI 13.
+
+## Testable independent native cleanup (2026-11-16)
+- [x] Extract independently guarded JNI cleanup actions into a small reusable helper used by KWS service teardown.
+- [x] Add regression tests proving a failed release does not skip later AudioRecord, Sherpa stream or spotter cleanup actions.
+- [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [ ] Validate KWS stop/wake-detection teardown on Redmi Note 9 / Android 12 MIUI 13.
