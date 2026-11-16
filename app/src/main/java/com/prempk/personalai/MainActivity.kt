@@ -38,6 +38,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     private var wakeMode = false
     private var awaitingCommand = false
+    private var consecutiveRecognitionErrors = 0
     private var responseLanguageTag = "en-IN"
     private var recognitionDetectedLanguageTag: String? = null
     private lateinit var status: TextView
@@ -828,6 +829,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             recognizer?.setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
+                    consecutiveRecognitionErrors = 0
                     status.text = "●  Listening… speak now"
                     orb.setListening(true)
                 }
@@ -839,14 +841,27 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 override fun onBufferReceived(buffer: ByteArray?) = Unit
                 override fun onEndOfSpeech() = Unit
                 override fun onError(error: Int) {
-                    if (wakeMode) transcript.postDelayed({ startRecognition() }, 700)
+                    if (!wakeMode) return
+                    consecutiveRecognitionErrors += 1
+                    val retryDelay = SpeechRecognitionRetryPolicy.delayAfterFailure(consecutiveRecognitionErrors)
+                    if (retryDelay != null) {
+                        status.text = "●  Speech service retry $consecutiveRecognitionErrors/${SpeechRecognitionRetryPolicy.maxRetries()}"
+                        transcript.postDelayed({
+                            if (wakeMode && !isFinishing && !isDestroyed) startRecognition()
+                        }, retryDelay)
+                    } else {
+                        stopAfterRecognitionFailures(error)
+                    }
                 }
                 override fun onResults(results: Bundle?) {
+                    consecutiveRecognitionErrors = 0
                     val spoken = results
                         ?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         ?.firstOrNull()
                     if (!spoken.isNullOrBlank()) processVoice(spoken)
-                    if (wakeMode) transcript.postDelayed({ startRecognition() }, 500)
+                    if (wakeMode) transcript.postDelayed({
+                        if (wakeMode && !isFinishing && !isDestroyed) startRecognition()
+                    }, 500)
                 }
                 override fun onPartialResults(partialResults: Bundle?) {
                     val partial = partialResults
@@ -881,6 +896,19 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             prepareKwsResumeAfterHandoffFailure()
             respond("Speech error: ${exception.localizedMessage ?: "unknown"}")
         }
+    }
+
+    private fun stopAfterRecognitionFailures(error: Int) {
+        val wasWakeHandoff = awaitingCommand
+        wakeMode = false
+        awaitingCommand = false
+        recognizer?.destroy()
+        recognizer = null
+        orb.setListening(false)
+        status.text = "●  Speech recognition stopped · tap Start listening to retry"
+        transcript.text = "Speech provider kept failing (error $error). The microphone listener was stopped safely."
+        if (wasWakeHandoff) prepareKwsResumeAfterHandoffFailure()
+        respond("Speech recognition kept failing. Please check your speech service and try again.")
     }
 
     private fun processVoice(raw: String) {
