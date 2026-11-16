@@ -7,10 +7,32 @@ import java.util.Locale
  * Returns null for ambiguous or out-of-range values rather than guessing.
  */
 object AlarmTimeParser {
+    private val timeToken = Regex(
+        "(\\\\d{1,2})(?::(\\\\d{2}))?\\\\s*(a\\\\.?m\\\\.?|p\\\\.?m\\\\.?|बजे)?",
+        RegexOption.IGNORE_CASE
+    )
+    private val timePrefix = Regex(
+        "(?:\\\\b(?:at|around)\\\\s*|\\\\b(?:alarm)\\\\s*(?:at\\\\s*)?|अलार्म\\\\s*(?:पर\\\\s*)?|(?:सुबह|सवेरे|भोर|दोपहर|शाम|रात)\\\\s*)$",
+        RegexOption.IGNORE_CASE
+    )
+    private val durationSuffix = Regex(
+        "^\\\\s*(?:minutes?|mins?|hours?|hrs?|seconds?|secs?|मिनट|घंटे?|सेकंड)",
+        RegexOption.IGNORE_CASE
+    )
+
     fun parseMinutes(command: String): Int? {
         val normalized = command.lowercase(Locale.ROOT)
-        val match = Regex("(?:at\\s*)?(\\d{1,2})(?::(\\d{2}))?\\s*(?:a\\.?m\\.?|p\\.?m\\.?|बजे)?", RegexOption.IGNORE_CASE)
-            .find(normalized) ?: return null
+        val candidates = timeToken.findAll(normalized).filter { match ->
+            val suffix = match.groupValues[3]
+            val prefix = normalized.substring(0, match.range.first)
+            val hasCue = suffix.isNotBlank() || timePrefix.containsMatchIn(prefix)
+            val following = normalized.substring(match.range.last + 1)
+            hasCue && !durationSuffix.containsMatchIn(following)
+        }.toList()
+        // Multiple explicit times are ambiguous; never silently choose one.
+        if (candidates.size != 1) return null
+
+        val match = candidates.single()
         var hour = match.groupValues[1].toIntOrNull() ?: return null
         val minute = match.groupValues[2].ifBlank { "0" }.toIntOrNull() ?: return null
         if (minute !in 0..59 || hour !in 0..23) return null
@@ -21,7 +43,6 @@ object AlarmTimeParser {
             normalized.contains("सवेरे") || normalized.contains("भोर")
         if (isPm && hour in 1..11) hour += 12
         if (isAm && hour == 12) hour = 0
-        if (normalized.contains("दोपहर") && hour == 12) hour = 12
         if (normalized.contains("रात") && hour == 12) hour = 0
         return hour * 60 + minute
     }
