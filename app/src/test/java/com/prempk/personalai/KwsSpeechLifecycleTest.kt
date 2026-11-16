@@ -46,9 +46,11 @@ class KwsSpeechLifecycleTest {
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.INFO_TIME, false))
     }
 
-    @Test fun appLaunchesDoNotNeedSpeechCompletionGate() {
-        assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.OPEN_YOUTUBE, true))
-        assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.OPEN_WHATSAPP, true))
+    @Test fun everyCommandWaitsForItsSpokenConfirmationBeforeKwsResume() {
+        AssistantCommandType.values().forEach { command ->
+            assertTrue("$command must wait for TTS completion",
+                KwsSpeechLifecycle.shouldResumeAfterSpeech(command, true))
+        }
     }
     @Test fun wakeHandoffFailureResumesOnlyWhenOptedInAndPermissionGranted() {
         assertTrue(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(true, true))
