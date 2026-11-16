@@ -1049,6 +1049,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 openApp(listOf("com.android.chrome"), "Chrome")
             AssistantCommandType.OPEN_SETTINGS ->
                 openIntent(Intent(Settings.ACTION_SETTINGS), localized("Opening Settings.", "सेटिंग्स खोल रहा हूँ।"))
+            AssistantCommandType.OPEN_WIFI_SETTINGS ->
+                openIntent(Intent(Settings.ACTION_WIFI_SETTINGS), localized("Opening Wi-Fi settings.", "वाई-फाई सेटिंग्स खोल रहा हूँ।"))
+            AssistantCommandType.OPEN_BLUETOOTH_SETTINGS ->
+                openIntent(Intent(Settings.ACTION_BLUETOOTH_SETTINGS), localized("Opening Bluetooth settings.", "ब्लूटूथ सेटिंग्स खोल रहा हूँ।"))
             AssistantCommandType.OPEN_INSTALLED_APP -> openInstalledApp(command)
             AssistantCommandType.MEDIA_PLAY -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PLAY)
             AssistantCommandType.MEDIA_PAUSE -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE)
