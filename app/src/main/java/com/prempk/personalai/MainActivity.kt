@@ -1057,12 +1057,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.CREATE_REMINDER -> createReminder(command)
             AssistantCommandType.OPEN_MAPS -> openIntent(Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=")), localized("Opening Maps.", "Maps खोल रहा हूँ।"))
             AssistantCommandType.INFO_TIME -> {
-                val time = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT).format(java.util.Date())
-                respond(localized("The time is $time.", "अभी $time बजे हैं।"))
+                val spoken = VoiceDateTimeFormatter.format(java.util.Date(), responseLanguageTag)
+                respond(if (responseLanguageTag == "hi-IN") "अभी ${spoken.time} बजे हैं।"
+                    else "The time is ${spoken.time}.")
             }
             AssistantCommandType.INFO_DATE -> {
-                val date = java.text.DateFormat.getDateInstance(java.text.DateFormat.FULL).format(java.util.Date())
-                respond(localized("Today is $date.", "आज $date है।"))
+                val spoken = VoiceDateTimeFormatter.format(java.util.Date(), responseLanguageTag)
+                respond(if (responseLanguageTag == "hi-IN") "आज ${spoken.date} है।"
+                    else "Today is ${spoken.date}.")
             }
             AssistantCommandType.GREETING -> respond(TimeAwareGreeting.reply(responseLanguageTag == "hi-IN"))
             AssistantCommandType.SCROLL_UP -> runAccessibilityAction(PkAccessibilityService.Action.SCROLL_BACKWARD)
