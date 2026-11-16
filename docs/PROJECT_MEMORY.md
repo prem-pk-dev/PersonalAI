@@ -46,16 +46,16 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Cellular call disconnect requires a compliant default-dialer implementation and the user's explicit role approval; it is not a normal app permission.
 - WhatsApp does not expose general public APIs for arbitrary call control or silently sending messages. Use supported deep links/intents and user confirmation only.
 - A hotword that listens with the screen off requires a carefully designed, user-started foreground service, visible notification, microphone permissions/service declarations, and compliance with Android background-start restrictions. Device OEM battery policies may still affect reliability.
-- The app declares an ACTION_ASSIST activity entry point. Default-assistant ROLE_ASSISTANT registration and VoiceInteractionService registration are currently deferred because the required RecognitionService provider has not been integrated.
-- The wake word is "PK" (Hindi STT variants "पीके" / "पी के"). SpeechRecognizer-based PK recognition still requires the app to be open and listening started by the user. The registered assistant services are not an always-on hotword detector. Screen-off detection requires a compatible hotword engine, keyphrase enrollment, device SoundTrigger/DSP support, and foreground/background lifecycle validation.
+- The app declares an ACTION_ASSIST activity entry point and a user-consented ROLE_ASSISTANT request flow. A real VoiceInteractionService/session service is still not implemented; do not describe the app as a complete system assistant.
+- The wake word is "PK" (Hindi STT variants "पीके" / "पी के"). Background KWS is a separate, user-started foreground service with a visible notification. Wake detection currently requires tapping the notification to open PK before command recognition; seamless hands-free wake-to-command and screen-off behavior remain unverified.
 - Android 14+ exposes `SpeechRecognizer` language detection callbacks and allowed-language constraints, but provider implementations may ignore the extras. Android 12 (the user's Redmi Note 9) does not expose this API; the current app falls back to transcript-script/Romanized-Hindi heuristics and still needs device verification.
 - sherpa-onnx is a viable offline Android candidate for keyword spotting and speaker verification. Its official docs describe open-vocabulary KWS (custom keywords without retraining) and list English/Chinese pretrained KWS models; this does not establish Hindi wake-word accuracy or Redmi Note 9 performance.
 - Do not bypass lock-screen protections, record secretly, auto-send messages, or automate emergency calling.
 
-## Current repository state (2026-11-14)
+## Current repository state (2026-11-16)
 
-- Default branch: `main`; keep it stable.
-- Active branch: `development/mvp-foundation`.
+- Default/stable branch: `main`; keep it stable and do not modify directly.
+- Active implementation branch: `feature/sherpa-onnx-kws-spike`.
 - Pull request: #1, draft, targets `main`.
 - Android Gradle project, native Activity, CI workflow, and continuity documentation are committed to the development branch.
 - The first CI attempt failed because an Activity property named `background` shadowed the View background property. It was renamed to `backgroundColorValue`.
@@ -148,3 +148,14 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Candidate English GigaSpeech mobile KWS model is separate from the runtime. It must be pinned, checksum-verified, licence-reviewed, and provisioned for offline first-run behavior. Do not make wake-word detection depend on a network download after the app is already running.
 - Decision: no native KWS dependency or foreground service has been added yet. First create a small isolated integration branch/CI proof that verifies the exact v2.0.1 AAR API, JNI loading, arm64-v8a packaging, model loading, and custom keyword decoding. Only then wire it into the production assistant lifecycle. This avoids shipping a nonfunctional native wrapper or falsely claiming screen-off support.
 - Research references: https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.1 ; https://k2-fsa.github.io/sherpa/onnx/android/build-sherpa-onnx.html ; https://github.com/k2-fsa/sherpa-onnx/tree/master/android/SherpaOnnxKws
+
+
+## Current verified implementation snapshot (2026-11-16)
+
+- Latest inspected CI run: Build #287, commit `89a208af4b2c57a5fec776ea976955ec5c59af5d`, passed clean build, unit tests, ARM JNI packaging checks, APK signature/package metadata verification, and uploaded artifact `personalai-debug-apk-device-test` (artifact ID `14211223756`, SHA-256 `78aac31b88141a77ea5ae124cad551eb9a842d7052b45589425ae11b548643de`). This is a device-test artifact, not a final release.
+- Hindi offline one-shot ASR is now integrated in `HindiOfflineAsrEngine.kt`, `HindiOfflineModelInstaller.kt`, and `HindiPcmAudio.kt`. It downloads a pinned IndicConformer int8 model on explicit user action, verifies model SHA-256, stores files privately, captures mono 16 kHz PCM and transcribes locally through Sherpa-ONNX. CI verifies code/build only; the large model download and transcription accuracy have not been tested on Redmi Note 9.
+- User must install the optional ~198 MB model and tap Speak Hindi offline. This is not a continuous offline Hindi listener and does not provide Hindi hotword detection.
+- Active-media-session commands for play/pause/next/previous are integrated with explicit Notification Access and passed CI; real media app behavior remains a device test.
+- Installed-app discovery, user-confirmed WhatsApp share composition, alarm/timer parsing, call/SMS composers, calendar composer and limited AccessibilityService actions are implemented; several app handoffs and gestures remain device tests.
+- Remaining major work: real VoiceInteractionService/session integration; seamless KWS-to-command handoff and automatic KWS resume; Redmi Note 9 tests for Hindi model install/transcription, wake word, media, accessibility, permissions, battery/thermal/memory; broader Hinglish offline recognition; regression coverage for all commands; privacy review; signed release build.
+- Do not report a numeric overall progress percentage unless it is calculated from a defined feature checklist. Keep CI-verified and physical-device-verified status separate.
