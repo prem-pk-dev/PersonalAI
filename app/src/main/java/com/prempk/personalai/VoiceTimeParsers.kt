@@ -38,9 +38,10 @@ object AlarmTimeParser {
         val minute = match.groupValues[2].ifBlank { "0" }.toIntOrNull() ?: return null
         if (minute !in 0..59 || hour !in 0..23) return null
 
-        val isPm = normalized.contains("pm") || normalized.contains("दोपहर") ||
+        val suffix = match.groupValues[3].replace(".", "")
+        val isPm = suffix == "pm" || normalized.contains("pm") || normalized.contains("दोपहर") ||
             normalized.contains("शाम") || normalized.contains("रात")
-        val isAm = normalized.contains("am") || normalized.contains("सुबह") ||
+        val isAm = suffix == "am" || normalized.contains("am") || normalized.contains("सुबह") ||
             normalized.contains("सवेरे") || normalized.contains("भोर")
         if (isPm && hour in 1..11) hour += 12
         if (isAm && hour == 12) hour = 0
