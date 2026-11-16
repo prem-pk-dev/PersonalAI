@@ -25,7 +25,8 @@ object AlarmTimeParser {
         val candidates = timeToken.findAll(normalized).filter { match ->
             val suffix = match.groupValues[3]
             val prefix = normalized.substring(0, match.range.first)
-            val hasCue = suffix.isNotBlank() || timePrefix.containsMatchIn(prefix)
+            val hasCue = suffix.isNotBlank() || match.groupValues[2].isNotBlank() ||
+                timePrefix.containsMatchIn(prefix)
             val following = normalized.substring(match.range.last + 1)
             hasCue && !durationSuffix.containsMatchIn(following)
         }.toList()
