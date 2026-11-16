@@ -233,3 +233,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Added an explicit in-app multi-select allowlist for scroll gestures in installed YouTube, WhatsApp, WhatsApp Business and Chrome packages. The default is deny-all; users must select each app before PK can scroll it.
 - Accessibility service reads only the active window package identifier to enforce the allowlist, then traverses scrollable nodes without reading node text. Back/Home remain separately disclosed global navigation actions.
 - Added JVM tests for default deny, allowed package, unselected package and missing active package. Exact-head CI and Redmi Note 9 interaction checks remain pending.
+
+
+## Wake acknowledgement microphone handoff (2026-11-16)
+
+- Review found that a wake-only SpeechRecognizer result ("PK") spoke an acknowledgement but the result callback still scheduled another recognizer start after 500 ms. That could reopen the microphone while TTS was speaking.
+- The Activity now marks a pending recognition restart only when both wake mode and awaiting-command are active, suppresses the immediate result-loop restart, and starts command recognition after the assistant utterance completes. Missing/failed TTS uses the same guarded recovery path.
+- Added a unit-testable lifecycle predicate. Redmi Note 9 microphone/TTS overlap behavior and exact-head CI remain unverified.
