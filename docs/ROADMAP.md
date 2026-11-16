@@ -102,3 +102,12 @@
 - [x] Strengthen PCM16-to-float normalization, requested frame-length, invalid-input, and RMS unit coverage for the Hindi offline ASR preprocessing helpers.
 - [ ] Verify these tests and the latest KWS lifecycle tests in GitHub Actions for the exact latest feature-branch head.
 - [ ] Verify real microphone capture, VAD threshold, model inference and memory/latency on Redmi Note 9; unit tests do not replace device validation.
+
+
+## Hindi offline model installation safety (2026-11-16)
+- [x] Stage and verify the Hindi model before promoting it over an existing installation.
+- [x] Preserve the previous installed model until the new directory is promoted; restore the previous directory if promotion fails.
+- [x] Recover a previous-model backup after an interrupted promotion.
+- [x] Add JVM tests for replacement, empty destination, missing staging, and interrupted-promotion recovery.
+- [ ] Verify the new tests and clean APK build in CI for the exact branch head.
+- [ ] Validate interrupted download/install behavior and available storage on Redmi Note 9.
