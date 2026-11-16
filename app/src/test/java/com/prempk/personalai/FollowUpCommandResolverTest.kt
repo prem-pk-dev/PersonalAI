@@ -5,27 +5,34 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class FollowUpCommandResolverTest {
-    @Test fun resolvesExplicitEnglishReopenReferences() {
-        assertEquals("open YouTube", FollowUpCommandResolver.resolve("open it again", "YouTube"))
-        assertEquals("open WhatsApp", FollowUpCommandResolver.resolve("Hey PK, reopen it!", "WhatsApp"))
-        assertEquals("open Chrome", FollowUpCommandResolver.resolve("open the same app", "Chrome"))
+    @Test fun resolvesExplicitEnglishReopenReferencesToExactPackage() {
+        assertEquals("com.google.android.youtube",
+            FollowUpCommandResolver.resolvePackage("open it again", "com.google.android.youtube"))
+        assertEquals("com.whatsapp.w4b",
+            FollowUpCommandResolver.resolvePackage("Hey PK, reopen it!", "com.whatsapp.w4b"))
+        assertEquals("com.android.chrome",
+            FollowUpCommandResolver.resolvePackage("open the same app", "com.android.chrome"))
     }
 
-    @Test fun resolvesExplicitHindiAndHinglishReopenReferences() {
-        assertEquals("open YouTube", FollowUpCommandResolver.resolve("उसे फिर से खोलो", "YouTube"))
-        assertEquals("open Chrome", FollowUpCommandResolver.resolve("वही ऐप खोलो।", "Chrome"))
-        assertEquals("open WhatsApp", FollowUpCommandResolver.resolve("same app kholo", "WhatsApp"))
+    @Test fun resolvesExplicitHindiAndHinglishReopenReferencesToExactPackage() {
+        assertEquals("com.google.android.youtube",
+            FollowUpCommandResolver.resolvePackage("उसे फिर से खोलो", "com.google.android.youtube"))
+        assertEquals("com.android.chrome",
+            FollowUpCommandResolver.resolvePackage("वही ऐप खोलो।", "com.android.chrome"))
+        assertEquals("com.whatsapp",
+            FollowUpCommandResolver.resolvePackage("same app kholo", "com.whatsapp"))
     }
 
-    @Test fun doesNotResolveWithoutSafeRecentAppContext() {
-        assertNull(FollowUpCommandResolver.resolve("open it again", null))
-        assertNull(FollowUpCommandResolver.resolve("open it again", " "))
-        assertNull(FollowUpCommandResolver.resolve("open it again", "x".repeat(81)))
+    @Test fun doesNotResolveWithoutSafeRecentPackageContext() {
+        assertNull(FollowUpCommandResolver.resolvePackage("open it again", null))
+        assertNull(FollowUpCommandResolver.resolvePackage("open it again", " "))
+        assertNull(FollowUpCommandResolver.resolvePackage("open it again", "WhatsApp"))
+        assertNull(FollowUpCommandResolver.resolvePackage("open it again", "x".repeat(256)))
     }
 
     @Test fun doesNotInterpretArbitraryFollowUpTextAsAnAction() {
-        assertNull(FollowUpCommandResolver.resolve("send it again", "WhatsApp"))
-        assertNull(FollowUpCommandResolver.resolve("open my messages", "WhatsApp"))
-        assertNull(FollowUpCommandResolver.resolve("delete it", "Chrome"))
+        assertNull(FollowUpCommandResolver.resolvePackage("send it again", "com.whatsapp"))
+        assertNull(FollowUpCommandResolver.resolvePackage("open my messages", "com.whatsapp"))
+        assertNull(FollowUpCommandResolver.resolvePackage("delete it", "com.android.chrome"))
     }
 }
