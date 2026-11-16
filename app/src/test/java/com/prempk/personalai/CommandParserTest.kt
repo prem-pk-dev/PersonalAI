@@ -70,6 +70,22 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("पिछला ट्रैक"))
     }
 
+    @Test fun recognizesCommonHinglishPlaybackVolumeAndNavigationCommands() {
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("gaana chalao"))
+        assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("music roko"))
+        assertEquals(AssistantCommandType.MEDIA_NEXT, CommandParser.parse("agla gaana"))
+        assertEquals(AssistantCommandType.MEDIA_PREVIOUS, CommandParser.parse("pichla gana"))
+        assertEquals(AssistantCommandType.VOLUME_UP, CommandParser.parse("volume badhao"))
+        assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("awaz kam karo"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("awaz band"))
+        assertEquals(AssistantCommandType.SCROLL_UP, CommandParser.parse("upar scroll"))
+        assertEquals(AssistantCommandType.SCROLL_DOWN, CommandParser.parse("neeche scroll"))
+        assertEquals(AssistantCommandType.GO_BACK, CommandParser.parse("peeche jao"))
+        assertEquals(AssistantCommandType.GO_HOME, CommandParser.parse("home jao"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("samay kya hai"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("aaj ki tareekh"))
+    }
+
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
         assertEquals(AssistantCommandType.OPEN_SETTINGS, CommandParser.parse("  Settings kholo  "))
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse("tell me a joke"))
