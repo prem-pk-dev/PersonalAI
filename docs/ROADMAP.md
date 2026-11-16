@@ -127,3 +127,12 @@
 - [x] Add regression coverage for opt-in and microphone-permission combinations.
 - [ ] Verify wake detection, permission prompts, SpeechRecognizer failures, and listener restart on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI and APK assembly.
+
+
+## Hindi offline listening cancellation (2026-11-16)
+- [x] Add an explicit Cancel control while one-shot Hindi offline listening is active.
+- [x] Stop microphone capture on cancellation, check cancellation before/after native transcription, and prevent dispatch of a cancelled result.
+- [x] Restore an opted-in KWS listener after a user cancellation or failed one-shot capture, after microphone resources are released; do not restart from a destroyed Activity.
+- [x] Close the cancel window before posting a completed transcript to avoid a cancel/dispatch race.
+- [ ] Verify cancellation during capture and transcription, microphone release, and KWS restart on Redmi Note 9.
+- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
