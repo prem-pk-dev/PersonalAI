@@ -707,7 +707,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 // If capture/transcription failed or was cancelled, the success path
                 // never reaches handleCommand(), so explicitly restore an opted-in
                 // KWS listener after the microphone has been released.
-                runOnUiThread { cancelHindiButton.isEnabled = false }
+                runOnUiThread {
+                    if (!isFinishing && !isDestroyed) cancelHindiButton.isEnabled = false
+                }
                 if (!commandDispatched) {
                     runOnUiThread {
                         if (!isFinishing && !isDestroyed &&
