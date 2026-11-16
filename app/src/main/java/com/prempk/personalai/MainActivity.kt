@@ -50,6 +50,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     @Volatile private var hindiAsrInProgress = false
     @Volatile private var hindiAsrCancelled = false
     private lateinit var hindiAsrStatus: TextView
+    private lateinit var cancelHindiButton: Button
     private var restartKwsAfterSpeech = false
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
@@ -342,8 +343,18 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             background = surface(0xFF087F91.toInt(), 15, 0x6654D5E5)
             setPadding(dp(7), dp(11), dp(7), dp(11))
         }
-        hindiAsrRow.addView(installHindiButton, LinearLayout.LayoutParams(0, dp(48), 1f).apply { marginEnd = dp(8) })
-        hindiAsrRow.addView(listenHindiButton, LinearLayout.LayoutParams(0, dp(48), 1f))
+        cancelHindiButton = makeButton("Cancel") {
+            cancelHindiOfflineListening()
+        }.apply {
+            isAllCaps = false
+            isEnabled = false
+            textSize = 10f
+            background = surface(0xFF3A2630.toInt(), 15, 0x667E5261)
+            setPadding(dp(6), dp(11), dp(6), dp(11))
+        }
+        hindiAsrRow.addView(installHindiButton, LinearLayout.LayoutParams(0, dp(48), 1.15f).apply { marginEnd = dp(6) })
+        hindiAsrRow.addView(listenHindiButton, LinearLayout.LayoutParams(0, dp(48), 1f).apply { marginEnd = dp(6) })
+        hindiAsrRow.addView(cancelHindiButton, LinearLayout.LayoutParams(0, dp(48), 0.65f))
         backgroundCard.addView(hindiAsrRow)
         hindiAsrStatus = label(
             if (HindiOfflineModelInstaller.isInstalled(this)) "✓ Hindi offline model installed · runs on device"
@@ -591,6 +602,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }.start()
     }
 
+    private fun cancelHindiOfflineListening() {
+        if (!hindiAsrInProgress) return
+        hindiAsrCancelled = true
+        hindiAsrStatus.text = "Cancelling Hindi listening…"
+        cancelHindiButton.isEnabled = false
+    }
+
     /** Captures mono 16 kHz audio and transcribes locally without sharing the microphone with KWS. */
     private fun startHindiOfflineListening() {
         if (hindiAsrInProgress) return
@@ -605,6 +623,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         hindiAsrCancelled = false
         hindiAsrInProgress = true
+        cancelHindiButton.isEnabled = true
         stopListening()
         // Stop KWS without clearing the enabled preference; handleCommand resumes it afterwards.
         stopService(Intent(this, KwsForegroundService::class.java))
@@ -660,6 +679,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 val pcm = ShortArray(captured.size) { captured[it] }
                 engine = HindiOfflineAsrEngine(HindiOfflineModelInstaller.modelDirectory(this))
                 val recognized = engine.transcribe(HindiPcmAudio.toFloatSamples(pcm), sampleRate)
+                check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
                 check(recognized.isNotBlank()) { "Hindi speech was not recognized. Please repeat the command." }
                 commandDispatched = true
                 runOnUiThread {
@@ -673,7 +693,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             } catch (error: Exception) {
                 runOnUiThread {
                     hindiAsrInProgress = false
-                    if (!isFinishing) {
+                    cancelHindiButton.isEnabled = false
+                    if (!isFinishing && !isDestroyed) {
                         hindiAsrStatus.text = error.localizedMessage ?: "Hindi offline recognition failed."
                         status.text = "●  Ready when you are"
                     }
@@ -686,13 +707,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 // If capture/transcription failed or was cancelled, the success path
                 // never reaches handleCommand(), so explicitly restore an opted-in
                 // KWS listener after the microphone has been released.
+                runOnUiThread { cancelHindiButton.isEnabled = false }
                 if (!commandDispatched) {
                     runOnUiThread {
-                        if (!isFinishing && !hindiAsrCancelled &&
+                        if (!isFinishing && !isDestroyed &&
                             getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                                 .getBoolean(KEY_KWS_ENABLED, false)) {
                             window.decorView.postDelayed({
-                                if (!isFinishing && !hindiAsrInProgress &&
+                                if (!isFinishing && !isDestroyed && !hindiAsrInProgress &&
                                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                                         .getBoolean(KEY_KWS_ENABLED, false)) {
                                     startKwsService()
