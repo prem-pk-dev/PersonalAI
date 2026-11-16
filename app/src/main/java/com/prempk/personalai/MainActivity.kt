@@ -55,6 +55,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var restartKwsAfterSpeech = false
     private var restartRecognitionAfterSpeech = false
     private var lastOpenedAppLabel: String? = null
+    private var lastOpenedAppPackage: String? = null
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
 
@@ -1010,7 +1011,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
         val spokenCommand = raw.trim()
         responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(spokenCommand)
-        val command = FollowUpCommandResolver.resolve(spokenCommand, lastOpenedAppLabel) ?: spokenCommand
+        val followUpPackage = FollowUpCommandResolver.resolvePackage(spokenCommand, lastOpenedAppPackage)
+        if (followUpPackage != null) {
+            restartKwsAfterSpeech = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getBoolean(KEY_KWS_ENABLED, false)
+            openApp(listOf(followUpPackage), lastOpenedAppLabel ?: "app")
+            return
+        }
+        val command = spokenCommand
         val commandType = CommandParser.parse(command)
         // Avoid loading the native KWS model while TTS is speaking. This reduces
         // memory and CPU contention on lower-memory phones.
@@ -1157,13 +1165,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         when (candidates.size) {
             0 -> respond(localized("I couldn't find an installed app named $requestedName.", "$requestedName नाम का इंस्टॉल ऐप नहीं मिला।"))
-            1 -> openInstalledAppLaunch(candidates.first().first, candidates.first().second)
+            1 -> openInstalledAppLaunch(candidates.first().first, candidates.first().second, candidates.first().third)
             else -> {
                 val labels = candidates.map { it.first }.toTypedArray()
                 AlertDialog.Builder(this)
                     .setTitle(localized("Choose an app", "ऐप चुनें"))
                     .setItems(labels) { _, which ->
-                        openInstalledAppLaunch(candidates[which].first, candidates[which].second)
+                        openInstalledAppLaunch(candidates[which].first, candidates[which].second, candidates[which].third)
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
@@ -1171,10 +1179,11 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
     }
 
-    private fun openInstalledAppLaunch(label: String, launch: Intent) {
+    private fun openInstalledAppLaunch(label: String, launch: Intent, packageName: String) {
         runCatching {
             startActivity(launch)
             lastOpenedAppLabel = label
+            lastOpenedAppPackage = packageName
             respond(localized("Opening $label.", "$label खोल रहा हूँ।"))
         }.onFailure {
             respond(localized("Could not open $label.", "$label नहीं खुल पाया।"))
@@ -1182,15 +1191,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun openApp(packageNames: List<String>, label: String) {
-        val launch = packageNames.firstNotNullOfOrNull {
-            packageManager.getLaunchIntentForPackage(it)
+        val target = packageNames.firstNotNullOfOrNull { packageName ->
+            packageManager.getLaunchIntentForPackage(packageName)?.let { packageName to it }
         }
-        if (launch == null) {
+        if (target == null) {
             respond(localized("$label is not installed.", "$label इंस्टॉल नहीं है।"))
         } else {
             runCatching {
-                startActivity(launch)
+                startActivity(target.second)
                 lastOpenedAppLabel = label
+                lastOpenedAppPackage = target.first
                 respond(localized("Opening $label.", "$label खोल रहा हूँ।"))
             }
                 .onFailure { respond(localized("Could not open $label.", "$label नहीं खुल पाया।")) }
