@@ -65,9 +65,11 @@
 - [ ] Add explicit unsupported-action responses for commands that cannot be completed.
 
 ## Milestone 5 — Offline language and local intelligence
-- [ ] Integrate and benchmark an offline Hindi + Hinglish/English speech-recognition model on ARM64 and Redmi memory/CPU constraints. Research identified Sherpa-ONNX 2.0.1 `OfflineRecognizer` support, a 198 MB int8 Hindi CTC model and a separate ~150 MB Hinglish Swift Whisper option; no model has been downloaded, integrated or device-tested yet.
-- [ ] Keep wake-word recognition and command speech recognition as separate documented subsystems.
-- [ ] Add deterministic Hindi, Hinglish and English intent coverage with unit tests.
+- [x] Integrate an optional offline Hindi IndicConformer int8 CTC recognizer using Sherpa-ONNX `OfflineRecognizer`; add explicit user-triggered model download (about 198 MB), pinned immutable model revision, SHA-256 verification, app-private storage, 16 kHz mono PCM capture, voice-activity timeout, and one-shot local transcription in the assistant flow. Builds #286 and #287 passed CI including clean build, unit tests, ARM native packaging, APK signature/metadata and artifact upload.
+- [ ] Download and run the model on Redmi Note 9; benchmark transcription accuracy for Hindi/Hinglish, memory, CPU, latency, thermal and battery. The model is not bundled in the APK and has not yet been physically device-tested.
+- [x] Keep KWS and one-shot Hindi command transcription as separate subsystems; the Hindi offline action stops KWS while it owns the microphone.
+- [ ] Verify microphone handoff and listener resume on Redmi Note 9, including permission denial, cancellation, app backgrounding and low-memory paths.
+- [ ] Expand deterministic Hindi, Hinglish and English intent coverage with unit tests; current offline recognizer integration is Hindi one-shot and does not yet provide robust Hinglish/English offline recognition.
 - [ ] Add a lightweight local conversation context for follow-up commands; do not execute arbitrary generated code.
 - [ ] Optional local LLM research only after device RAM, storage, latency, thermal and license evaluation; no paid API requirement.
 - [ ] Add owner voice enrollment / speaker verification as a separate opt-in subsystem; evaluate false accepts, false rejects and replay attacks before describing it as secure.
