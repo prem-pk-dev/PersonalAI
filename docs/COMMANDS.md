@@ -25,7 +25,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "volume badhao" / "आवाज बढ़ा दो" | VOLUME_UP | Increase system music-stream volume |
 | "awaz kam karo" / "आवाज कम करो" | VOLUME_DOWN | Decrease system music-stream volume |
 | "awaz band" / "आवाज बंद" | VOLUME_MUTE | Mute system music-stream volume where supported |
-| "Help" / "मदद" | HELP | Explain supported assistant actions |
+| "Help" / "मदद" | HELP | Explain supported app, communication, media, volume, accessibility, alarm/timer, reminder and device-info actions, including permission/app-support limits |
 
 ## Wake-word behavior\n\n- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
 
