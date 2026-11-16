@@ -69,7 +69,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         super.onCreate(savedInstanceState)
         tts = TextToSpeech(this, this)
         buildUi()
-        ensureAudioPermission()
+        // Request microphone access only when the user starts a voice feature,
+        // or when Android explicitly launches PK as the selected voice assistant.
         if (intent?.action == Intent.ACTION_ASSIST) {
             window.decorView.post { startWakeListening() }
         }
