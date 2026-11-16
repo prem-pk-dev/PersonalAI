@@ -705,12 +705,15 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 )
                 check(recorder.state == AudioRecord.STATE_INITIALIZED) { "Microphone could not be initialized." }
                 val chunk = ShortArray(2048)
-                val captured = ArrayList<Short>(sampleRate * 6)
+                // A fixed primitive buffer avoids boxing every PCM sample into Short objects.
+                // It also hard-caps this one-shot capture at nine seconds on low-memory phones.
+                val captured = PcmCaptureBuffer(sampleRate * 9)
                 recorder.startRecording()
                 val startedAt = System.currentTimeMillis()
                 var speechStartedAt = 0L
                 var lastVoiceAt = 0L
-                while (!hindiAsrCancelled && System.currentTimeMillis() - startedAt < 9_000L) {
+                while (!hindiAsrCancelled && !captured.isFull &&
+                    System.currentTimeMillis() - startedAt < 9_000L) {
                     val count = recorder.read(chunk, 0, chunk.size)
                     if (count == AudioRecord.ERROR_INVALID_OPERATION || count == AudioRecord.ERROR_BAD_VALUE || count < 0) {
                         throw IllegalStateException("Microphone read failed ($count).")
@@ -721,7 +724,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                         if (speechStartedAt == 0L) speechStartedAt = now
                         lastVoiceAt = now
                     }
-                    for (i in 0 until count) captured.add(chunk[i])
+                    captured.append(chunk, count)
                     if (speechStartedAt == 0L && now - startedAt >= 4_000L) break
                     if (speechStartedAt > 0L && now - lastVoiceAt >= 1_200L) break
                 }
@@ -733,7 +736,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 recorder.release()
                 recorder = null
                 check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
-                val pcm = ShortArray(captured.size) { captured[it] }
+                val pcm = captured.toShortArray()
                 engine = HindiOfflineAsrEngine(HindiOfflineModelInstaller.modelDirectory(this))
                 check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
                 val recognized = engine.transcribe(HindiPcmAudio.toFloatSamples(pcm), sampleRate)
