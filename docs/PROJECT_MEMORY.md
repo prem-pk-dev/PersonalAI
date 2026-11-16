@@ -257,8 +257,8 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 
 ## Constrained local conversation context (2026-11-16)
 
-- Added a narrow in-memory follow-up resolver for explicit reopen phrases in English, Hindi and Hinglish. It remembers only the label of the last successfully launched app for the current Activity session.
-- Phrases such as "open it again", "reopen it", "उसे फिर से खोलो", "वही ऐप खोलो" and "same app kholo" resolve to a normal app-launch command only when a valid recent app label exists.
+- Added a narrow in-memory follow-up resolver for explicit reopen phrases in English, Hindi and Hinglish. It remembers the label and exact package name of the last successfully launched app for the current Activity session.
+- Phrases such as "open it again", "reopen it", "उसे फिर से खोलो", "वही ऐप खोलो" and "same app kholo" relaunch the exact package only when a valid recent package exists, avoiding ambiguity between similarly named apps.
 - Unrelated instructions, destructive phrases, missing context and oversized labels are rejected. No generated text or arbitrary prior conversation is executed. Added JVM tests. Physical Redmi Note 9 verification and exact-head CI remain pending.
 
 
