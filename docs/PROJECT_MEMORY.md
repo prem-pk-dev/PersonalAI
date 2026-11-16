@@ -184,3 +184,11 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Added JVM tests for successful replacement, first installation, missing staging preservation, and interrupted-promotion recovery.
 - The tests are committed but not yet CI-verified; this is filesystem transaction coverage, not a physical-device download test.
 - Code commits: installer integration `0731d176cb30043bedcdc237ebf277b317fdccbd`; helper `e6172a6474f68759f66b9c17219203cf12992510`; tests `eeec301dc696406a8bf9948ce99b58e0c4b7a1e4`, recovery fix `79dfe428818ee2b08462474746f4f6c4a3910988`, recovery test `2ccdd62176f82e8df9c9efe3f049ce041a64ff69`.
+
+
+## KWS capture failure shutdown (2026-11-16)
+
+- Fixed a foreground-service failure mode: an unexpected AudioRecord/model/native exception previously updated the notification but could leave the service foregrounded with the persisted KWS opt-in still true, even though capture had stopped.
+- The worker now distinguishes a requested stop from a real capture failure. After releasing recorder, stream, spotter, and CPU WakeLock resources, it posts main-thread cleanup that clears the persisted opt-in, updates a non-ongoing error notification, detaches foreground state, and stops the service.
+- This is code-level lifecycle hardening only. Android 12 / MIUI service restart, permission revocation, and notification behavior remain physical-device checks; latest CI is not yet verified.
+- Commit: `affe477eba8557b29c1511d3aaac6e0b7703eca5`.
