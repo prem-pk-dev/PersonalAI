@@ -163,3 +163,11 @@
 - [x] Add unit tests for default-deny, selected-app allow, unselected-app deny, and missing active package.
 - [ ] Verify app switching, package identification, scroll gestures and Back/Home on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+
+
+## Wake acknowledgement microphone handoff (2026-11-16)
+- [x] Prevent the command recognizer from restarting immediately after hearing the wake-only phrase "PK" while the spoken acknowledgement is still playing.
+- [x] Resume one-shot command recognition after the TTS completion callback; use the same guarded path when TTS is unavailable or fails.
+- [x] Add a testable policy for restarting recognition only while wake mode and awaiting-command state are both active.
+- [ ] Verify wake phrase, acknowledgement audio, command capture and microphone non-overlap on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head CI and APK assembly.
