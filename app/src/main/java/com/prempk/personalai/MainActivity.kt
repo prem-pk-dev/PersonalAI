@@ -1322,7 +1322,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun speak(message: String) {
-        val engine = tts ?: return
+        val engine = tts
+        if (engine == null) {
+            // TTS may still be initializing (or unavailable); do not strand an opted-in
+            // KWS listener after its wake-to-command handoff.
+            resumeKwsAfterSpeech()
+            return
+        }
         val spokenLanguage = VoiceLanguage.detect(message)
         val languageResult = engine.setLanguage(Locale.forLanguageTag(spokenLanguage))
         if (languageResult == TextToSpeech.LANG_MISSING_DATA ||
@@ -1336,9 +1342,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun resumeKwsAfterSpeech() {
         if (!restartKwsAfterSpeech) return
         restartKwsAfterSpeech = false
-        if (!isFinishing && getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-                .getBoolean(KEY_KWS_ENABLED, false)) {
-            window.decorView.postDelayed({ if (!isFinishing) startKwsService() }, 350)
+        if (!isFinishing && !isDestroyed &&
+            checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
+            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
+            window.decorView.postDelayed({
+                if (!isFinishing && !isDestroyed && !hindiAsrInProgress &&
+                    checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
+                    getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
+                    startKwsService()
+                }
+            }, 350)
         }
     }
 
@@ -1358,6 +1371,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                     if (utteranceId == "assistant_reply") runOnUiThread { resumeKwsAfterSpeech() }
                 }
             })
+        } else {
+            // A failed TTS engine must not leave the background listener stopped forever.
+            runOnUiThread { resumeKwsAfterSpeech() }
         }
     }
 
