@@ -213,3 +213,11 @@
 - [x] Reject zero, overflow and durations above 24 hours with regression tests.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
 - [ ] Verify timer handoff and confirmation on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Romanized Hinglish intent coverage (2026-11-16)
+- [x] Add explicit Romanized-Hinglish aliases for common media playback, volume, scroll/navigation, time and date commands.
+- [x] Add deterministic unit tests for the new aliases; keep matching finite and intent-based rather than implying general Hinglish understanding.
+- [x] Document the tested examples and their bounded behavior in the command contract.
+- [ ] Verify the exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [ ] Validate recognition transcript quality and command execution on Redmi Note 9; parser tests do not validate microphone ASR accuracy.
