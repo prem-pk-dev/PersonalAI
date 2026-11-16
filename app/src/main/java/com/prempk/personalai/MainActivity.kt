@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -914,6 +915,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             AssistantCommandType.MEDIA_PAUSE -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE)
             AssistantCommandType.MEDIA_NEXT -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_NEXT)
             AssistantCommandType.MEDIA_PREVIOUS -> dispatchMediaKey(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+            AssistantCommandType.VOLUME_UP -> adjustMediaVolume(AudioManager.ADJUST_RAISE)
+            AssistantCommandType.VOLUME_DOWN -> adjustMediaVolume(AudioManager.ADJUST_LOWER)
+            AssistantCommandType.VOLUME_MUTE -> adjustMediaVolume(AudioManager.ADJUST_MUTE)
             AssistantCommandType.CALL_CONTACT -> callContact(command)
             AssistantCommandType.COMPOSE_SMS -> composeSms(command)
             AssistantCommandType.OPEN_ALARMS -> openAlarms()
@@ -961,6 +965,21 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             respond(message)
         }
+    }
+
+    private fun adjustMediaVolume(direction: Int) {
+        val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+        audioManager.adjustStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            direction,
+            AudioManager.FLAG_SHOW_UI
+        )
+        val response = when (direction) {
+            AudioManager.ADJUST_RAISE -> localized("Media volume increased.", "मीडिया की आवाज़ बढ़ा दी है।")
+            AudioManager.ADJUST_LOWER -> localized("Media volume decreased.", "मीडिया की आवाज़ कम कर दी है।")
+            else -> localized("Media audio muted.", "मीडिया की आवाज़ म्यूट कर दी है।")
+        }
+        respond(response)
     }
 
     private fun dispatchMediaKey(keyCode: Int) {
