@@ -171,3 +171,10 @@
 - [x] Add a testable policy for restarting recognition only while wake mode and awaiting-command state are both active.
 - [ ] Verify wake phrase, acknowledgement audio, command capture and microphone non-overlap on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI and APK assembly.
+
+
+## KWS foreground notification persistence (2026-11-16)
+- [x] Mark the foreground notification ongoing while the user-started KWS microphone listener is active.
+- [x] Keep detected and error notifications dismissible/non-ongoing after capture has stopped.
+- [ ] Verify notification visibility, stop action and dismissal behavior on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Verify exact branch-head CI and APK assembly.
