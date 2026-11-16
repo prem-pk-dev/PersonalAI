@@ -742,12 +742,23 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         kwsSetupStatus.text = "Background PK listening stopped."
     }
 
+    private fun prepareKwsResumeAfterHandoffFailure() {
+        val listenerEnabled = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getBoolean(KEY_KWS_ENABLED, false)
+        val microphoneGranted =
+            checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        restartKwsAfterSpeech = KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(
+            listenerEnabled, microphoneGranted
+        )
+    }
+
     private fun startCommandListeningAfterWake() {
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ensureAudioPermission()
             return
         }
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
+            prepareKwsResumeAfterHandoffFailure()
             respond("Speech recognition is unavailable.")
             return
         }
@@ -839,7 +850,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             recognizer?.startListening(intent)
         } catch (exception: Exception) {
             wakeMode = false
-            status.text = "Speech error: ${exception.localizedMessage ?: "unknown"}"
+            prepareKwsResumeAfterHandoffFailure()
+            respond("Speech error: ${exception.localizedMessage ?: "unknown"}")
         }
     }
 
@@ -1330,8 +1342,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         if (requestCode == REQUEST_AUDIO) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                 status.text = "Microphone permission granted"
+                prepareKwsResumeAfterHandoffFailure()
                 respond("Microphone permission granted. Tap Start listening when ready.")
             } else {
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+                    .putBoolean(KEY_KWS_ENABLED, false).apply()
+                restartKwsAfterSpeech = false
                 respond("Microphone permission was not granted. Voice commands need microphone access; text commands remain available.")
             }
         }
