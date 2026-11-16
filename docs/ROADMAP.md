@@ -190,10 +190,10 @@
 
 
 ## Constrained local conversation context (2026-11-16)
-- [x] Remember the last successfully launched app label in Activity memory only.
-- [x] Resolve explicit English, Hindi and Hinglish "open it again / वही ऐप खोलो" follow-ups to that app.
-- [x] Reject follow-up resolution without a recent app, with an invalid label, or for unrelated free-form requests; never execute generated instructions.
-- [x] Add unit tests for supported phrases, missing context and unrelated action rejection.
+- [x] Remember the label and exact package name of the last successfully launched app in Activity memory only.
+- [x] Resolve explicit English, Hindi and Hinglish "open it again / वही ऐप खोलो" follow-ups using the exact package identity, avoiding confusion between similarly named apps.
+- [x] Reject follow-up resolution without a valid recent package name or for unrelated free-form requests; never execute generated instructions.
+- [x] Add unit tests for supported phrases, exact package resolution, missing/invalid context and unrelated action rejection.
 - [ ] Verify follow-up app relaunch and context lifecycle on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
 
