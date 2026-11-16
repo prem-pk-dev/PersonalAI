@@ -196,3 +196,11 @@
 - [x] Add unit tests for supported phrases, missing context and unrelated action rejection.
 - [ ] Verify follow-up app relaunch and context lifecycle on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+
+
+## All-command TTS microphone gate (2026-11-16)
+- [x] Keep the opted-in KWS microphone listener stopped for every dispatched command until its spoken confirmation/error finishes.
+- [x] Remove the previous app-launch exception, which could restart KWS before the "Opening app" TTS response completed.
+- [x] Add an exhaustive enum-based unit test so newly added command types also require the TTS handoff.
+- [ ] Verify microphone non-overlap for app launch, media, navigation, alarm and error responses on Redmi Note 9.
+- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
