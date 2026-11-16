@@ -50,4 +50,12 @@ class KwsSpeechLifecycleTest {
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterHandoffFailure(false, false))
     }
 
+    @Test fun ttsFailureResumesOnlyWhenRestartWasRequestedAndListenerStillEnabled() {
+        assertTrue(KwsSpeechLifecycle.shouldResumeAfterTtsFailure(true, true, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterTtsFailure(false, true, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterTtsFailure(true, false, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterTtsFailure(true, true, false))
+        assertFalse(KwsSpeechLifecycle.shouldResumeAfterTtsFailure(false, false, false))
+    }
+
 }
