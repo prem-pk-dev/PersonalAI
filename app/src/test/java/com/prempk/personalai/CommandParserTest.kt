@@ -65,6 +65,9 @@ class CommandParserTest {
 
     @Test fun recognizesMediaPlaybackCommands() {
         assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("play music"))
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("music play karo"))
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("pk music play karo"))
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("पीके म्यूजिक चलाओ"))
         assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("गाना चलाओ"))
         assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("pause music"))
         assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("गाना रोक दो"))
@@ -111,6 +114,10 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("कैलकुलेटर खोलो"))
         assertEquals("calculator", InstalledAppCommandParser.extractAppName("open calculator"))
         assertEquals("Spotify", InstalledAppCommandParser.extractAppName("Hey PK launch Spotify"))
+        assertEquals("ChatGPT", InstalledAppCommandParser.extractAppName("pk chatgpt kholo"))
+        assertEquals("ChatGPT", InstalledAppCommandParser.extractAppName("पीके chatgpt खोलो"))
+        assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("pk chatgpt kholo"))
+        assertEquals(AssistantCommandType.OPEN_INSTALLED_APP, CommandParser.parse("पीके chatgpt खोलो"))
         assertEquals("कैलकुलेटर", InstalledAppCommandParser.extractAppName("कैलकुलेटर खोलो"))
     }
 
