@@ -779,31 +779,33 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun dispatchMediaKey(keyCode: Int) {
-        val audio = getSystemService(android.media.AudioManager::class.java)
-        if (audio == null) {
-            respond(localized("Media controls are unavailable on this device.", "इस फोन पर मीडिया कंट्रोल उपलब्ध नहीं हैं।"))
-            return
-        }
-        val down = android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN, keyCode)
-        val up = android.view.KeyEvent(android.view.KeyEvent.ACTION_UP, keyCode)
-        val delivered = runCatching {
-            audio.dispatchMediaKeyEvent(down)
-            audio.dispatchMediaKeyEvent(up)
-        }.isSuccess
-        respond(if (delivered) localized(
-            when (keyCode) {
-                android.view.KeyEvent.KEYCODE_MEDIA_PLAY -> "Play command sent to the active media app."
-                android.view.KeyEvent.KEYCODE_MEDIA_PAUSE -> "Pause command sent to the active media app."
-                android.view.KeyEvent.KEYCODE_MEDIA_NEXT -> "Next-track command sent to the active media app."
-                else -> "Previous-track command sent to the active media app."
-            },
-            when (keyCode) {
-                android.view.KeyEvent.KEYCODE_MEDIA_PLAY -> "चलाने का command active media app को भेजा गया।"
-                android.view.KeyEvent.KEYCODE_MEDIA_PAUSE -> "रोकने का command active media app को भेजा गया।"
-                android.view.KeyEvent.KEYCODE_MEDIA_NEXT -> "अगले गाने का command active media app को भेजा गया।"
-                else -> "पिछले गाने का command active media app को भेजा गया।"
+        when (val result = MediaSessionControls.dispatch(this, keyCode)) {
+            is MediaSessionControls.Result.Sent -> {
+                val app = result.packageName
+                val action = when (keyCode) {
+                    android.view.KeyEvent.KEYCODE_MEDIA_PLAY -> localized("Play", "चलाएँ")
+                    android.view.KeyEvent.KEYCODE_MEDIA_PAUSE -> localized("Pause", "रोकें")
+                    android.view.KeyEvent.KEYCODE_MEDIA_NEXT -> localized("Next track", "अगला गाना")
+                    else -> localized("Previous track", "पिछला गाना")
+                }
+                respond(localized("$action command sent to $app.", "$action command $app को भेजा गया।"))
             }
-        ) else localized("The active media app did not accept the media command.", "Active media app ने media command स्वीकार नहीं किया।"))
+            MediaSessionControls.Result.AccessRequired -> {
+                respond(localized(
+                    "Allow PK access to media notifications to discover and control the active media session. Then repeat your command.",
+                    "Active media session पहचानने और नियंत्रित करने के लिए PK को notification access दें। फिर command दोहराएँ।"
+                ))
+                runCatching {
+                    startActivity(Intent(android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                }
+            }
+            MediaSessionControls.Result.NoActiveSession ->
+                respond(localized("No active media session was found. Start playback in a supported media app and try again.",
+                    "कोई active media session नहीं मिला। किसी supported media app में playback शुरू करके फिर प्रयास करें।"))
+            MediaSessionControls.Result.Unsupported ->
+                respond(localized("The active media app does not support this control.",
+                    "Active media app इस control को support नहीं करता।"))
+        }
     }
 
     private fun openInstalledApp(command: String) {
