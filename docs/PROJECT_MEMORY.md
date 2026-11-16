@@ -260,3 +260,10 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Added a narrow in-memory follow-up resolver for explicit reopen phrases in English, Hindi and Hinglish. It remembers only the label of the last successfully launched app for the current Activity session.
 - Phrases such as "open it again", "reopen it", "उसे फिर से खोलो", "वही ऐप खोलो" and "same app kholo" resolve to a normal app-launch command only when a valid recent app label exists.
 - Unrelated instructions, destructive phrases, missing context and oversized labels are rejected. No generated text or arbitrary prior conversation is executed. Added JVM tests. Physical Redmi Note 9 verification and exact-head CI remain pending.
+
+
+## All-command TTS microphone gate (2026-11-16)
+
+- Found that app-launch commands were excluded from the TTS completion gate even though their launch helpers speak a confirmation. The handler therefore restarted the opted-in background KWS service before the spoken "Opening ..." response completed.
+- Changed the lifecycle policy so every dispatched command defers KWS restart until its TTS completion callback (or the existing TTS-failure fallback). Added an exhaustive test over all `AssistantCommandType` values so new commands cannot silently bypass the gate.
+- Physical microphone/TTS overlap verification on Redmi Note 9 and exact-head CI remain pending.
