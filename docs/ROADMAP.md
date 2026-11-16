@@ -61,7 +61,8 @@
 - [x] Parse English/Hindi alarm times and timer durations using Android AlarmClock intents (code + unit tests; current revision CI verified; Redmi device confirmation pending).
 - [x] Add Calendar event/reminder composer intent with user review; date/time scheduling is completed in Calendar, not silently by PK.
 - [x] Add media controls where Android media-session/platform APIs permit: play/pause/next/previous route to the active session; Notification Access is user-granted; no-session and unsupported-action responses are implemented and CI verified.
-- [ ] Add volume commands where Android system-volume APIs and user intent permit; per-app volume is not generally exposed by MediaSession.
+- [x] Add Hindi/English system media volume up/down/mute commands through Android `AudioManager` on `STREAM_MUSIC`, with visible system volume UI and parser unit tests; CI verification pending.
+- [ ] Validate media volume behavior, mute semantics and OEM audio policy on Redmi Note 9; per-app volume is not generally exposed by MediaSession.
 - [ ] Add explicit unsupported-action responses for commands that cannot be completed.
 
 ## Milestone 5 — Offline language and local intelligence
