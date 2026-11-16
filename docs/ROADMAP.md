@@ -275,3 +275,9 @@
 - [x] Add deterministic parser regression tests and document the supported phrases.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Verify settings screens open correctly on Redmi Note 9 / Android 12 MIUI 13; user performs any radio change.
+
+## Voice orb listening-state animation (2026-11-16)
+- [x] Keep the orb animation stopped in the idle/ready state; render a static orb without a continuously running animator.
+- [x] Start pulse and rotating ring animation only when the app enters an explicit listening state; stop and reset it when listening ends.
+- [ ] Verify exact branch-head CI, lint, unit tests, and clean APK assembly for this change.
+- [ ] Verify idle stability, Start Listening animation, Stop Listening reset, and permission-denied behavior on Redmi Note 9 / Android 12 MIUI 13.
