@@ -4,6 +4,7 @@ import java.util.Locale
 
 /**
  * Resolves only narrow, explicit references to the last successfully launched app.
+ * The exact package name is returned so similarly named apps cannot be confused.
  * No free-form text or generated instructions are ever executed from conversation history.
  */
 object FollowUpCommandResolver {
@@ -25,15 +26,17 @@ object FollowUpCommandResolver {
         "use phir se kholo",
         "usi app ko kholo"
     )
+    private val packageNamePattern = Regex("[A-Za-z0-9_]+(?:\\.[A-Za-z0-9_]+)+")
 
-    fun resolve(raw: String, lastOpenedAppName: String?): String? {
-        val appName = lastOpenedAppName?.trim()?.takeIf { it.isNotEmpty() && it.length <= 80 }
+    fun resolvePackage(raw: String, lastOpenedPackageName: String?): String? {
+        val packageName = lastOpenedPackageName?.trim()
+            ?.takeIf { it.length <= 255 && packageNamePattern.matches(it) }
             ?: return null
         val normalized = raw.trim()
             .lowercase(Locale.ROOT)
             .replace(Regex("[.!?।]+$"), "")
             .replace(Regex("^hey\\s+pk[, ]*"), "")
             .trim()
-        return if (normalized in reopenPhrases) "open $appName" else null
+        return packageName.takeIf { normalized in reopenPhrases }
     }
 }
