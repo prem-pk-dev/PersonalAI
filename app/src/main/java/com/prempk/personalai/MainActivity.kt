@@ -612,6 +612,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         Thread {
             var recorder: AudioRecord? = null
             var engine: HindiOfflineAsrEngine? = null
+            var commandDispatched = false
             try {
                 Thread.sleep(250)
                 val sampleRate = HindiOfflineAsrEngine.SAMPLE_RATE
@@ -659,6 +660,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 engine = HindiOfflineAsrEngine(HindiOfflineModelInstaller.modelDirectory(this))
                 val recognized = engine.transcribe(HindiPcmAudio.toFloatSamples(pcm), sampleRate)
                 check(recognized.isNotBlank()) { "Hindi speech was not recognized. Please repeat the command." }
+                commandDispatched = true
                 runOnUiThread {
                     hindiAsrInProgress = false
                     if (!isFinishing && !hindiAsrCancelled) {
@@ -680,6 +682,24 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 runCatching { recorder?.release() }
                 runCatching { engine?.close() }
                 hindiAsrInProgress = false
+                // If capture/transcription failed or was cancelled, the success path
+                // never reaches handleCommand(), so explicitly restore an opted-in
+                // KWS listener after the microphone has been released.
+                if (!commandDispatched) {
+                    runOnUiThread {
+                        if (!isFinishing && !hindiAsrCancelled &&
+                            getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                                .getBoolean(KEY_KWS_ENABLED, false)) {
+                            window.decorView.postDelayed({
+                                if (!isFinishing && !hindiAsrInProgress &&
+                                    getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                                        .getBoolean(KEY_KWS_ENABLED, false)) {
+                                    startKwsService()
+                                }
+                            }, 500)
+                        }
+                    }
+                }
             }
         }.start()
     }
