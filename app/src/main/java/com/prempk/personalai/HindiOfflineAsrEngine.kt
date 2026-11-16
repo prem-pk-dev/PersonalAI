@@ -40,8 +40,7 @@ class HindiOfflineAsrEngine(
     }
 
     fun transcribe(samples: FloatArray, sampleRate: Int = SAMPLE_RATE): String {
-        require(sampleRate == SAMPLE_RATE) { "Hindi ASR requires 16 kHz mono audio." }
-        require(samples.isNotEmpty()) { "No audio was captured." }
+        HindiPcmAudio.validateFloatSamples(samples, sampleRate)
         val stream = recognizer.createStream()
         return try {
             stream.acceptWaveform(samples, sampleRate)
