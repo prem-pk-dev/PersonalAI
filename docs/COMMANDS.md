@@ -8,7 +8,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "WhatsApp par message bhejo hello" / "व्हाट्सएप पर मैसेज भेजो नमस्ते" | COMPOSE_WHATSAPP | Prepare text in WhatsApp share flow; user selects chat and sends manually |
 | "YouTube kholo" | OPEN_APP(youtube) | Launch YouTube if installed |
 | "Chrome kholo" | OPEN_APP(chrome) | Launch Chrome if installed |
-| "Settings kholo" | OPEN_SETTINGS | Open Android Settings |\n| "Wi-Fi settings kholo" / "वाईफाई सेटिंग खोलो" | OPEN_WIFI_SETTINGS | Open the Android Wi-Fi settings screen; the user changes the setting |\n| "Bluetooth settings kholo" / "ब्लूटूथ सेटिंग खोलो" | OPEN_BLUETOOTH_SETTINGS | Open the Android Bluetooth settings screen; the user changes the setting |
+| "Settings kholo" | OPEN_SETTINGS | Open Android Settings |\n| "Wi-Fi settings kholo" / "wifi setting kholo" / "वाईफाई सेटिंग खोलो" | OPEN_WIFI_SETTINGS | Open the Android Wi-Fi settings screen; the user changes the setting |\n| "Bluetooth settings kholo" / "bluetooth setting kholo" / "ब्लूटूथ सेटिंग खोलो" | OPEN_BLUETOOTH_SETTINGS | Open the Android Bluetooth settings screen; the user changes the setting |
 | "Rahul ko call karo" | DIAL_CONTACT(Rahul) | Rank exact, prefix, and partial matches; dial unique result or ask user to choose |
 | "9876543210 par call karo" | DIAL_NUMBER(number) | Open dialer for user confirmation |
 | "SMS 9876543210" | COMPOSE_SMS(number) | Open SMS composer; user sends manually |
