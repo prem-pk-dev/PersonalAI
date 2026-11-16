@@ -11,7 +11,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import kotlin.math.min
 
-/** Lightweight animated voice orb; no image assets or network dependencies. */
+/** Lightweight voice orb; motion is active only during an explicit listening session. */
 class SiriOrbView(context: Context) : View(context) {
     private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val orbPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -23,7 +23,7 @@ class SiriOrbView(context: Context) : View(context) {
     private var phase = 0f
     private var listening = false
     private val animator = ValueAnimator.ofFloat(0f, 1f).apply {
-        duration = 3200L
+        duration = 1500L
         repeatCount = ValueAnimator.INFINITE
         interpolator = LinearInterpolator()
         addUpdateListener {
@@ -32,15 +32,16 @@ class SiriOrbView(context: Context) : View(context) {
         }
     }
 
-    init {
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
-        animator.start()
-    }
-
+    // Deliberately do not start the animator here: the idle orb must remain still.
     fun setListening(active: Boolean) {
+        if (listening == active) return
         listening = active
-        animator.duration = if (active) 1500L else 3200L
-        if (!animator.isStarted) animator.start()
+        if (active) {
+            if (!animator.isStarted) animator.start()
+        } else {
+            animator.cancel()
+            phase = 0f
+        }
         invalidate()
     }
 
@@ -49,7 +50,7 @@ class SiriOrbView(context: Context) : View(context) {
         val cx = width / 2f
         val cy = height / 2f
         val base = min(width, height) * 0.34f
-        val pulse = if (listening) 0.07f else 0.025f
+        val pulse = if (listening) 0.07f else 0f
         val breathe = 1f + pulse * kotlin.math.sin(phase * Math.PI * 2).toFloat()
         val radius = base * breathe
 
