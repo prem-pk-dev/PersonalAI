@@ -236,3 +236,11 @@
 - [x] Add JVM regression tests for missing microphone permission, missing model, Android 12 notification-permission exemption, Android 13+ notification requirement, and ready state.
 - [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
 - [ ] Verify permission grant/denial and KWS startup behavior on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Bounded Hindi PCM capture for Redmi Note 9 (2026-11-16)
+- [x] Replace boxed per-sample PCM accumulation with a fixed-capacity primitive ShortArray buffer.
+- [x] Hard-cap one-shot Hindi capture to nine seconds and stop reading when the buffer is full.
+- [x] Add JVM tests for frame ordering, partial frames, capacity truncation, defensive snapshots and invalid input.
+- [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
+- [ ] Measure Hindi ASR peak memory, latency and thermal behavior on Redmi Note 9; this code change alone is not a device benchmark.
