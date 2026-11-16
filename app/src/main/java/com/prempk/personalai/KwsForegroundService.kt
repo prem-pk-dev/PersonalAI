@@ -161,10 +161,12 @@ class KwsForegroundService : Service() {
                 }
             } finally {
                 running.set(false)
+                // Each native resource is released independently: one JNI cleanup
+                // failure must not prevent the remaining resources or WakeLock cleanup.
                 runCatching { localRecorder?.stop() }
-                localRecorder?.release()
-                localStream?.release()
-                localSpotter?.release()
+                runCatching { localRecorder?.release() }
+                runCatching { localStream?.release() }
+                runCatching { localSpotter?.release() }
                 recorder = null
                 stream = null
                 spotter = null
