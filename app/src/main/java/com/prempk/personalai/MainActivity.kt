@@ -908,6 +908,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 override fun onEndOfSpeech() = Unit
                 override fun onError(error: Int) {
                     if (!wakeMode) return
+                    // Recognition is not actively listening while the provider retries.
+                    orb.setListening(false)
                     consecutiveRecognitionErrors += 1
                     val retryDelay = SpeechRecognitionRetryPolicy.delayAfterFailure(consecutiveRecognitionErrors)
                     if (retryDelay != null) {
@@ -959,6 +961,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             recognizer?.startListening(intent)
         } catch (exception: Exception) {
             wakeMode = false
+            orb.setListening(false)
             prepareKwsResumeAfterHandoffFailure()
             respond("Speech error: ${exception.localizedMessage ?: "unknown"}")
         }
