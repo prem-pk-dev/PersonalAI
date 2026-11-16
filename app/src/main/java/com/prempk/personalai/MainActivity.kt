@@ -1340,11 +1340,15 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun resumeKwsAfterSpeech() {
-        if (!restartKwsAfterSpeech) return
+        val listenerEnabled = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getBoolean(KEY_KWS_ENABLED, false)
+        val microphoneGranted =
+            checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val shouldResume = KwsSpeechLifecycle.shouldResumeAfterTtsFailure(
+            restartKwsAfterSpeech, listenerEnabled, microphoneGranted
+        )
         restartKwsAfterSpeech = false
-        if (!isFinishing && !isDestroyed &&
-            checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
-            getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(KEY_KWS_ENABLED, false)) {
+        if (shouldResume && !isFinishing && !isDestroyed) {
             window.decorView.postDelayed({
                 if (!isFinishing && !isDestroyed && !hindiAsrInProgress &&
                     checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
