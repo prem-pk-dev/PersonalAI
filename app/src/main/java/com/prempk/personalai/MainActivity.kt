@@ -676,11 +676,15 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 recorder.stop()
                 recorder.release()
                 recorder = null
+                check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
                 val pcm = ShortArray(captured.size) { captured[it] }
                 engine = HindiOfflineAsrEngine(HindiOfflineModelInstaller.modelDirectory(this))
+                check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
                 val recognized = engine.transcribe(HindiPcmAudio.toFloatSamples(pcm), sampleRate)
                 check(!hindiAsrCancelled) { "Hindi listening was cancelled." }
                 check(recognized.isNotBlank()) { "Hindi speech was not recognized. Please repeat the command." }
+                // Close the cancel window before posting the completed command to the UI thread.
+                hindiAsrInProgress = false
                 commandDispatched = true
                 runOnUiThread {
                     hindiAsrInProgress = false
