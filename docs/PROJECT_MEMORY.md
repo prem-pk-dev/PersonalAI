@@ -267,3 +267,9 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Found that app-launch commands were excluded from the TTS completion gate even though their launch helpers speak a confirmation. The handler therefore restarted the opted-in background KWS service before the spoken "Opening ..." response completed.
 - Changed the lifecycle policy so every dispatched command defers KWS restart until its TTS completion callback (or the existing TTS-failure fallback). Added an exhaustive test over all `AssistantCommandType` values so new commands cannot silently bypass the gate.
 - Physical microphone/TTS overlap verification on Redmi Note 9 and exact-head CI remain pending.
+
+
+## Timer duration ambiguity guard (2026-11-16)
+
+- Hardened `TimerDurationParser` to require exactly one numeric component and to read its unit from the text immediately following that amount. Multi-part durations such as "5 minutes and 10 seconds" or "1 hour 30 minutes" are rejected rather than silently interpreted as only the first component.
+- Supports explicit English/Hindi hour, minute and second units, preserves the single-number default-to-minutes behavior, and rejects zero, overflow and durations over 24 hours. Added JVM regression tests. CI and physical-device timer handoff remain pending.
