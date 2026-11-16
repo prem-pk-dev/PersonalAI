@@ -1157,21 +1157,27 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         when (candidates.size) {
             0 -> respond(localized("I couldn't find an installed app named $requestedName.", "$requestedName नाम का इंस्टॉल ऐप नहीं मिला।"))
-            1 -> {
-                lastOpenedAppLabel = candidates.first().first
-                openIntent(candidates.first().second, localized("Opening ${candidates.first().first}.", "${candidates.first().first} खोल रहा हूँ।"))
-            }
+            1 -> openInstalledAppLaunch(candidates.first().first, candidates.first().second)
             else -> {
                 val labels = candidates.map { it.first }.toTypedArray()
                 AlertDialog.Builder(this)
                     .setTitle(localized("Choose an app", "ऐप चुनें"))
                     .setItems(labels) { _, which ->
-                        lastOpenedAppLabel = candidates[which].first
-                        openIntent(candidates[which].second, localized("Opening ${candidates[which].first}.", "${candidates[which].first} खोल रहा हूँ।"))
+                        openInstalledAppLaunch(candidates[which].first, candidates[which].second)
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
             }
+        }
+    }
+
+    private fun openInstalledAppLaunch(label: String, launch: Intent) {
+        runCatching {
+            startActivity(launch)
+            lastOpenedAppLabel = label
+            respond(localized("Opening $label.", "$label खोल रहा हूँ।"))
+        }.onFailure {
+            respond(localized("Could not open $label.", "$label नहीं खुल पाया।"))
         }
     }
 
