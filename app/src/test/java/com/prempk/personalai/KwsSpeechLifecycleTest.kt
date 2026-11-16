@@ -34,6 +34,13 @@ class KwsSpeechLifecycleTest {
         spokenCommands.forEach { assertTrue("$it should wait for TTS", KwsSpeechLifecycle.shouldResumeAfterSpeech(it, true)) }
     }
 
+    @Test fun speechPromptRestartsRecognizerOnlyDuringWakeCommandHandoff() {
+        assertTrue(KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(true, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(true, false))
+        assertFalse(KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(false, true))
+        assertFalse(KwsSpeechLifecycle.shouldResumeSpeechRecognitionAfterPrompt(false, false))
+    }
+
     @Test fun doesNotScheduleListenerWhenOptInIsOff() {
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.MEDIA_PLAY, false))
         assertFalse(KwsSpeechLifecycle.shouldResumeAfterSpeech(AssistantCommandType.INFO_TIME, false))
