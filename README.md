@@ -10,6 +10,7 @@ PK is a native Kotlin Android assistant for Android 12–16 (device validation i
 - Android SpeechRecognizer and TextToSpeech, with automatic response-language selection: Hindi-script and common Romanized-Hindi input select Hindi (India) TTS; English/other Latin input defaults to English (India). Android 14+ language-detection callbacks are enabled when supported; Android 12 uses the script/phrase heuristic fallback. Actual recognition depends on the installed provider and language models.
 - ACTION_ASSIST activity entry point and a user-consented Android default-assistant role request. The role request and API guards pass CI; a real VoiceInteractionService/session implementation is still pending, so this is not yet a complete always-on system assistant.
 - Deterministic command parser and JUnit coverage.
+- Media playback commands (play/pause/next/previous) route through the active Android media session using `MediaController`; users must grant PK Notification Access first. The app reports when no active session exists or an action is unsupported. This integration is CI-verified, but Redmi Note 9 / app-specific behavior remains untested.
 - Contact lookup with contextual permission rationale, exact-first matching, duplicate-number normalization, and chooser for ambiguous matches.
 - Microphone and Contacts permission denials have clear feedback.
 - Launch WhatsApp / WhatsApp Business, YouTube, Chrome, and Android Settings.
