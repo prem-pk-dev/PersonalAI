@@ -96,3 +96,9 @@
 - [x] Add a testable KWS speech lifecycle policy so media and volume command TTS replies complete before the microphone listener resumes.
 - [x] Add unit tests for deferred resume, opt-out behavior, and app-launch behavior.
 - [ ] Verify the exact branch-head CI run for this change; do not mark tests/build as passed until the matching run is confirmed.
+
+
+## Hindi offline audio preprocessing regression tests (2026-11-16)
+- [x] Strengthen PCM16-to-float normalization, requested frame-length, invalid-input, and RMS unit coverage for the Hindi offline ASR preprocessing helpers.
+- [ ] Verify these tests and the latest KWS lifecycle tests in GitHub Actions for the exact latest feature-branch head.
+- [ ] Verify real microphone capture, VAD threshold, model inference and memory/latency on Redmi Note 9; unit tests do not replace device validation.
