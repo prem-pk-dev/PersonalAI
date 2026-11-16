@@ -13,6 +13,10 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.OPEN_YOUTUBE, CommandParser.parse("यूट्यूब खोलो"))
         assertEquals(AssistantCommandType.OPEN_CHROME, CommandParser.parse("Chrome kholo"))
         assertEquals(AssistantCommandType.OPEN_SETTINGS, CommandParser.parse("सेटिंग खोलो"))
+        assertEquals(AssistantCommandType.OPEN_WIFI_SETTINGS, CommandParser.parse("open Wi-Fi settings"))
+        assertEquals(AssistantCommandType.OPEN_WIFI_SETTINGS, CommandParser.parse("वाईफाई सेटिंग खोलो"))
+        assertEquals(AssistantCommandType.OPEN_BLUETOOTH_SETTINGS, CommandParser.parse("Bluetooth settings kholo"))
+        assertEquals(AssistantCommandType.OPEN_BLUETOOTH_SETTINGS, CommandParser.parse("ब्लूटूथ सेटिंग खोलो"))
     }
 
     @Test fun recognizesCommunicationAndAlarmCommands() {
