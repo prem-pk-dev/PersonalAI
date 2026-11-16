@@ -21,6 +21,10 @@ PK is a native Kotlin Android assistant for Android 12–16 (device validation i
 - PK-branded dark interface with animated voice orb, compact composer and conversation panel.
 - Explicitly enabled AccessibilityService supports limited cross-app scroll, Back and Home actions; the app reports whether the service is enabled. It does not read screen text or send messages.
 - Calendar reminder/event composer opens for the user to review and set its date/time; PK does not silently schedule reminders.
+- Alarm and timer commands parse supported English/Hindi durations and open Android Clock with the requested values for user confirmation; ambiguous or unsupported time/duration phrases are rejected.
+- System music-stream volume up/down/mute commands and Wi-Fi/Bluetooth Settings navigation are available; radio changes remain user-controlled.
+- The voice orb stays static while idle and animates only during active listening; it stops during recognition retry gaps and startup failures.
+- Explicitly tested Romanized-Hinglish aliases cover a finite set of media, volume, navigation, time and date commands; this is not general Hinglish speech understanding.
 
 ## Wake-word and platform limitations
 
