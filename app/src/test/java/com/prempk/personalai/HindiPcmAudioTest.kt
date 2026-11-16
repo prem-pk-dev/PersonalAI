@@ -40,6 +40,27 @@ class HindiPcmAudioTest {
         }
     }
 
+    @Test fun acceptsNormalizedFiniteFloatPcmAtSixteenKhz() {
+        HindiPcmAudio.validateFloatSamples(floatArrayOf(-1f, -0.5f, 0f, 0.5f, 1f), 16_000)
+    }
+
+    @Test fun rejectsWrongSampleRateAndEmptyFloatPcm() {
+        assertThrows(IllegalArgumentException::class.java) {
+            HindiPcmAudio.validateFloatSamples(floatArrayOf(0f), 8_000)
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            HindiPcmAudio.validateFloatSamples(floatArrayOf(), 16_000)
+        }
+    }
+
+    @Test fun rejectsNonFiniteAndOutOfRangeFloatPcm() {
+        listOf(Float.NaN, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, -1.01f, 1.01f).forEach { sample ->
+            assertThrows(IllegalArgumentException::class.java) {
+                HindiPcmAudio.validateFloatSamples(floatArrayOf(sample), 16_000)
+            }
+        }
+    }
+
     @Test fun calculatesExactRmsForSilenceAndKnownSignal() {
         assertEquals(0f, HindiPcmAudio.rms(shortArrayOf(0, 0, 0)), 0.000001f)
         assertEquals(kotlin.math.sqrt(0.125).toFloat(),
