@@ -71,8 +71,9 @@ object HindiOfflineModelInstaller {
             check(tokensPart.renameTo(File(staging, TOKENS_FILE))) { "Could not finalize Hindi vocabulary file." }
             File(staging, MARKER_FILE).writeText(MARKER_CONTENT, Charsets.UTF_8)
 
-            destination.deleteRecursively()
-            check(staging.renameTo(destination)) { "Could not finalize Hindi model installation." }
+            check(HindiModelDirectoryCommit.promote(staging, destination)) {
+                "Could not safely finalize Hindi model installation."
+            }
             check(isModelDirectoryReady(destination)) { "Hindi model installation verification failed." }
             onProgress("Hindi offline model is ready.", 100)
             return destination
