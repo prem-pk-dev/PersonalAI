@@ -127,7 +127,7 @@
 - [x] After microphone permission is granted, defer KWS restart until the permission response finishes speaking; clear stale KWS opt-in when permission is denied.
 - [x] Add regression coverage for opt-in and microphone-permission combinations.
 - [ ] Verify wake detection, permission prompts, SpeechRecognizer failures, and listener restart on Redmi Note 9 / Android 12 MIUI 13.
-- [ ] Verify exact branch-head CI and APK assembly.
+- [x] Verify exact branch-head CI and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## Hindi offline listening cancellation (2026-11-16)
@@ -136,7 +136,7 @@
 - [x] Restore an opted-in KWS listener after a user cancellation or failed one-shot capture, after microphone resources are released; do not restart from a destroyed Activity.
 - [x] Close the cancel window before posting a completed transcript to avoid a cancel/dispatch race.
 - [ ] Verify cancellation during capture and transcription, microphone release, and KWS restart on Redmi Note 9.
-- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [x] Verify exact branch-head CI, lint, unit tests and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## TTS failure recovery for KWS handoff (2026-11-16)
@@ -154,7 +154,7 @@
 - [x] Reset the consecutive-failure counter for a new listening session and after a successful recognition result; delayed retries re-check Activity and listening state.
 - [x] Add JVM tests for backoff sequence, retry exhaustion, and invalid failure counts.
 - [ ] Verify SpeechRecognizer error codes, recovery and KWS handoff on Redmi Note 9 / Android 12 MIUI 13.
-- [ ] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions.
+- [x] Verify exact branch-head lint, unit tests and APK assembly in GitHub Actions (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## Accessibility scroll app allowlist (2026-11-16)
@@ -163,7 +163,7 @@
 - [x] Keep Back/Home as explicit global navigation actions and disclose the distinction in the Accessibility setup prompt.
 - [x] Add unit tests for default-deny, selected-app allow, unselected-app deny, and missing active package.
 - [ ] Verify app switching, package identification, scroll gestures and Back/Home on Redmi Note 9 / Android 12 MIUI 13.
-- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [x] Verify exact branch-head CI, lint, unit tests and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## Wake acknowledgement microphone handoff (2026-11-16)
@@ -196,7 +196,7 @@
 - [x] Reject follow-up resolution without a valid recent package name or for unrelated free-form requests; never execute generated instructions.
 - [x] Add unit tests for supported phrases, exact package resolution, missing/invalid context and unrelated action rejection.
 - [ ] Verify follow-up app relaunch and context lifecycle on Redmi Note 9 / Android 12 MIUI 13.
-- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [x] Verify exact branch-head CI, lint, unit tests and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## All-command TTS microphone gate (2026-11-16)
@@ -204,14 +204,14 @@
 - [x] Remove the previous app-launch exception, which could restart KWS before the "Opening app" TTS response completed.
 - [x] Add an exhaustive enum-based unit test so newly added command types also require the TTS handoff.
 - [ ] Verify microphone non-overlap for app launch, media, navigation, alarm and error responses on Redmi Note 9.
-- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [x] Verify exact branch-head CI, lint, unit tests and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 
 
 ## Timer duration ambiguity guard (2026-11-16)
 - [x] Require exactly one numeric duration component; reject multi-part inputs such as "5 minutes and 10 seconds" rather than silently ignoring later values.
 - [x] Parse explicit English/Hindi hour, minute and second units; preserve the existing single-number default-to-minutes behavior.
 - [x] Reject zero, overflow and durations above 24 hours with regression tests.
-- [ ] Verify exact branch-head CI, lint, unit tests and APK assembly.
+- [x] Verify exact branch-head CI, lint, unit tests and APK assembly (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 - [ ] Verify timer handoff and confirmation on Redmi Note 9 / Android 12 MIUI 13.
 
 
@@ -234,7 +234,7 @@
 ## KWS startup permission gate (2026-11-16)
 - [x] Centralize microphone, model-installation and Android 13+ notification permission prerequisites in a deterministic startup gate.
 - [x] Add JVM regression tests for missing microphone permission, missing model, Android 12 notification-permission exemption, Android 13+ notification requirement, and ready state.
-- [ ] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions.
+- [x] Verify exact branch-head lint, unit tests and clean APK assembly in GitHub Actions (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 - [ ] Verify permission grant/denial and KWS startup behavior on Redmi Note 9 / Android 12 MIUI 13.
 
 
@@ -249,7 +249,7 @@
 ## Hindi ASR input validation (2026-11-16)
 - [x] Validate 16 kHz mono input, non-empty audio, finite samples and normalized PCM range before passing audio to Sherpa-ONNX.
 - [x] Add JVM regression tests for valid input, incorrect sample rate, empty audio, NaN/infinity and out-of-range values.
-- [ ] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions.
+- [x] Verify exact branch-head unit tests, lint and clean APK assembly in GitHub Actions (Build #439, exact head `8f228f62f797da4432143f8e9b5be506cde55bf3`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 - [ ] Confirm real microphone input and Hindi transcription quality on Redmi Note 9.
 
 ## Independent native audio resource cleanup (2026-11-16)
@@ -282,3 +282,11 @@
 - [x] Stop animation during speech-provider retry gaps and when recognition startup throws an exception.
 - [x] Verify exact branch-head CI, lint, unit tests, and clean APK assembly for this change (run #427, exact commit `45f46f6e20e262f4e3b8983bb0f075d3eefac50b`; clean rebuild, tests, ARM native packaging, APK signature/metadata and artifact upload passed).
 - [ ] Verify idle stability, Start Listening animation, Stop Listening reset, and permission-denied behavior on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Mute and Romanized-Hindi alarm command fixes (2026-11-17)
+- [x] Add Romanized-Hindi mute aliases including `mute karo`, `volume mute karo`, and `awaz mute karo`.
+- [x] Add Romanized-Hindi alarm setup aliases including `lagao` and `laga do`; ask for a time when missing and open Clock for confirmation when time is supplied.
+- [x] Add parser regression tests and update `docs/COMMANDS.md`.
+- [x] Verify clean tests, lint/build, ARM native packaging, APK signature/metadata and artifact upload on exact branch head `8f228f62f797da4432143f8e9b5be506cde55bf3` (Build #439).
+- [ ] Physical Redmi Note 9 validation remains pending; CI does not establish device behavior.
