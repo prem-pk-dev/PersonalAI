@@ -309,3 +309,11 @@
 - [x] Route keyboard and on-screen send actions through one submission method and the existing command handler.
 - [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
 - [ ] Review keyboard behavior and focus handling on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Local conversation context — safer app follow-ups (2026-11-17)
+- [x] Expand explicit English, Hindi and Romanized-Hindi phrases for reopening the last successfully launched app.
+- [x] Keep follow-up resolution restricted to a fixed allowlist of phrases and the exact validated package name from the current Activity session.
+- [x] Add JVM regression cases for the new aliases; arbitrary message, delete and send phrases remain non-actions.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Verify follow-up behavior after app switching, Activity recreation and process restart on Redmi Note 9; recent app context is intentionally session-only.
