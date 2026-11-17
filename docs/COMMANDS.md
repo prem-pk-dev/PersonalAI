@@ -9,13 +9,17 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "YouTube kholo" | OPEN_APP(youtube) | Launch YouTube if installed |
 | "Chrome kholo" | OPEN_APP(chrome) | Launch Chrome if installed |
 | "PK ChatGPT kholo" / "पीके ChatGPT खोलो" | OPEN_INSTALLED_APP(ChatGPT) | Resolve the installed app by display name and launch it if installed |
-| "Settings kholo" | OPEN_SETTINGS | Open Android Settings |\n| "Wi-Fi settings kholo" / "wifi setting kholo" / "वाईफाई सेटिंग खोलो" | OPEN_WIFI_SETTINGS | Open the Android Wi-Fi settings screen; the user changes the setting |\n| "Bluetooth settings kholo" / "bluetooth setting kholo" / "ब्लूटूथ सेटिंग खोलो" | OPEN_BLUETOOTH_SETTINGS | Open the Android Bluetooth settings screen; the user changes the setting |
+| "Settings kholo" | OPEN_SETTINGS | Open Android Settings |
+| "Wi-Fi settings kholo" / "wifi setting kholo" / "वाईफाई सेटिंग खोलो" | OPEN_WIFI_SETTINGS | Open the Android Wi-Fi settings screen; the user changes the setting |
+| "Bluetooth settings kholo" / "bluetooth setting kholo" / "ब्लूटूथ सेटिंग खोलो" | OPEN_BLUETOOTH_SETTINGS | Open the Android Bluetooth settings screen; the user changes the setting |
 | "Rahul ko call karo" | DIAL_CONTACT(Rahul) | Rank exact, prefix, and partial matches; dial unique result or ask user to choose |
 | "9876543210 par call karo" | DIAL_NUMBER(number) | Open dialer for user confirmation |
 | "SMS 9876543210" | COMPOSE_SMS(number) | Open SMS composer; user sends manually |
 | "Rahul ko SMS bhejo" / "Papa ko message bhejo" / "Amit ko SMS karo" | COMPOSE_SMS(contact) | Resolve contact safely and open composer |
-| "Alarm kholo" / "अलार्म खोलो" | OPEN_ALARMS
-| "PK alarm lagao" / "PK alarm 7 baje lagao" / "अलार्म लगा दो" | SET_ALARM | Ask for a time if missing; open Clock for user confirmation when a valid time is provided | Try Android Clock alarm intents, then supported Clock app launchers (including MIUI Clock); the user selects/edits alarms in Clock |
+| "Alarm kholo" / "अलार्म खोलो" | OPEN_ALARMS | Open the device Clock app or a supported alarm screen |
+| "PK alarm lagao" / "PK alarm 7 baje lagao" / "अलार्म लगा दो" | SET_ALARM | Ask for a time if missing; open Clock for user confirmation when a valid time is provided. Tries Android Clock alarm intents, then supported Clock app launchers (including MIUI Clock) |
+| "5 minute ka timer lagao" / "set timer for 5 minutes" | SET_TIMER | Parse a supported duration and open Clock for user confirmation |
+| "Remind me to drink water" / "मुझे पानी पीने की याद दिलाओ" | CREATE_REMINDER | Prepare a Calendar event; the user chooses date/time and saves it |
 | "Time kya hua" | INFO_TIME | Speak current device time offline |
 | "Aaj ki date batao" | INFO_DATE | Speak current device date offline |
 | "Battery kitni hai" | INFO_BATTERY | Read battery percentage offline |
@@ -29,7 +33,9 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "awaz band" / "mute karo" / "आवाज़ बंद करो" | VOLUME_MUTE | Mute system music-stream volume where supported |
 | "Help" / "मदद" | HELP | Explain supported app, communication, media, volume, accessibility, alarm/timer, reminder and device-info actions, including permission/app-support limits |
 
-## Wake-word behavior\n\n- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
+## Wake-word behavior
+
+- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
 
 - Say "PK" (Hindi speech transcript forms "पीके" or "पी के") and then speak the command.
 - A combined utterance such as "PK YouTube kholo" is also supported.
