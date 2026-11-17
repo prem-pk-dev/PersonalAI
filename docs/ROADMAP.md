@@ -356,3 +356,10 @@
 - [ ] Verify the exact updated branch-head lint, unit tests, clean APK build, ARM native packaging, APK metadata/signature and artifact upload.
 - [ ] Verify notification tap-to-command handoff, command execution, and KWS resume/stop on Redmi Note 9 / Android 12 MIUI 13.
 - [ ] Seamless hands-free background wake-to-command remains out of scope until a supported always-on command-recognition design is implemented and device-tested.
+
+
+## PK listener notification interruption fix (2026-11-17)
+- [x] Lower the persistent foreground-listener notification channel from HIGH to LOW importance to prevent unnecessary heads-up interruption.
+- [x] Bump the channel ID to v3 so Android creates the corrected channel instead of retaining the user's existing immutable v2 channel settings.
+- [ ] Verify notification visibility, Stop action, and wake-detected notification tap on Android 12 / MIUI 13.
+- [ ] Verify branch-head CI, lint, JVM tests, clean APK build, ARM native packaging, APK metadata/signature and artifact upload.
