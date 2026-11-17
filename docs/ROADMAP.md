@@ -341,3 +341,10 @@
 - [x] Update the command contract with discoverable examples.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Validate speech-recognition transcription variants and command execution on Redmi Note 9 / Android 12 MIUI 13.
+
+## Expanded natural everyday phrases (2026-11-17)
+- [x] Add common conversational English and Romanized-Hindi variants for time, date, battery, volume, and media playback intents.
+- [x] Add deterministic parser regression tests for the newly supported phrases.
+- [x] Update the user-facing command contract with representative examples.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Validate speech transcripts and actual command execution on Redmi Note 9 / Android 12 MIUI 13.
