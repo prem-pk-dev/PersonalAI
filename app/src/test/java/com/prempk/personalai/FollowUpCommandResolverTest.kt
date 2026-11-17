@@ -21,6 +21,16 @@ class FollowUpCommandResolverTest {
             FollowUpCommandResolver.resolvePackage("वही ऐप खोलो।", "com.android.chrome"))
         assertEquals("com.whatsapp",
             FollowUpCommandResolver.resolvePackage("same app kholo", "com.whatsapp"))
+        assertEquals("com.google.android.youtube",
+            FollowUpCommandResolver.resolvePackage("last app kholo", "com.google.android.youtube"))
+        assertEquals("com.android.chrome",
+            FollowUpCommandResolver.resolvePackage("pichla app kholo", "com.android.chrome"))
+        assertEquals("com.whatsapp.w4b",
+            FollowUpCommandResolver.resolvePackage("wahi app dobara kholo", "com.whatsapp.w4b"))
+        assertEquals("com.android.chrome",
+            FollowUpCommandResolver.resolvePackage("आखिरी ऐप फिर से खोलो", "com.android.chrome"))
+        assertEquals("com.google.android.youtube",
+            FollowUpCommandResolver.resolvePackage("उसी ऐप को दोबारा खोलो।", "com.google.android.youtube"))
     }
 
     @Test fun doesNotResolveWithoutSafeRecentPackageContext() {
