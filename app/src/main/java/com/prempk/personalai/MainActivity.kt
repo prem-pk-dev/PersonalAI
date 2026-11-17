@@ -1169,13 +1169,63 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
                 respond(if (level in 0..100) localized("Your battery is at $level percent.", "आपकी बैटरी $level प्रतिशत है।")
                     else localized("I cannot read the battery level right now.", "अभी बैटरी का स्तर नहीं पढ़ पा रहा हूँ।"))
             }
-            AssistantCommandType.HELP -> respond(localized(
-                "I can open installed apps, prepare calls, SMS and WhatsApp messages for your review, control active media playback and system media volume, scroll or navigate when Accessibility is enabled, set up alarms and timers in Clock, prepare Calendar reminders, and tell you the time, date and battery level. Some controls depend on Android permissions and app support.",
-                "मैं इंस्टॉल ऐप खोल सकता हूँ, कॉल, SMS और WhatsApp संदेश आपके जाँचने के लिए तैयार कर सकता हूँ, चल रहे मीडिया और सिस्टम मीडिया आवाज़ को नियंत्रित कर सकता हूँ, Accessibility चालू होने पर स्क्रॉल और नेविगेशन कर सकता हूँ, Clock में अलार्म और टाइमर सेट करने में मदद कर सकता हूँ, Calendar में रिमाइंडर तैयार कर सकता हूँ और समय, तारीख तथा बैटरी बता सकता हूँ। कुछ सुविधाओं के लिए Android अनुमति और ऐप का समर्थन ज़रूरी है।"
-            ))
+            AssistantCommandType.HELP -> showCommandHelp()
             AssistantCommandType.UNKNOWN ->
                 respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
         }
+    }
+
+    private fun showCommandHelp() {
+        val english = """
+            APPS
+            • “YouTube kholo” · “WhatsApp kholo” · “Chrome kholo”
+            • “Calculator kholo” · “ChatGPT kholo” (if installed)
+
+            COMMUNICATION — YOU REVIEW AND SEND
+            • “Rahul ko call karo” · “Papa ko SMS bhejo”
+            • “WhatsApp par message bhejo hello”
+
+            PHONE & MEDIA
+            • “Wi-Fi settings kholo” · “Bluetooth settings kholo”
+            • “music play karo” · “agla gaana” · “volume badhao”
+            • “upar scroll” · “peeche jao” (Accessibility required)
+
+            DAILY TOOLS
+            • “alarm 7 baje lagao” · “5 minute ka timer lagao”
+            • “mujhe paani peene ki yaad dilao”
+            • “time kya hua” · “aaj ki tareekh” · “battery kitni hai”
+
+            Say “PK” before a command when using the wake listener.
+            Some actions need Android permissions or compatible apps.
+        """.trimIndent()
+        val hindi = """
+            ऐप खोलना
+            • “यूट्यूब खोलो” · “व्हाट्सएप खोलो” · “क्रोम खोलो”
+            • “कैलकुलेटर खोलो” · “ChatGPT खोलो” (इंस्टॉल हो तो)
+
+            बातचीत — भेजने से पहले आप जाँचेंगे
+            • “राहुल को कॉल करो” · “पापा को SMS भेजो”
+            • “व्हाट्सएप पर मैसेज भेजो नमस्ते”
+
+            फोन और मीडिया
+            • “वाईफाई सेटिंग खोलो” · “ब्लूटूथ सेटिंग खोलो”
+            • “गाना चलाओ” · “अगला गाना” · “आवाज बढ़ाओ”
+            • “ऊपर स्क्रॉल” · “पीछे जाओ” (Accessibility ज़रूरी)
+
+            रोज़ के काम
+            • “अलार्म 7 बजे लगाओ” · “5 मिनट का टाइमर लगाओ”
+            • “मुझे पानी पीने की याद दिलाओ”
+            • “समय क्या हुआ” · “आज की तारीख” · “बैटरी कितनी है”
+
+            Wake listener के लिए कमांड से पहले “PK” बोलें।
+            कुछ कामों के लिए Android अनुमति या compatible ऐप ज़रूरी है।
+        """.trimIndent()
+        AlertDialog.Builder(this)
+            .setTitle(localized("What can PK do?", "PK क्या कर सकता है?"))
+            .setMessage(if (responseLanguageTag == "hi-IN") hindi else english)
+            .setPositiveButton(localized("Got it", "समझ गया"), null)
+            .show()
+        respond(localized("I’ve opened the command guide on screen.", "कमांड गाइड स्क्रीन पर खोल दी है।"))
     }
 
     private fun runAccessibilityAction(action: PkAccessibilityService.Action) {
