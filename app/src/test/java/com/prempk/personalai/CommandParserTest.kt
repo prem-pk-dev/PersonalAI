@@ -112,6 +112,21 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("आज क्या तारीख है"))
     }
 
+    @Test fun recognizesExpandedEverydayNaturalPhrases() {
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("what's the time"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("abhi time kya hai"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("which day is today"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("aaj kaun sa din hai"))
+        assertEquals(AssistantCommandType.INFO_BATTERY, CommandParser.parse("how much battery"))
+        assertEquals(AssistantCommandType.INFO_BATTERY, CommandParser.parse("kitni battery bachi hai"))
+        assertEquals(AssistantCommandType.VOLUME_UP, CommandParser.parse("make it louder"))
+        assertEquals(AssistantCommandType.VOLUME_UP, CommandParser.parse("awaz tez karo"))
+        assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("make it quieter"))
+        assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("awaz dheemi karo"))
+        assertEquals(AssistantCommandType.MEDIA_PLAY, CommandParser.parse("start playing music"))
+        assertEquals(AssistantCommandType.MEDIA_PAUSE, CommandParser.parse("stop the music"))
+    }
+
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
         assertEquals(AssistantCommandType.OPEN_SETTINGS, CommandParser.parse("  Settings kholo  "))
         assertEquals(AssistantCommandType.UNKNOWN, CommandParser.parse("tell me a joke"))
