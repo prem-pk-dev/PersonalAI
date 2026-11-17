@@ -411,6 +411,48 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         refreshAssistantRoleStatus(assistantRoleStatusView)
         refreshAccessibilityStatus()
 
+        // One place for the user to review Android settings required by optional features.
+        // These buttons only open system settings; PK never silently changes protected settings.
+        val deviceSetupCard = panelCard()
+        deviceSetupCard.addView(sectionTitle("PHONE SETUP"))
+        deviceSetupCard.addView(label(
+            "Review permissions and background settings here. Android asks you to make each change.",
+            12f, muted
+        ))
+        val appPermissionsButton = makeButton("Open PK app permissions") {
+            runCatching {
+                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:$packageName")))
+            }.onFailure { respond("Could not open PK app settings.") }
+        }.apply { isAllCaps = false; textSize = 12f }
+        deviceSetupCard.addView(appPermissionsButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(46)
+        ).apply { topMargin = dp(10) })
+        val notificationAccessButton = makeButton("Open notification access") {
+            runCatching { startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)) }
+                .onFailure { respond("Notification access settings are unavailable on this phone.") }
+        }.apply { isAllCaps = false; textSize = 12f }
+        deviceSetupCard.addView(notificationAccessButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(46)
+        ).apply { topMargin = dp(8) })
+        val batterySettingsButton = makeButton("Open battery optimization settings") {
+            runCatching { startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
+                .onFailure {
+                    runCatching { startActivity(Intent(Settings.ACTION_SETTINGS)) }
+                        .onFailure { respond("Could not open battery settings.") }
+                }
+        }.apply { isAllCaps = false; textSize = 12f }
+        deviceSetupCard.addView(batterySettingsButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(46)
+        ).apply { topMargin = dp(8) })
+        val accessibilitySettingsButton = makeButton("Open accessibility settings") {
+            runCatching { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+                .onFailure { respond("Accessibility settings are unavailable on this phone.") }
+        }.apply { isAllCaps = false; textSize = 12f }
+        deviceSetupCard.addView(accessibilitySettingsButton, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(46)
+        ).apply { topMargin = dp(8) })
+
         val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
             letterSpacing = 0.08f
@@ -418,7 +460,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         val views = listOf<View>(
-            header, heroCard, conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, footer
+            header, heroCard, conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, deviceSetupCard, footer
         )
         views.forEachIndexed { index, view ->
             val top = when (index) {
