@@ -317,3 +317,12 @@
 - [x] Add JVM regression cases for the new aliases; arbitrary message, delete and send phrases remain non-actions.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Verify follow-up behavior after app switching, Activity recreation and process restart on Redmi Note 9; recent app context is intentionally session-only.
+
+
+## Expanded natural app-launch phrasing (2026-11-17)
+- [x] Accept additional English app-launch verbs such as show/find and polite open requests.
+- [x] Accept common Romanized-Hindi and Devanagari launch endings such as khol do, dikhao, खोल दो and दिखाओ.
+- [x] Keep app resolution based on installed launcher labels; do not claim an app exists when it is not installed.
+- [x] Add parser and app-name extraction regression cases.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Verify app label matching and chooser behavior on Redmi Note 9 / Android 12 MIUI 13.
