@@ -54,6 +54,7 @@ object InstalledAppCommandParser {
         .replace(Regex("^(पीके|पी\\s+के)\\s*"), "")
         .replace(Regex("(?i)^\\s*(please\\s+)?(open|launch|start)\\s+"), "")
         .replace(Regex("(?i)\\s+(app\\s+)?(please\\s+)?(open|launch|start)$"), "")
+        .replace(Regex("(?i)(\\s+app)?\\s*(ko\\s*)?(kholo|kholna|chalao|shuru\\s+karo)$"), "")
         .replace(Regex("^(कृपया\\s*)?"), "")
         .replace(Regex("(\\s+ऐप)?\\s*(को\\s*)?(खोलो|खोलना|चलाओ|शुरू करो)$"), "")
         .trim()
