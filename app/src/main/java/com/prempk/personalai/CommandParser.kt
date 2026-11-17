@@ -100,7 +100,7 @@ object CommandParser {
             containsAny(command, "go home", "home screen", "home jao", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
             containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
-            containsAny(command, "open ", "launch ", "start ", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
+            containsAny(command, "open ", "launch ", "start ", "kholo", "kholna", "chalao", "shuru karo", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
             else -> AssistantCommandType.UNKNOWN
         }
     }
