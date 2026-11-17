@@ -81,7 +81,7 @@ object CommandParser {
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
             containsAny(command, "remind me", "reminder", "याद दिला", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
             containsAny(command, "call", "कॉल", "फोन लगाओ", "फोन करो") -> AssistantCommandType.CALL_CONTACT
-            containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "लगाओ", "लगाना", "बजा", "बजे") -> AssistantCommandType.SET_ALARM
+            containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "set karo", "lagao", "laga do", "lagana", "baje", "बजे", "लगाओ", "लगा दो", "लगाना", "बजा") -> AssistantCommandType.SET_ALARM
             containsAny(command, "alarm", "अलार्म") -> AssistantCommandType.OPEN_ALARMS
             containsAny(command, "map", "maps", "नक्शा", "मैप") -> AssistantCommandType.OPEN_MAPS
             containsAny(command, "time", "समय", "samay", "kitne baje", "कितने बजे") -> AssistantCommandType.INFO_TIME
@@ -89,7 +89,7 @@ object CommandParser {
             containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
             containsAny(command, "volume up", "increase volume", "turn volume up", "volume badhao", "volume badha", "awaz badhao", "awaaz badhao", "आवाज बढ़ा", "वॉल्यूम बढ़ा", "आवाज़ तेज", "आवाज तेज") -> AssistantCommandType.VOLUME_UP
             containsAny(command, "volume down", "decrease volume", "turn volume down", "volume kam", "awaz kam", "awaaz kam", "आवाज कम", "वॉल्यूम कम", "आवाज़ धीमी", "आवाज धीमी") -> AssistantCommandType.VOLUME_DOWN
-            containsAny(command, "mute volume", "mute sound", "awaz band", "awaaz band", "आवाज म्यूट", "वॉल्यूम म्यूट", "आवाज बंद") -> AssistantCommandType.VOLUME_MUTE
+            containsAny(command, "mute volume", "mute sound", "mute karo", "volume mute", "sound mute", "awaz mute", "awaaz mute", "awaz band", "awaaz band", "sound band", "volume band", "आवाज म्यूट", "आवाज़ म्यूट", "वॉल्यूम म्यूट", "आवाज बंद", "आवाज़ बंद", "आवाज बंद करो", "आवाज़ बंद करो", "ध्वनि बंद") -> AssistantCommandType.VOLUME_MUTE
             containsAny(command, "next song", "next track", "skip song", "agla gana", "agla gaana", "अगला गाना", "अगला ट्रैक", "नेक्स्ट गाना", "नेक्स्ट ट्रैक") -> AssistantCommandType.MEDIA_NEXT
             containsAny(command, "previous song", "previous track", "pichla gana", "pichla gaana", "पिछला गाना", "पिछला ट्रैक", "प्रिवियस गाना", "पिछला") -> AssistantCommandType.MEDIA_PREVIOUS
             containsAny(command, "pause music", "pause song", "music pause", "gana roko", "gaana roko", "music roko", "गाना रोक", "म्यूजिक रोक", "पॉज करो") -> AssistantCommandType.MEDIA_PAUSE
