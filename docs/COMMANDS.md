@@ -84,3 +84,7 @@ After enabling **PK Accessibility Service** in Android Settings, these commands 
 | Go home / Home screen | होम स्क्रीन / होम जाओ | Android Home global action |
 
 The service is disabled until the user explicitly enables it in Android Accessibility Settings. It does not read node text or message content and does not send messages. Scrolling depends on the active app exposing a scrollable accessibility node; some apps or screens may not support it. Accessibility access is powerful, so enable it only if you understand and accept this scope.
+
+
+## When a phrase is not recognized
+PK repeats the phrase it heard and offers the supported task categories plus a prompt to rephrase or open Help. This is a recovery hint, not a claim that PK can execute arbitrary requests. Unsupported actions must be explained honestly rather than simulated.
