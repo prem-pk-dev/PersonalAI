@@ -290,3 +290,9 @@
 - [x] Add parser regression tests and update `docs/COMMANDS.md`.
 - [x] Verify clean tests, lint/build, ARM native packaging, APK signature/metadata and artifact upload on exact branch head `8f228f62f797da4432143f8e9b5be506cde55bf3` (Build #439).
 - [ ] Physical Redmi Note 9 validation remains pending; CI does not establish device behavior.
+
+## Premium usability — one-tap quick actions (2026-11-17)
+- [x] Add a compact QUICK ACTIONS panel to the home screen for Time, Battery, YouTube, WhatsApp, Settings and Help.
+- [x] Route each shortcut through the same deterministic command handler used by typed and recognized voice commands; do not create a separate action path.
+- [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
+- [ ] Check tap targets, layout and command feedback on Redmi Note 9 / Android 12 MIUI 13.
