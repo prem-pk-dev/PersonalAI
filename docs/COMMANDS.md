@@ -22,16 +22,16 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "PK alarm lagao" / "PK alarm 7 baje lagao" / "अलार्म लगा दो" | SET_ALARM | Ask for a time if missing; open Clock for user confirmation when a valid time is provided. Tries Android Clock alarm intents, then supported Clock app launchers (including MIUI Clock) |
 | "5 minute ka timer lagao" / "set timer for 5 minutes" | SET_TIMER | Parse a supported duration and open Clock for user confirmation |
 | "Remind me to drink water" / "mujhe paani peena yaad dilao" / "मुझे पानी पीने की याद दिलाओ" | CREATE_REMINDER | Prepare a Calendar event; the user chooses date/time and saves it |
-| "Time kya hua" / "abhi kitne baje" / "समय बताओ" | INFO_TIME | Speak current device time offline |
-| "Aaj ki date batao" / "what is the date" / "आज क्या तारीख है" | INFO_DATE | Speak current device date offline |
-| "Battery kitni hai" / "battery percentage" / "कितना चार्ज है" | INFO_BATTERY | Read battery percentage offline |
+| "Time kya hua" / "what's the time" / "abhi time kya hai" / "समय बताओ" | INFO_TIME | Speak current device time offline |
+| "Aaj ki date batao" / "which day is today" / "aaj kaun sa din hai" / "आज क्या तारीख है" | INFO_DATE | Speak current device date offline |
+| "Battery kitni hai" / "how much battery" / "kitni battery bachi hai" / "कितना चार्ज है" | INFO_BATTERY | Read battery percentage offline |
 | "Maps kholo" | OPEN_MAPS | Open a Maps handler |
-| "music play karo" / "PK music play karo" / "gaana chalao" / "गाना चलाओ" | MEDIA_PLAY | Resume the active media session where supported |
-| "music roko" / "गाना रोक दो" | MEDIA_PAUSE | Pause the active media session where supported |
+| "music play karo" / "start playing music" / "PK music play karo" / "gaana chalao" / "गाना चलाओ" | MEDIA_PLAY | Resume the active media session where supported |
+| "music roko" / "stop the music" / "गाना रोक दो" | MEDIA_PAUSE | Pause the active media session where supported |
 | "agla gaana" / "अगला गाना" | MEDIA_NEXT | Skip to the next active-session track |
 | "pichla gana" / "पिछला गाना" | MEDIA_PREVIOUS | Return to the previous active-session track |
-| "volume badhao" / "आवाज बढ़ा दो" | VOLUME_UP | Increase system music-stream volume |
-| "awaz kam karo" / "आवाज कम करो" | VOLUME_DOWN | Decrease system music-stream volume |
+| "volume badhao" / "make it louder" / "आवाज बढ़ा दो" | VOLUME_UP | Increase system music-stream volume |
+| "awaz kam karo" / "make it quieter" / "आवाज कम करो" | VOLUME_DOWN | Decrease system music-stream volume |
 | "awaz band" / "mute karo" / "आवाज़ बंद करो" | VOLUME_MUTE | Mute system music-stream volume where supported |
 | "Help" / "मदद" | HELP | Explain supported app, communication, media, volume, accessibility, alarm/timer, reminder and device-info actions, including permission/app-support limits |
 
