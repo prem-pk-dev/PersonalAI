@@ -348,3 +348,11 @@
 - [x] Update the user-facing command contract with representative examples.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Validate speech transcripts and actual command execution on Redmi Note 9 / Android 12 MIUI 13.
+
+## Background PK wake-to-command handoff clarity (2026-11-17)
+- [x] Review the actual KWS service lifecycle and notification PendingIntent path against the user-facing command contract.
+- [x] Correct the command contract: background KWS detects PK, posts a notification, stops capture, and requires the user to tap before SpeechRecognizer captures the command.
+- [x] Preserve the explicit user-started foreground microphone service and notification stop control; do not attempt a policy-bypassing background Activity launch.
+- [ ] Verify the exact updated branch-head lint, unit tests, clean APK build, ARM native packaging, APK metadata/signature and artifact upload.
+- [ ] Verify notification tap-to-command handoff, command execution, and KWS resume/stop on Redmi Note 9 / Android 12 MIUI 13.
+- [ ] Seamless hands-free background wake-to-command remains out of scope until a supported always-on command-recognition design is implemented and device-tested.
