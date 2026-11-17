@@ -41,7 +41,8 @@ The command router uses explicit, testable intents rather than executing arbitra
 
 - Say "PK" (Hindi speech transcript forms "पीके" or "पी के") and then speak the command.
 - A combined utterance such as "PK YouTube kholo" is also supported.
-- Wake-word recognition is active only during a user-started listening session while the app is open.
+- Two separate wake flows exist: (1) app-open SpeechRecognizer mode, where PK and the following command can be spoken in one or two recognition results; (2) optional background Sherpa-ONNX KWS mode, which is user-started and runs in a microphone foreground service with a persistent notification.
+- In background KWS mode, after PK is detected the service posts a high-priority notification and stops its microphone capture. The user must tap that notification to open PK; only then does Android SpeechRecognizer listen for the command. This is an intentional Android background-activity and microphone handoff boundary, not seamless hands-free wake-to-command. The KWS service is resumed after the command response when the user opt-in remains enabled.
 - ACTION_ASSIST is declared as an app entry point, but default-assistant role integration is deferred until a valid Android RecognitionService provider is integrated.
 
 ## Contact resolution and communication safety
