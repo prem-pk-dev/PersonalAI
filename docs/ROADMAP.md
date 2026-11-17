@@ -303,3 +303,9 @@
 - [x] Explain wake phrase and permission/compatible-app limitations in the guide.
 - [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
 - [ ] Review readability and dialog sizing on Redmi Note 9 / Android 12 MIUI 13.
+
+## Premium usability — keyboard command submission (2026-11-17)
+- [x] Support the Android keyboard Send/Done action in the text composer.
+- [x] Route keyboard and on-screen send actions through one submission method and the existing command handler.
+- [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
+- [ ] Review keyboard behavior and focus handling on Redmi Note 9 / Android 12 MIUI 13.
