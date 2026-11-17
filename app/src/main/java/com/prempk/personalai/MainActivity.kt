@@ -23,6 +23,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.widget.Button
@@ -239,12 +240,20 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             setTextColor(white)
             textSize = 15f
             isSingleLine = true
+            imeOptions = EditorInfo.IME_ACTION_SEND
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE) {
+                    submitTypedCommand()
+                    true
+                } else {
+                    false
+                }
+            }
             background = null
             setPadding(dp(8), dp(8), dp(8), dp(8))
         }
         val sendButton = makeButton("➤") {
-            val command = commandInput.text.toString().trim()
-            if (command.isNotEmpty()) { handleCommand(command); commandInput.text.clear() }
+            submitTypedCommand()
         }.apply {
             textSize = 20f
             background = surface(0xFF1599B2.toInt(), 18)
@@ -513,6 +522,13 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         scroll.addView(root)
         setContentView(scroll)
+    }
+
+    private fun submitTypedCommand() {
+        val command = commandInput.text.toString().trim()
+        if (command.isEmpty()) return
+        commandInput.text.clear()
+        handleCommand(command)
     }
 
     private fun makeButton(label: String, action: () -> Unit) =
