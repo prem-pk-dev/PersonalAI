@@ -326,3 +326,10 @@
 - [x] Add parser and app-name extraction regression cases.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Verify app label matching and chooser behavior on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Command discovery and recovery (2026-11-17)
+- [x] Replace the abrupt unsupported-command response with a bilingual capability summary and a rephrase/Help suggestion.
+- [x] Keep the response honest: it does not claim arbitrary natural-language execution or unsupported features.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Review speech clarity and recovery flow on Redmi Note 9 / Android 12 MIUI 13.
