@@ -42,11 +42,19 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.VOLUME_DOWN, CommandParser.parse("आवाज कम करो"))
         assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("mute volume"))
         assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("आवाज म्यूट करो"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("mute karo"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("PK mute karo"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("volume mute karo"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("awaz mute karo"))
+        assertEquals(AssistantCommandType.VOLUME_MUTE, CommandParser.parse("आवाज़ बंद करो"))
         assertEquals(AssistantCommandType.HELP, CommandParser.parse("help"))
     }
 
     @Test fun recognizesAlarmAndTimerCommands() {
         assertEquals(AssistantCommandType.SET_ALARM, CommandParser.parse("set alarm at 7:30"))
+        assertEquals(AssistantCommandType.SET_ALARM, CommandParser.parse("PK alarm lagao"))
+        assertEquals(AssistantCommandType.SET_ALARM, CommandParser.parse("PK alarm 7 baje lagao"))
+        assertEquals(AssistantCommandType.SET_ALARM, CommandParser.parse("अलार्म लगा दो"))
         assertEquals(AssistantCommandType.SET_TIMER, CommandParser.parse("set timer for 5 minutes"))
         assertEquals(AssistantCommandType.OPEN_ALARMS, CommandParser.parse("open alarms"))
     }
