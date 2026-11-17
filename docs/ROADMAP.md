@@ -333,3 +333,11 @@
 - [x] Keep the response honest: it does not claim arbitrary natural-language execution or unsupported features.
 - [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
 - [ ] Review speech clarity and recovery flow on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Everyday command phrase coverage (2026-11-17)
+- [x] Expand time, date, battery, call and reminder phrase aliases in English, Hindi and Romanized Hindi.
+- [x] Add deterministic parser regression tests for representative new phrases.
+- [x] Update the command contract with discoverable examples.
+- [ ] Verify exact branch-head CI, lint, unit tests and clean APK assembly.
+- [ ] Validate speech-recognition transcription variants and command execution on Redmi Note 9 / Android 12 MIUI 13.
