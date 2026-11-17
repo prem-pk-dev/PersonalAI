@@ -259,6 +259,40 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         inputCard.addView(inputRow)
 
+        // One-tap actions make common tasks discoverable without requiring voice input.
+        val quickActionsCard = panelCard()
+        quickActionsCard.addView(sectionTitle("QUICK ACTIONS"))
+        quickActionsCard.addView(label("Tap a shortcut or type your own command.", 12f, muted))
+        fun quickActionRow(vararg actions: Pair<String, String>) = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            actions.forEachIndexed { index, action ->
+                val chip = makeButton(action.first) { handleCommand(action.second) }.apply {
+                    isAllCaps = false
+                    textSize = 11f
+                    background = surface(0xFF1B3650.toInt(), 16, 0x554C9DB8)
+                    setPadding(dp(5), dp(10), dp(5), dp(10))
+                }
+                addView(chip, LinearLayout.LayoutParams(0, dp(42), 1f).apply {
+                    if (index < actions.lastIndex) marginEnd = dp(7)
+                })
+            }
+        }
+        quickActionsCard.addView(quickActionRow(
+            "🕒  Time" to "time kya hua",
+            "🔋  Battery" to "battery kitni hai",
+            "▶  YouTube" to "YouTube kholo"
+        ), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(42)).apply {
+            topMargin = dp(12)
+        })
+        quickActionsCard.addView(quickActionRow(
+            "WhatsApp" to "WhatsApp kholo",
+            "Settings" to "Settings kholo",
+            "Help" to "help"
+        ), LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(42)).apply {
+            topMargin = dp(8)
+        })
+
         // Primary voice controls
         val voiceHeading = sectionTitle("VOICE CONTROLS")
         val listenRow = LinearLayout(this).apply {
@@ -460,16 +494,17 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
 
         val views = listOf<View>(
-            header, heroCard, conversationCard, inputCard, voiceHeading, listenRow, backgroundCard, deviceSetupCard, footer
+            header, heroCard, conversationCard, inputCard, quickActionsCard, voiceHeading, listenRow, backgroundCard, deviceSetupCard, footer
         )
         views.forEachIndexed { index, view ->
             val top = when (index) {
                 1 -> dp(18)
                 2 -> dp(16)
                 3 -> dp(12)
-                4 -> dp(20)
-                5 -> dp(0)
-                6 -> dp(16)
+                4 -> dp(12)
+                5 -> dp(20)
+                6 -> dp(0)
+                7 -> dp(16)
                 else -> dp(0)
             }
             root.addView(view, LinearLayout.LayoutParams(
