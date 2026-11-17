@@ -9,6 +9,8 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "YouTube kholo" | OPEN_APP(youtube) | Launch YouTube if installed |
 | "Chrome kholo" | OPEN_APP(chrome) | Launch Chrome if installed |
 | "PK ChatGPT kholo" / "पीके ChatGPT खोलो" | OPEN_INSTALLED_APP(ChatGPT) | Resolve the installed app by display name and launch it if installed |
+| "show calculator" / "camera khol do" / "gallery dikhao" / "Instagram open karo" | OPEN_INSTALLED_APP(app name) | Resolve the spoken app label and launch it if installed; show a chooser when names are ambiguous |
+| "फोन खोलो" / "फोटो दिखाओ" / "कैमरा खोल दो" | OPEN_INSTALLED_APP(app name) | Resolve the Hindi app label against installed launcher apps; availability depends on the installed app label |
 | "Settings kholo" | OPEN_SETTINGS | Open Android Settings |
 | "Wi-Fi settings kholo" / "wifi setting kholo" / "वाईफाई सेटिंग खोलो" | OPEN_WIFI_SETTINGS | Open the Android Wi-Fi settings screen; the user changes the setting |
 | "Bluetooth settings kholo" / "bluetooth setting kholo" / "ब्लूटूथ सेटिंग खोलो" | OPEN_BLUETOOTH_SETTINGS | Open the Android Bluetooth settings screen; the user changes the setting |
@@ -63,7 +65,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 - Normalize case and extra whitespace for intent matching.
 - Strip a leading wake prefix ("PK", "Hey PK", "पीके", or "पी के") before classifying the command; generic installed-app extraction must also remove that prefix.
 - Preserve the original recognized transcript when returning text after the wake phrase.
-- Recognize supported English, Devanagari Hindi, and explicitly tested Romanized-Hinglish aliases (including media, volume, navigation, time, and date intents). Romanized-Hinglish coverage is intentionally finite, not general speech understanding.
+- Recognize supported English, Devanagari Hindi, and explicitly tested Romanized-Hinglish aliases (including app launch verbs such as open/show/find, kholo/khol do/dikhao, media, volume, navigation, time, and date intents). Romanized-Hinglish coverage is intentionally finite, not general speech understanding.
 - Strip only known filler words; do not remove contact-name tokens unnecessarily.
 - Ask one focused question when a required value is missing.
 - Never send SMS or WhatsApp messages silently.
