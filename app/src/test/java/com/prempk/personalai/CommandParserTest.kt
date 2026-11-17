@@ -24,6 +24,8 @@ class CommandParserTest {
 
     @Test fun recognizesCommunicationAndAlarmCommands() {
         assertEquals(AssistantCommandType.CALL_CONTACT, CommandParser.parse("Rahul ko call karo"))
+        assertEquals(AssistantCommandType.CALL_CONTACT, CommandParser.parse("Rahul ko phone lagao"))
+        assertEquals(AssistantCommandType.CALL_CONTACT, CommandParser.parse("dial Rahul"))
         assertEquals(AssistantCommandType.CALL_CONTACT, CommandParser.parse("राहुल को कॉल करो"))
         assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("SMS 9876543210"))
         assertEquals(AssistantCommandType.COMPOSE_SMS, CommandParser.parse("मैसेज भेजो"))
@@ -101,7 +103,13 @@ class CommandParserTest {
         assertEquals(AssistantCommandType.GO_BACK, CommandParser.parse("peeche jao"))
         assertEquals(AssistantCommandType.GO_HOME, CommandParser.parse("home jao"))
         assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("samay kya hai"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("abhi kitne baje hain"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("tell me the time"))
+        assertEquals(AssistantCommandType.INFO_TIME, CommandParser.parse("समय बताओ"))
         assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("aaj ki tareekh"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("aaj kya date hai"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("what is the date"))
+        assertEquals(AssistantCommandType.INFO_DATE, CommandParser.parse("आज क्या तारीख है"))
     }
 
     @Test fun trimsWhitespaceAndRejectsUnknownCommands() {
