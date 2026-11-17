@@ -82,14 +82,14 @@ object CommandParser {
             containsAny(command, "settings", "सेटिंग") -> AssistantCommandType.OPEN_SETTINGS
             containsAny(command, "sms", "message", "मैसेज", "संदेश") -> AssistantCommandType.COMPOSE_SMS
             containsAny(command, "timer", "टाइमर") -> AssistantCommandType.SET_TIMER
-            containsAny(command, "remind me", "reminder", "याद दिला", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
-            containsAny(command, "call", "कॉल", "फोन लगाओ", "फोन करो") -> AssistantCommandType.CALL_CONTACT
+            containsAny(command, "remind me", "remind me to", "set reminder", "create reminder", "reminder", "yaad dilana", "yaad dila dena", "mujhe yaad dilao", "याद दिला", "याद दिलाना", "याद दिला देना", "रिमाइंडर", "रिमाइंड") -> AssistantCommandType.CREATE_REMINDER
+            containsAny(command, "call", "dial ", "phone ", "call laga", "call karo", "phone lagao", "phone karo", "कॉल", "फोन लगाओ", "फोन करो", "डायल") -> AssistantCommandType.CALL_CONTACT
             containsAny(command, "alarm", "अलार्म") && containsAny(command, "set", "set karo", "lagao", "laga do", "lagana", "baje", "बजे", "लगाओ", "लगा दो", "लगाना", "बजा") -> AssistantCommandType.SET_ALARM
             containsAny(command, "alarm", "अलार्म") -> AssistantCommandType.OPEN_ALARMS
             containsAny(command, "map", "maps", "नक्शा", "मैप") -> AssistantCommandType.OPEN_MAPS
-            containsAny(command, "time", "समय", "samay", "kitne baje", "कितने बजे") -> AssistantCommandType.INFO_TIME
-            containsAny(command, "date", "tareekh", "tarikh", "तारीख", "आज कौन सा दिन") -> AssistantCommandType.INFO_DATE
-            containsAny(command, "battery", "बैटरी", "चार्ज") -> AssistantCommandType.INFO_BATTERY
+            containsAny(command, "time", "what time", "tell me the time", "current time", "samay", "samay batao", "abhi kitne baje", "kitne baje", "waqt kya", "समय", "वक्त", "अभी कितने बजे", "कितने बजे", "समय बताओ") -> AssistantCommandType.INFO_TIME
+            containsAny(command, "date", "today date", "today's date", "what is the date", "what day is it", "tareekh", "tarikh", "aaj ki date", "aaj ki tareekh", "aaj kya date", "आज की डेट", "आज की तारीख", "तारीख", "आज कौन सा दिन", "आज क्या तारीख") -> AssistantCommandType.INFO_DATE
+            containsAny(command, "battery", "battery level", "battery percentage", "battery kitni", "kitna charge", "phone charge kitna", "बैटरी", "बैटरी कितनी", "कितना चार्ज", "चार्ज कितना") -> AssistantCommandType.INFO_BATTERY
             containsAny(command, "volume up", "increase volume", "turn volume up", "volume badhao", "volume badha", "awaz badhao", "awaaz badhao", "आवाज बढ़ा", "वॉल्यूम बढ़ा", "आवाज़ तेज", "आवाज तेज") -> AssistantCommandType.VOLUME_UP
             containsAny(command, "volume down", "decrease volume", "turn volume down", "volume kam", "awaz kam", "awaaz kam", "आवाज कम", "वॉल्यूम कम", "आवाज़ धीमी", "आवाज धीमी") -> AssistantCommandType.VOLUME_DOWN
             containsAny(command, "mute volume", "mute sound", "mute karo", "volume mute", "sound mute", "awaz mute", "awaaz mute", "awaz band", "awaaz band", "sound band", "volume band", "आवाज म्यूट", "आवाज़ म्यूट", "वॉल्यूम म्यूट", "आवाज बंद", "आवाज़ बंद", "आवाज बंद करो", "आवाज़ बंद करो", "ध्वनि बंद") -> AssistantCommandType.VOLUME_MUTE
