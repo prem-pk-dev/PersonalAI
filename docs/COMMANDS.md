@@ -14,7 +14,8 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "9876543210 par call karo" | DIAL_NUMBER(number) | Open dialer for user confirmation |
 | "SMS 9876543210" | COMPOSE_SMS(number) | Open SMS composer; user sends manually |
 | "Rahul ko SMS bhejo" / "Papa ko message bhejo" / "Amit ko SMS karo" | COMPOSE_SMS(contact) | Resolve contact safely and open composer |
-| "Alarm kholo" / "अलार्म खोलो" | OPEN_ALARMS | Try Android Clock alarm intents, then supported Clock app launchers (including MIUI Clock); the user selects/edits alarms in Clock |
+| "Alarm kholo" / "अलार्म खोलो" | OPEN_ALARMS
+| "PK alarm lagao" / "PK alarm 7 baje lagao" / "अलार्म लगा दो" | SET_ALARM | Ask for a time if missing; open Clock for user confirmation when a valid time is provided | Try Android Clock alarm intents, then supported Clock app launchers (including MIUI Clock); the user selects/edits alarms in Clock |
 | "Time kya hua" | INFO_TIME | Speak current device time offline |
 | "Aaj ki date batao" | INFO_DATE | Speak current device date offline |
 | "Battery kitni hai" | INFO_BATTERY | Read battery percentage offline |
@@ -25,7 +26,7 @@ The command router uses explicit, testable intents rather than executing arbitra
 | "pichla gana" / "पिछला गाना" | MEDIA_PREVIOUS | Return to the previous active-session track |
 | "volume badhao" / "आवाज बढ़ा दो" | VOLUME_UP | Increase system music-stream volume |
 | "awaz kam karo" / "आवाज कम करो" | VOLUME_DOWN | Decrease system music-stream volume |
-| "awaz band" / "आवाज बंद" | VOLUME_MUTE | Mute system music-stream volume where supported |
+| "awaz band" / "mute karo" / "आवाज़ बंद करो" | VOLUME_MUTE | Mute system music-stream volume where supported |
 | "Help" / "मदद" | HELP | Explain supported app, communication, media, volume, accessibility, alarm/timer, reminder and device-info actions, including permission/app-support limits |
 
 ## Wake-word behavior\n\n- Canonical and only configured wake phrase: "PK". Do not substitute "Hey Assistant" or "Hey PersonalAI".
