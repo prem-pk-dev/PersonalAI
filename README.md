@@ -2,6 +2,10 @@
 
 PK is a native Kotlin Android assistant for Android 12–16 (device validation is still pending). The ₹0 MVP uses Android speech APIs and system intents; it requires no backend or paid AI API.
 
+## Android phone setup
+
+The main screen includes a **PHONE SETUP** section with shortcuts to Android's PK app-permission page, notification-access settings, battery-optimization settings, and Accessibility settings. These shortcuts only open system settings; the user reviews and changes permissions manually. Availability and exact screen behavior can vary by Android version and OEM.
+
 ## Current features
 
 - Siri-inspired dark interface with animated orb, tap-to-listen, transcript, text command entry, and activity log.
