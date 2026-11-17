@@ -1187,7 +1187,10 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             AssistantCommandType.HELP -> showCommandHelp()
             AssistantCommandType.UNKNOWN ->
-                respond(localized("I heard: $command. This command is not supported yet.", "मैंने सुना: $command। यह कमांड अभी उपलब्ध नहीं है।"))
+                respond(localized(
+                    "I heard: $command. I can open installed apps, prepare calls or messages, control supported media and volume, open phone settings, set alarms and timers, create reminders, and tell you the time, date or battery level. Try saying it another way, or say Help to see examples.",
+                    "मैंने सुना: $command। मैं इंस्टॉल ऐप खोल सकता हूँ, कॉल या संदेश तैयार कर सकता हूँ, समर्थित मीडिया और आवाज़ नियंत्रित कर सकता हूँ, फोन सेटिंग खोल सकता हूँ, अलार्म और टाइमर लगा सकता हूँ, रिमाइंडर बना सकता हूँ और समय, तारीख या बैटरी बता सकता हूँ। इसे दूसरे तरीके से कहें या उदाहरण देखने के लिए Help बोलें।"
+                ))
         }
     }
 
