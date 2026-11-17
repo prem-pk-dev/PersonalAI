@@ -52,11 +52,14 @@ object InstalledAppCommandParser {
     fun extractAppName(raw: String): String = raw.trim()
         .replace(Regex("(?i)^\\s*(hey\\s+pk|pk)\\s+"), "")
         .replace(Regex("^(पीके|पी\\s+के)\\s*"), "")
-        .replace(Regex("(?i)^\\s*(please\\s+)?(open|launch|start)\\s+"), "")
+        .replace(Regex("(?i)^\\s*(please\\s+)?(open|launch|start|show|find)\\s+"), "")
+        .replace(Regex("(?i)^\\s*(can you|could you|please)\\s+"), "")
+        .replace(Regex("(?i)\\s+(please)?(\\s+for me)?$"), "")
         .replace(Regex("(?i)\\s+(app\\s+)?(please\\s+)?(open|launch|start)$"), "")
-        .replace(Regex("(?i)(\\s+app)?\\s*(ko\\s*)?(kholo|kholna|chalao|shuru\\s+karo)$"), "")
+        .replace(Regex("(?i)(\\s+app)?\\s*(ko\\s*)?(kholo|khol do|kholna|dikhao|dikhाओ|chalao|chala do|shuru karo|shuru kar do)$"), "")
+        .replace(Regex("(?i)\\s+(dikha do|open kar do|open karo|launch karo)$"), "")
         .replace(Regex("^(कृपया\\s*)?"), "")
-        .replace(Regex("(\\s+ऐप)?\\s*(को\\s*)?(खोलो|खोलना|चलाओ|शुरू करो)$"), "")
+        .replace(Regex("(\\s+ऐप)?\\s*(को\\s*)?(खोलो|खोल दो|खोलना|दिखाओ|दिखा दो|चलाओ|चला दो|शुरू करो|शुरू कर दो)$"), "")
         .trim()
 }
 
@@ -100,7 +103,7 @@ object CommandParser {
             containsAny(command, "go home", "home screen", "home jao", "होम स्क्रीन", "होम जाओ") -> AssistantCommandType.GO_HOME
             containsAny(command, "good morning", "good afternoon", "good evening", "good night", "सुप्रभात", "शुभ प्रभात", "शुभ दोपहर", "शुभ संध्या", "शुभ रात्रि", "नमस्कार") -> AssistantCommandType.GREETING
             containsAny(command, "help", "मदद", "क्या कर सकते") -> AssistantCommandType.HELP
-            containsAny(command, "open ", "launch ", "start ", "kholo", "kholna", "chalao", "shuru karo", "खोलो", "खोलना", "चलाओ") -> AssistantCommandType.OPEN_INSTALLED_APP
+            containsAny(command, "open ", "launch ", "start ", "show ", "find ", "kholo", "khol do", "kholna", "dikhao", "dikhाओ", "chalao", "chala do", "shuru karo", "shuru kar do", "खोलो", "खोल दो", "खोलना", "दिखाओ", "दिखा दो", "चलाओ", "चला दो", "शुरू करो") -> AssistantCommandType.OPEN_INSTALLED_APP
             else -> AssistantCommandType.UNKNOWN
         }
     }
