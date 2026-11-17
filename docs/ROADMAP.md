@@ -296,3 +296,10 @@
 - [x] Route each shortcut through the same deterministic command handler used by typed and recognized voice commands; do not create a separate action path.
 - [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
 - [ ] Check tap targets, layout and command feedback on Redmi Note 9 / Android 12 MIUI 13.
+
+## Premium usability — bilingual command guide (2026-11-17)
+- [x] Replace the spoken-only Help response with a readable English/Hindi command guide.
+- [x] Group examples by apps, user-confirmed communication, phone/media controls and daily tools.
+- [x] Explain wake phrase and permission/compatible-app limitations in the guide.
+- [ ] Verify exact-head CI, lint, unit tests, APK assembly and artifact upload.
+- [ ] Review readability and dialog sizing on Redmi Note 9 / Android 12 MIUI 13.
