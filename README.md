@@ -9,6 +9,7 @@ The main screen includes a **PHONE SETUP** section with shortcuts to Android's P
 ## Current features
 
 - Siri-inspired dark interface with animated orb, tap-to-listen, transcript, text command entry, and activity log.
+- Home-screen quick actions for Time, Battery, YouTube, WhatsApp, Settings and Help; shortcuts use the same safe command router as voice and text input.
 - The only configured wake phrase is "PK" (Hindi speech transcripts "पीके" / "पी के" are accepted); "Hey Assistant" is not used.
 - Foreground speech recognition can listen while the app is open. A separate, explicitly user-started Sherpa-ONNX foreground service can monitor the wake word while other apps are in use; after detection, the user taps its notification to open PK and continue command recognition. This is not a seamless hands-free wake-to-command flow.
 - Optional offline Hindi command transcription: user explicitly downloads a pinned ~198 MB IndicConformer int8 CTC model (SHA-256 checked) and taps Speak Hindi offline. The app captures one short mono 16 kHz utterance and transcribes locally with Sherpa-ONNX; after model installation, transcription itself does not require internet. This is a one-shot in-app feature, not always-on Hindi wake-word detection; Redmi Note 9 accuracy, latency, memory and battery remain untested.
