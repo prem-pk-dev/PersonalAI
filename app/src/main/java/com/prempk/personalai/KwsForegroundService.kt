@@ -262,7 +262,7 @@ class KwsForegroundService : Service() {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(
                 CHANNEL_ID, getString(R.string.kws_notification_channel),
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW
             )
             getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         }
@@ -289,7 +289,7 @@ class KwsForegroundService : Service() {
         const val ACTION_WAKE_DETECTED = "com.prempk.personalai.action.WAKE_DETECTED"
         const val EXTRA_WAKE_DETECTED = "wake_detected"
         private const val TAG = "PK-KWS"
-        private const val CHANNEL_ID = "pk_wake_listener_v2"
+        private const val CHANNEL_ID = "pk_wake_listener_v3"
         private const val NOTIFICATION_ID = 4201
         private const val SAMPLE_RATE = 16_000
     }
