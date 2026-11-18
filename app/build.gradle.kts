@@ -12,17 +12,31 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
         // Redmi Note 9 uses ARM; exclude unused x86 native runtimes from the install APK.
         ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
+    }
+
+    // Use a persistent CI signing identity when supplied. Without it, Gradle's
+    // per-run debug key changes and Android rejects APK updates as signature conflicts.
+    val stableSigningStorePath = System.getenv("PK_SIGNING_KEYSTORE_PATH")
+    if (!stableSigningStorePath.isNullOrBlank()) {
+        signingConfigs {
+            create("stableDebug") {
+                storeFile = file(stableSigningStorePath)
+                storePassword = System.getenv("PK_SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("PK_SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("PK_SIGNING_KEY_PASSWORD")
+            }
+        }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
+    buildTypes {\n        getByName("debug") {\n            if (!stableSigningStorePath.isNullOrBlank()) {\n                signingConfig = signingConfigs.getByName("stableDebug")\n            }\n        }\n    }\n\n    kotlinOptions {
         jvmTarget = "17"
     }
 }
