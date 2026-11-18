@@ -60,3 +60,8 @@ GitHub Actions runs `lintDebug testDebugUnitTest assembleDebug`, verifies APK si
 ## Project continuity
 
 Read `docs/PROJECT_MEMORY.md`, `docs/ROADMAP.md`, and `docs/COMMANDS.md` before architectural changes.
+
+
+### APK update signing
+
+For repeatable APK updates, configure the persistent debug signing secrets described in [docs/ANDROID_APK_SIGNING.md](docs/ANDROID_APK_SIGNING.md). CI intentionally withholds the device-test APK artifact until the stable signer is configured.
