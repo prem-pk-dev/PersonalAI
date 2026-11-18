@@ -47,6 +47,28 @@ jobs:
             --output app/libs/sherpa-onnx-2.0.1.aar
           echo "a8d09d1d32f3eb8520482c6d3d43fae674681c5b050385967c70a3c2c9bf0ee7  app/libs/sherpa-onnx-2.0.1.aar" | sha256sum --check
 
+      - name: Prepare persistent APK signing key
+        id: stable-signing
+        shell: bash
+        env:
+          PK_SIGNING_KEYSTORE_BASE64: ${{ secrets.PK_SIGNING_KEYSTORE_BASE64 }}
+          PK_SIGNING_STORE_PASSWORD: ${{ secrets.PK_SIGNING_STORE_PASSWORD }}
+          PK_SIGNING_KEY_ALIAS: ${{ secrets.PK_SIGNING_KEY_ALIAS }}
+          PK_SIGNING_KEY_PASSWORD: ${{ secrets.PK_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${PK_SIGNING_KEYSTORE_BASE64}" || -z "${PK_SIGNING_STORE_PASSWORD}" || -z "${PK_SIGNING_KEY_ALIAS}" || -z "${PK_SIGNING_KEY_PASSWORD}" ]]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Persistent signing secrets are not configured. Build can be tested, but no APK artifact will be published because its signing identity would not support reliable updates. See docs/ANDROID_APK_SIGNING.md."
+            exit 0
+          fi
+          printf '%s' "$PK_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/pk-assistant-signing.jks"
+          echo "PK_SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/pk-assistant-signing.jks" >> "$GITHUB_ENV"
+          echo "PK_SIGNING_STORE_PASSWORD=$PK_SIGNING_STORE_PASSWORD" >> "$GITHUB_ENV"
+          echo "PK_SIGNING_KEY_ALIAS=$PK_SIGNING_KEY_ALIAS" >> "$GITHUB_ENV"
+          echo "PK_SIGNING_KEY_PASSWORD=$PK_SIGNING_KEY_PASSWORD" >> "$GITHUB_ENV"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
       - name: Clean, test, and rebuild APK without cached build outputs
         run: gradle clean lintDebug testDebugUnitTest assembleDebug --no-build-cache --rerun-tasks
 
@@ -73,12 +95,16 @@ jobs:
           test -n "$APKSIGNER"
           test -n "$AAPT"
           "$APKSIGNER" verify --verbose app/build/outputs/apk/debug/app-debug.apk
-          "$AAPT" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^package: name='com.prempk.personalai' versionCode='2' versionName='0.2.0'"
+          if [[ "${{ steps.stable-signing.outputs.ready }}" == "true" ]]; then
+            "$APKSIGNER" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk | grep -F "766ff50e0519533e76e40f52801d5848d72b50581154642feba583b69067772b"
+          fi
+          "$AAPT" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^package: name='com.prempk.personalai' versionCode='3' versionName='0.3.0'"
           "$AAPT" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^sdkVersion:'26'"
  
       # Physical target-device validation is more useful for this microphone/ARM
       # feature than a hosted x86_64 emulator. The APK is built and uploaded below.
-      - name: Upload fresh debug APK for Redmi Note 9 device validation
+      - name: Upload persistently signed debug APK for Redmi Note 9 device validation
+        if: steps.stable-signing.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: personalai-debug-apk-device-test
