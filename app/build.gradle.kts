@@ -36,7 +36,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildTypes {\n        getByName("debug") {\n            if (!stableSigningStorePath.isNullOrBlank()) {\n                signingConfig = signingConfigs.getByName("stableDebug")\n            }\n        }\n    }\n\n    kotlinOptions {
+    buildTypes {
+        getByName("debug") {
+            if (!stableSigningStorePath.isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("stableDebug")
+            }
+        }
+    }
+
+    kotlinOptions {
         jvmTarget = "17"
     }
 }
