@@ -363,3 +363,12 @@
 - [x] Bump the channel ID to v3 so Android creates the corrected channel instead of retaining the user's existing immutable v2 channel settings.
 - [ ] Verify notification visibility, Stop action, and wake-detected notification tap on Android 12 / MIUI 13.
 - [ ] Verify branch-head CI, lint, JVM tests, clean APK build, ARM native packaging, APK metadata/signature and artifact upload.
+
+
+## Latest branch-head verification — 2026-11-18
+
+- [x] Android CI Build #485 passed for exact branch head `a9e8b68bab854391a47b16ad935c933063dfba86`: clean lint, unit tests, debug APK assembly, ARM JNI packaging, APK signature and metadata checks, and artifact upload.
+- [x] KWS Runtime Verification run #8 passed for the same commit; official sherpa-onnx v2.0.1 AAR checksum and ARM JNI payload checks passed.
+- [x] Debug APK artifact `personalai-debug-apk-device-test` uploaded (ID `14443606143`, SHA-256 `84325e63618b79cf9f9d3b5cdca89ea5787087e1840dc379eecb7c99dbf52e05`; expires 2026-12-02).
+- [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 acceptance remains outstanding. CI does not validate microphone capture, notification handoff, actual KWS accuracy, screen-off behavior, or OEM battery restrictions.
+- [ ] Continue to keep the APK classified as a debug/device-test artifact, not a release APK.
