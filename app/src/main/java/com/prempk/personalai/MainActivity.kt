@@ -157,7 +157,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         brand.addView(label("PK", 23f, white, true))
         brand.addView(label("PERSONAL VOICE ASSISTANT", 9f, muted, true))
         header.addView(brand, LinearLayout.LayoutParams(0, dp(52), 1f))
-        val languageButton = makeButton("AUTO · HI / EN") {
+        lateinit var languageButton: Button
+        languageButton = makeButton("AUTO · HI / EN") {
             val choices = arrayOf("Auto detect", "हिंदी (HI)", "English (EN)")
             AlertDialog.Builder(this)
                 .setTitle("Assistant language")
