@@ -41,6 +41,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var awaitingCommand = false
     private var consecutiveRecognitionErrors = 0
     private var responseLanguageTag = "en-IN"
+    private var languagePreference = "auto"
     private var recognitionDetectedLanguageTag: String? = null
     private lateinit var status: TextView
     private lateinit var transcript: TextView
@@ -156,10 +157,30 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         brand.addView(label("PK", 23f, white, true))
         brand.addView(label("PERSONAL VOICE ASSISTANT", 9f, muted, true))
         header.addView(brand, LinearLayout.LayoutParams(0, dp(52), 1f))
-        val languageButton = makeButton("AUTO · HI / EN") { }.apply {
+        val languageButton = makeButton("AUTO · HI / EN") {
+            val choices = arrayOf("Auto detect", "हिंदी (HI)", "English (EN)")
+            AlertDialog.Builder(this)
+                .setTitle("Assistant language")
+                .setSingleChoiceItems(choices, listOf("auto", "hi", "en").indexOf(languagePreference)) { dialog, which ->
+                    languagePreference = listOf("auto", "hi", "en")[which]
+                    responseLanguageTag = when (languagePreference) {
+                        "hi" -> "hi-IN"
+                        "en" -> "en-IN"
+                        else -> recognitionDetectedLanguageTag ?: "en-IN"
+                    }
+                    languageButton.text = choices[which]
+                    dialog.dismiss()
+                    respond(when (languagePreference) {
+                        "hi" -> "भाषा हिंदी चुनी गई।"
+                        "en" -> "English selected."
+                        else -> "Automatic language detection selected."
+                    })
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }.apply {
             textSize = 10f
             isAllCaps = false
-            isClickable = false
             background = surface(0x332D9FC1, 18, 0x6658D8F2)
             setPadding(dp(12), dp(8), dp(12), dp(8))
         }
@@ -521,7 +542,69 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             ).apply { topMargin = top })
         }
         scroll.addView(root)
-        setContentView(scroll)
+
+        // Persistent bottom navigation mirrors the approved PK reference layout.
+        val bottomNav = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(dp(5), dp(7), dp(5), dp(8))
+            background = surface(0xF20A1730.toInt(), 24, 0x66415F91)
+        }
+        fun navItem(symbol: String, caption: String, action: () -> Unit) =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                isClickable = true
+                isFocusable = true
+                setPadding(dp(3), dp(3), dp(3), dp(3))
+                addView(label(symbol, 21f, 0xFFB7D9F5.toInt(), true).apply { gravity = Gravity.CENTER })
+                addView(label(caption, 9f, 0xFFDDE8F5.toInt()).apply { gravity = Gravity.CENTER })
+                setOnClickListener { action() }
+            }
+        bottomNav.addView(navItem("⌂", "Home") {
+            scroll.smoothScrollTo(0, 0)
+        }, LinearLayout.LayoutParams(0, dp(52), 1f))
+        bottomNav.addView(navItem("▦", "Apps") {
+            val apps = listOf(
+                "WhatsApp" to "WhatsApp kholo",
+                "YouTube" to "YouTube kholo",
+                "Chrome" to "Chrome kholo",
+                "Phone" to "phone kholo",
+                "Messages" to "messages kholo",
+                "Settings" to "settings kholo"
+            )
+            AlertDialog.Builder(this).setTitle("Open an app")
+                .setItems(apps.map { it.first }.toTypedArray()) { _, which ->
+                    handleCommand(apps[which].second)
+                }.show()
+        }, LinearLayout.LayoutParams(0, dp(52), 1f))
+        bottomNav.addView(navItem("●", "Speak") {
+            startWakeListening()
+        }, LinearLayout.LayoutParams(0, dp(52), 1f))
+        bottomNav.addView(navItem("ϟ", "Commands") {
+            showHelp()
+        }, LinearLayout.LayoutParams(0, dp(52), 1f))
+        bottomNav.addView(navItem("⚙", "Settings") {
+            runCatching { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:$packageName"))) }
+                .onFailure { respond("Could not open PK settings.") }
+        }, LinearLayout.LayoutParams(0, dp(52), 1f))
+
+        val screen = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(10), 0, dp(10), dp(5))
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(0xFF050A16.toInt(), 0xFF0B1930.toInt(), 0xFF07101F.toInt())
+            )
+            addView(scroll, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
+            ))
+            addView(bottomNav, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(64)
+            ).apply { topMargin = dp(5) })
+        }
+        setContentView(screen)
     }
 
     private fun submitTypedCommand() {
@@ -1075,7 +1158,11 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun processVoice(raw: String) {
         transcript.text = "You said: $raw"
-        responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(raw)
+        responseLanguageTag = when (languagePreference) {
+            "hi" -> "hi-IN"
+            "en" -> "en-IN"
+            else -> recognitionDetectedLanguageTag ?: VoiceLanguage.detect(raw)
+        }
         val normalized = raw.lowercase(Locale.ROOT)
         // Accept PK, and the common Hindi speech-to-text forms "पीके" / "पी के".
         val commandAfterWake = WakeWordParser.extractCommand(raw)
@@ -1114,7 +1201,11 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         stopListening()
 
         val spokenCommand = raw.trim()
-        responseLanguageTag = recognitionDetectedLanguageTag ?: VoiceLanguage.detect(spokenCommand)
+        responseLanguageTag = when (languagePreference) {
+            "hi" -> "hi-IN"
+            "en" -> "en-IN"
+            else -> recognitionDetectedLanguageTag ?: VoiceLanguage.detect(spokenCommand)
+        }
         val followUpPackage = FollowUpCommandResolver.resolvePackage(spokenCommand, lastOpenedAppPackage)
         if (followUpPackage != null) {
             restartKwsAfterSpeech = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
