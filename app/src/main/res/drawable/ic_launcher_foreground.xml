@@ -4,32 +4,31 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Keep all artwork inside the adaptive-icon safe zone so launchers do not crop it. -->
+    <!-- Artwork remains within the 66dp adaptive-icon safe zone (21..87). -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#32DDF4"
         android:strokeWidth="2.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M31,22h35c11,0 19,8 19,19v26" />
+        android:pathData="M31,23h31c12,0 21,9 21,21v20" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#A855F7"
         android:strokeWidth="2.8"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M85,69v-2c0,11 -8,19 -19,19H42c-11,0 -19,-8 -19,-19V41c0,-8 5,-15 12,-18" />
-    <!-- Bold PK monogram, optically centered and sized like neighboring launcher icons. -->
+        android:pathData="M83,66c0,11 -9,19 -20,19H42c-11,0 -19,-8 -19,-19V42c0,-8 4,-14 11,-18" />
     <path
         android:fillColor="#F5FAFF"
-        android:pathData="M31,35h17c10,0 16,5 16,14s-6,15 -16,15H41v10H31zM41,45v9h7c4,0 6,-1 6,-5s-2,-4 -6,-4z" />
+        android:pathData="M28,36h15c9,0 14,5 14,13s-5,14 -14,14h-5v9H28zM38,45v9h5c3,0 5,-1 5,-5s-2,-4 -5,-4z" />
     <path
         android:fillColor="#F5FAFF"
-        android:pathData="M67,35h10v15l12,-15h12L85,52l16,22H89L78,58l-1,1v15H67z" />
+        android:pathData="M59,36h10v14l11,-14h7L74,53l13,19H75L67,59l-1,1v12H56V36z" />
     <path
         android:fillColor="#26DDF2"
-        android:pathData="M28,78c11,-7 22,-7 33,-2c8,4 16,4 24,0l-3,5c-9,5 -18,5 -27,1c-8,-4 -16,-4 -24,1z" />
+        android:pathData="M27,78c10,-6 20,-6 29,-2c8,3 15,3 23,-1l-3,5c-8,5 -17,5 -25,1c-8,-3 -15,-3 -22,1z" />
     <path
         android:fillColor="#A855F7"
-        android:pathData="M82,23h5v5h-5z" />
+        android:pathData="M77,25h5v5h-5z" />
 </vector>
