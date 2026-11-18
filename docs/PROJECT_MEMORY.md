@@ -80,7 +80,7 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - No physical Android device test has yet been performed. Auto language recognition and TTS language-pack behavior remain unverified on the Redmi Note 9.
 - CI run 43578152900 passed for commit 20a849eef89bf702ef0267efe471d003a8292913: unit tests, debug APK build, and artifact upload succeeded. Artifact personalai-debug-apk (artifact ID 14107681808, SHA-256 43d31f51f3954aa66d0bf74b37257848701be4f96c9b8f2f3a064373168771d1) expires 2026-11-28. This artifact predates the subsequent VoiceInteraction registration changes and is not the latest APK.
 - VoiceInteractionService/session-service registration was briefly added, then safely removed because the required RecognitionService metadata/provider was not integrated. The app retains ACTION_ASSIST but is not currently registered as the default assistant.
-- Latest branch head: `4e92118e59623b110317c04d176c24c0f06b426f` (2026-11-14), commit message `Render assistant session text with proper line breaks`.
+- Latest branch head (2026-11-18): `a9e8b68bab854391a47b16ad935c933063dfba86`, commit message `docs: sync KWS implementation and Build 484 verification status`.
 - CI run `43578918662` passed for that exact commit: unit tests, debug APK build, and artifact upload succeeded. Artifact `personalai-debug-apk`, ID `14107658281`, size 877,405 bytes, SHA-256 `fd7e5a505f178281dcb00280826096632b8073ea3792a81161e110733b99f01d`, expires 2026-11-28.
 - CI runs `lintDebug testDebugUnitTest assembleDebug`. Run `43586183849` passed for exact commit `ebe804b4084d399696cf320dc0fee07f667fc968`: lint, unit tests, APK build, and artifact upload all succeeded. Artifact `personalai-debug-apk`, ID `14109918243`, size 874,250 bytes, SHA-256 `74699af9196568e009381b0ce5f8d14b19a214d0cab81dfb3d7f1f059ea08474`, expires 2026-11-28.
 - No physical Android device test has yet been performed; do not claim screen-off PK behavior.
@@ -291,3 +291,14 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - This is a device-test debug APK, not a signed release APK and not proof of physical-device operation. No Redmi Note 9 / Android 12 / MIUI 13 install, microphone, wake accuracy, battery, or thermal test has been recorded.
 - Branch alignment audit: `feature/sherpa-onnx-kws-spike` is 298 commits ahead of `development/mvp-foundation` and 0 commits behind at this checkpoint. Draft PR #1 still targets `main` from `development/mvp-foundation` at head `ea52ae10a40f704759356bf3ae9a0c18a48b9e67`; it does not represent the Build #484 feature-branch head. Do not merge or retarget automatically. `main` remains at `d703e4229cbe19d3aa42b68c7f3fe1fae2ff4100`.
 - Background KWS is user-enabled and notification-visible. After PK detection, the user must tap the notification before command recognition begins; do not describe this as seamless hands-free wake-to-command.
+
+
+## Latest verified branch state — 2026-11-18
+
+- Active branch head: `a9e8b68bab854391a47b16ad935c933063dfba86`.
+- Android CI Build #485 passed for this exact head: clean Gradle build, `lintDebug`, `testDebugUnitTest`, `assembleDebug`, ARM JNI packaging checks for `arm64-v8a` and `armeabi-v7a`, APK signature verification, package/minSdk metadata checks, and APK artifact upload.
+- Build #485 artifact: `personalai-debug-apk-device-test`, artifact ID `14443606143`, size 25,731,402 bytes, SHA-256 `84325e63618b79cf9f9d3b5cdca89ea5787087e1840dc379eecb7c99dbf52e05`, expires 2026-12-02.
+- KWS Runtime Verification run #8 passed for the same head; official sherpa-onnx v2.0.1 AAR checksum and ARM JNI archive contents were verified. Evidence artifact ID `14443531101`, expires 2026-11-25.
+- Build #484 passed for parent commit `f6e4e0119fad272a336b8ef16d4f2d982feff0c7`; Build #485 supersedes it for current APK validation.
+- These are hosted CI results only. No Redmi Note 9 / Android 12 / MIUI 13 physical-device test has been recorded. Wake-word accuracy, foreground microphone stability, notification tap handoff, screen-off behavior, TTS/recognizer handoff, battery and thermal performance remain unverified.
+- Do not call Build #485 a release build. It is a debug APK artifact intended for device validation; no signed release APK has been published.
