@@ -280,3 +280,14 @@ Build a personal Android AI assistant that accepts both voice and text and perfo
 - Integrated the formatter into INFO_TIME and INFO_DATE commands; unsupported locale tags safely fall back to en-IN.
 - Added JVM tests for Hindi/English locale output, timezone conversion and date rollover, and fallback behavior.
 - Physical-device TTS pronunciation and locale formatting remain pending on Redmi Note 9 / Android 12 MIUI 13.
+
+
+## Verified GitHub Actions Build #484 (2026-11-18)
+
+- Current feature branch: `feature/sherpa-onnx-kws-spike`, exact head `f6e4e0119fad272a336b8ef16d4f2d982feff0c7`.
+- GitHub Actions run `44300379236` / Build #484 completed successfully. All workflow steps passed: JDK/Gradle setup, pinned sherpa-onnx AAR download, clean lint + unit tests + APK assembly, ARM ABI packaging checks, APK signature/package metadata verification, and artifact upload.
+- Artifact: `personalai-debug-apk-device-test`, ID `14424953210`, 25,731,406-byte ZIP, SHA-256 `a93c8d66a9ce19d370ccdd4d629edfb27ca2f1b53c0f6464132a5a6c879690e3`, expires 2026-12-02.
+- Downloaded artifact ZIP digest matched GitHub's artifact digest. Extracted `app-debug.apk`: 55,926,286 bytes; SHA-256 `2b059d77df984aede1716627e8141094fe420ba2391baff4c636651b07c30fb8`. APK contains sherpa JNI libraries for `arm64-v8a` and `armeabi-v7a`; workflow's APK signature and package metadata verification step passed.
+- This is a device-test debug APK, not a signed release APK and not proof of physical-device operation. No Redmi Note 9 / Android 12 / MIUI 13 install, microphone, wake accuracy, battery, or thermal test has been recorded.
+- Branch alignment audit: `feature/sherpa-onnx-kws-spike` is 298 commits ahead of `development/mvp-foundation` and 0 commits behind at this checkpoint. Draft PR #1 still targets `main` from `development/mvp-foundation` at head `ea52ae10a40f704759356bf3ae9a0c18a48b9e67`; it does not represent the Build #484 feature-branch head. Do not merge or retarget automatically. `main` remains at `d703e4229cbe19d3aa42b68c7f3fe1fae2ff4100`.
+- Background KWS is user-enabled and notification-visible. After PK detection, the user must tap the notification before command recognition begins; do not describe this as seamless hands-free wake-to-command.

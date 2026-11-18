@@ -2,7 +2,7 @@
 
 ## Goal
 
-Verify the official sherpa-onnx Android runtime package before adding any native dependency to the PK application. This remains an isolated integration spike, not a production-ready wake-word feature. The spike branch adds the pinned AAR and model installer to the build, but does not yet connect model setup to the UI or run continuous microphone capture in a foreground service.
+Verify and incrementally integrate the official sherpa-onnx Android runtime package. At the current `feature/sherpa-onnx-kws-spike` head, the pinned AAR, explicit in-app model installer, and user-started microphone foreground service are present. The service captures 16 kHz mono PCM through `AudioRecord` and runs the English KWS model locally with a persistent notification and Stop action. On detection it stops capture and posts a notification; the user must tap that notification to open PK and begin command recognition. This is a tested-by-CI integration spike, not a device-verified or seamless hands-free assistant.
 
 ## Pinned upstream runtime
 
@@ -34,8 +34,8 @@ Verify the official sherpa-onnx Android runtime package before adding any native
 2. CI verifies that the KWS Java class is packaged and that the APK contains sherpa JNI libraries for arm64-v8a and armeabi-v7a. The emulator smoke test loads the class without initializing its JNI static loader because the hosted emulator is x86_64. Native library loading still requires an ARM64 device test.
 3. The official English GigaSpeech KWS model is pinned separately, with its own source, checksum, licence, and offline asset strategy.
 4. The custom spoken phrase "P-K" is evaluated for false accepts/rejects and accent robustness; the model is not represented as Hindi wake-word capable.
-5. Not implemented yet: AudioRecord processing in a user-started microphone foreground service with a persistent notification and clear stop control.
-6. Not implemented yet: command handoff must stop KWS capture cleanly, run speech recognition, then return to KWS only while the user-enabled listening session remains active.
+5. <strong>Implemented in source; CI build verified in #484:</strong> AudioRecord processing in a user-started microphone foreground service with a persistent notification and Stop action. Physical microphone capture, long-running stability, and battery behavior remain unverified on Redmi Note 9.
+6. <strong>Partially implemented:</strong> KWS stops after detection and posts a notification whose tap opens PK and starts SpeechRecognizer; command/TTS lifecycle code can resume KWS while the user's opt-in remains enabled. This is not a seamless wake-to-command flow. Notification tap, command execution, resume/stop, permission revocation, and app-switch behavior still require physical-device verification.
 7. Physical Redmi Note 9 / Android 12 / MIUI 13 tests cover foreground, background, screen-off, battery, and OEM restrictions.
 8. Speaker verification is evaluated as a separate model and enrollment flow. Keyword spotting alone is not owner authentication.
 

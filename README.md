@@ -49,7 +49,7 @@ The main screen includes a **PHONE SETUP** section with shortcuts to Android's P
 3. Sync Gradle and run the `app` configuration on an Android 13–16 device/emulator.
 4. Grant microphone permission; Contacts permission is requested only when a contact action needs it.
 
-GitHub Actions runs `lintDebug testDebugUnitTest assembleDebug` and uploads `personalai-debug-apk` only when all checks pass (14-day artifact retention).
+GitHub Actions runs `lintDebug testDebugUnitTest assembleDebug`, verifies APK signature/package metadata and (on the KWS spike branch) ARM native-library packaging, then uploads `personalai-debug-apk-device-test` for physical-device validation (14-day artifact retention).
 
 ## Branch strategy
 
