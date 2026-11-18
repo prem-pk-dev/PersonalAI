@@ -582,7 +582,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             startWakeListening()
         }, LinearLayout.LayoutParams(0, dp(52), 1f))
         bottomNav.addView(navItem("ϟ", "Commands") {
-            showHelp()
+            showCommandHelp()
         }, LinearLayout.LayoutParams(0, dp(52), 1f))
         bottomNav.addView(navItem("⚙", "Settings") {
             runCatching { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
