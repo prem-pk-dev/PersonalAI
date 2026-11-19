@@ -1,19 +1,25 @@
 package com.prempk.personalai
 
 /**
- * Serializes the final microphone-start operation with Stop.
- * The callback passed to startIfAllowed runs while the gate is held.
+ * Serializes microphone session ownership and the final microphone-start operation.
+ * A worker may start capture only while its generation is still current.
  */
 internal class KwsCaptureStartGate {
     private val lock = Any()
-    private var stopped = false
+    private var stopped = true
+    private var generation = 0L
 
-    fun reset() {
-        synchronized(lock) { stopped = false }
+    fun reset(): Long = synchronized(lock) {
+        stopped = false
+        ++generation
     }
 
-    fun startIfAllowed(start: () -> Unit): Boolean = synchronized(lock) {
-        if (stopped) {
+    fun isCurrent(session: Long): Boolean = synchronized(lock) {
+        !stopped && generation == session
+    }
+
+    fun startIfAllowed(session: Long, start: () -> Unit): Boolean = synchronized(lock) {
+        if (stopped || generation != session) {
             false
         } else {
             start()
@@ -24,6 +30,7 @@ internal class KwsCaptureStartGate {
     fun stop(stopCapture: () -> Unit) {
         synchronized(lock) {
             stopped = true
+            ++generation
             stopCapture()
         }
     }
