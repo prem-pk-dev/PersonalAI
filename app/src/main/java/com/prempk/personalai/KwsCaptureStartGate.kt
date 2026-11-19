@@ -27,4 +27,8 @@ internal class KwsCaptureStartGate {
             stopCapture()
         }
     }
+
+    fun withLock(action: () -> Unit) {
+        synchronized(lock) { action() }
+    }
 }
