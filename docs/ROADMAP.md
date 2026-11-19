@@ -399,3 +399,11 @@
 - [x] Correct `docs/COMMANDS.md`: wake-detected notifications use the app's low-importance listener channel; the command contract no longer incorrectly calls them high-priority.
 - [ ] Verify the documentation-only commit with exact-head Android CI.
 - [ ] Confirm actual notification presentation and tap handoff on Redmi Note 9 / Android 12 / MIUI 13; documentation does not replace device testing.
+
+
+## Signing-secret recheck — 2026-11-19
+
+- [x] Build #500 passed clean build, tests, ARM JNI packaging, APK signature verification, and package metadata checks.
+- [x] Build #500 logs show the signing step selected the `ready=false` path: GitHub Actions did not expose all four signing secrets to that run, so the APK artifact upload was skipped. No artifact was produced.
+- [ ] Re-run Android CI on a new branch-head commit after verifying all four secrets are saved under this repository's Actions secrets (not environment secrets): `PK_SIGNING_KEYSTORE_BASE64`, `PK_SIGNING_STORE_PASSWORD`, `PK_SIGNING_KEY_ALIAS`, and `PK_SIGNING_KEY_PASSWORD`.
+- [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 validation remains pending.
