@@ -51,7 +51,7 @@ jobs:
         id: stable-signing
         shell: bash
         env:
-          PK_SIGNING_KEYSTORE_BASE64: ${{ secrets.PK_SIGNING_KEYSTORE_BASE64 }}
+          PK_SIGNING_KEYSTORE_BASE64: ${{ secrets.PK_SIGNING_KEYSTORE_B64 }}
           PK_SIGNING_STORE_PASSWORD: ${{ secrets.PK_SIGNING_STORE_PASSWORD }}
           PK_SIGNING_KEY_ALIAS: ${{ secrets.PK_SIGNING_KEY_ALIAS }}
           PK_SIGNING_KEY_PASSWORD: ${{ secrets.PK_SIGNING_KEY_PASSWORD }}
@@ -59,10 +59,10 @@ jobs:
           set -euo pipefail
           if [[ -z "${PK_SIGNING_KEYSTORE_BASE64}" || -z "${PK_SIGNING_STORE_PASSWORD}" || -z "${PK_SIGNING_KEY_ALIAS}" || -z "${PK_SIGNING_KEY_PASSWORD}" ]]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Persistent signing secrets are not configured. Build can be tested, but no APK artifact will be published because its signing identity would not support reliable updates. See docs/ANDROID_APK_SIGNING.md."
+            echo "::warning::Persistent signing secrets are incomplete. Build can be tested, but no APK artifact will be published. See docs/ANDROID_APK_SIGNING.md."
             exit 0
           fi
-          printf '%s' "$PK_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/pk-assistant-signing.jks"
+          printf '%s' "${PK_SIGNING_KEYSTORE_BASE64}" | base64 --decode > "$RUNNER_TEMP/pk-assistant-signing.jks"
           echo "PK_SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/pk-assistant-signing.jks" >> "$GITHUB_ENV"
           echo "PK_SIGNING_STORE_PASSWORD=$PK_SIGNING_STORE_PASSWORD" >> "$GITHUB_ENV"
           echo "PK_SIGNING_KEY_ALIAS=$PK_SIGNING_KEY_ALIAS" >> "$GITHUB_ENV"
@@ -100,9 +100,9 @@ jobs:
           fi
           "$AAPT" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^package: name='com.prempk.personalai' versionCode='3' versionName='0.3.0'"
           "$AAPT" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^sdkVersion:'26'"
- 
+
       # Physical target-device validation is more useful for this microphone/ARM
-      # feature than a hosted x86_64 emulator. The APK is built and uploaded below.
+      # feature than a hosted x86_64 emulator.
       - name: Upload persistently signed debug APK for Redmi Note 9 device validation
         if: steps.stable-signing.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
