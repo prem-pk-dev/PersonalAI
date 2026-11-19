@@ -10,24 +10,24 @@ import org.junit.Test
 class KwsCaptureStartGateTest {
     @Test fun stopBeforeWorkerReachesStartGatePreventsCapture() {
         val gate = KwsCaptureStartGate()
-        gate.reset()
+        val session = gate.reset()
         gate.stop { }
 
         var started = false
-        assertFalse(gate.startIfAllowed { started = true })
+        assertFalse(gate.startIfAllowed(session) { started = true })
         assertFalse(started)
     }
 
     @Test fun stopWaitsForAnInProgressStartAndBlocksEveryLaterStart() {
         val gate = KwsCaptureStartGate()
-        gate.reset()
+        val session = gate.reset()
         val startEntered = CountDownLatch(1)
         val releaseStart = CountDownLatch(1)
         val started = AtomicBoolean(false)
         val stopped = AtomicBoolean(false)
 
         val starter = Thread {
-            assertTrue(gate.startIfAllowed {
+            assertTrue(gate.startIfAllowed(session) {
                 startEntered.countDown()
                 assertTrue(releaseStart.await(2, TimeUnit.SECONDS))
                 started.set(true)
@@ -49,6 +49,24 @@ class KwsCaptureStartGateTest {
         assertTrue(started.get())
         assertTrue(stopped.get())
 
-        assertFalse(gate.startIfAllowed { throw AssertionError("capture started after Stop") })
+        assertFalse(gate.startIfAllowed(session) { throw AssertionError("capture started after Stop") })
+    }
+
+    @Test fun previousWorkerCannotStartOrOwnStateAfterRestart() {
+        val gate = KwsCaptureStartGate()
+        val previousSession = gate.reset()
+        gate.stop { }
+
+        val currentSession = gate.reset()
+        assertFalse(gate.isCurrent(previousSession))
+        assertTrue(gate.isCurrent(currentSession))
+
+        var previousStarted = false
+        assertFalse(gate.startIfAllowed(previousSession) { previousStarted = true })
+        assertFalse(previousStarted)
+
+        var currentStarted = false
+        assertTrue(gate.startIfAllowed(currentSession) { currentStarted = true })
+        assertTrue(currentStarted)
     }
 }
