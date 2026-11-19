@@ -10,7 +10,7 @@ This project uses a dedicated **debug/device-test** key. It is not a production 
 
 In GitHub, open the repository Settings -> Secrets and variables -> Actions -> New repository secret. Add these four secrets using the matching files generated for the project:
 
-- `PK_SIGNING_KEYSTORE_BASE64`: complete one-line Base64 content from `PK_SIGNING_KEYSTORE_BASE64.txt`.
+- `PK_SIGNING_KEYSTORE_B64`: complete one-line Base64 content from `PK_SIGNING_KEYSTORE_BASE64.txt` (the workflow maps this repository secret into its internal `PK_SIGNING_KEYSTORE_BASE64` variable).
 - `PK_SIGNING_STORE_PASSWORD`: value in `PK_SIGNING_CREDENTIALS.txt`.
 - `PK_SIGNING_KEY_ALIAS`: value in `PK_SIGNING_CREDENTIALS.txt`.
 - `PK_SIGNING_KEY_PASSWORD`: value in `PK_SIGNING_CREDENTIALS.txt`.
