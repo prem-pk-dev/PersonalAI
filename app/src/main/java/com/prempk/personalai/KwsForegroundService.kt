@@ -29,7 +29,7 @@ import kotlin.concurrent.thread
  */
 class KwsForegroundService : Service() {
     private val running = AtomicBoolean(false)
-    private val captureLock = Any()
+    private val captureStartGate = KwsCaptureStartGate()
     private var worker: Thread? = null
     private var recorder: AudioRecord? = null
     private var spotter: KeywordSpotter? = null
@@ -104,6 +104,7 @@ class KwsForegroundService : Service() {
     }
 
     private fun startCapture() {
+        captureStartGate.reset()
         running.set(true)
         worker = thread(name = "PK-KWS-Audio", start = true) {
             var localSpotter: KeywordSpotter? = null
@@ -133,17 +134,14 @@ class KwsForegroundService : Service() {
                 check(localRecorder.state == AudioRecord.STATE_INITIALIZED) { "Microphone could not be initialized." }
                 // Serialize the final start gate with Stop so a late model/recorder
                 // initialization cannot start microphone capture after the user stops.
-                val started = synchronized(captureLock) {
-                    if (!running.get()) {
-                        false
-                    } else {
+                val started = captureStartGate.startIfAllowed {
+                    if (running.get()) {
                         spotter = localSpotter
                         stream = localStream
                         recorder = localRecorder
                         localRecorder.startRecording()
-                        true
                     }
-                }
+                } && running.get()
                 if (!started) return@thread
                 val pcm = ShortArray(SAMPLE_RATE / 10)
                 while (running.get()) {
@@ -179,7 +177,7 @@ class KwsForegroundService : Service() {
                     { localStream?.release() },
                     { localSpotter?.release() }
                 )
-                synchronized(captureLock) {
+                synchronized(this@KwsForegroundService) {
                     if (recorder === localRecorder) recorder = null
                     if (stream === localStream) stream = null
                     if (spotter === localSpotter) spotter = null
@@ -282,7 +280,7 @@ class KwsForegroundService : Service() {
     }
 
     private fun stopCapture() {
-        synchronized(captureLock) {
+        captureStartGate.stop {
             running.set(false)
             runCatching { recorder?.stop() }
             worker?.interrupt()
