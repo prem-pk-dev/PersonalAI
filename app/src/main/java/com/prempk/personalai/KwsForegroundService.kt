@@ -29,6 +29,7 @@ import kotlin.concurrent.thread
  */
 class KwsForegroundService : Service() {
     private val running = AtomicBoolean(false)
+    private val captureLock = Any()
     private var worker: Thread? = null
     private var recorder: AudioRecord? = null
     private var spotter: KeywordSpotter? = null
@@ -130,10 +131,20 @@ class KwsForegroundService : Service() {
                     maxOf(minBuffer * 2, SAMPLE_RATE / 5 * 2)
                 )
                 check(localRecorder.state == AudioRecord.STATE_INITIALIZED) { "Microphone could not be initialized." }
-                spotter = localSpotter
-                stream = localStream
-                recorder = localRecorder
-                localRecorder.startRecording()
+                // Serialize the final start gate with Stop so a late model/recorder
+                // initialization cannot start microphone capture after the user stops.
+                val started = synchronized(captureLock) {
+                    if (!running.get()) {
+                        false
+                    } else {
+                        spotter = localSpotter
+                        stream = localStream
+                        recorder = localRecorder
+                        localRecorder.startRecording()
+                        true
+                    }
+                }
+                if (!started) return@thread
                 val pcm = ShortArray(SAMPLE_RATE / 10)
                 while (running.get()) {
                     val count = localRecorder.read(pcm, 0, pcm.size)
@@ -168,9 +179,11 @@ class KwsForegroundService : Service() {
                     { localStream?.release() },
                     { localSpotter?.release() }
                 )
-                recorder = null
-                stream = null
-                spotter = null
+                synchronized(captureLock) {
+                    if (recorder === localRecorder) recorder = null
+                    if (stream === localStream) stream = null
+                    if (spotter === localSpotter) spotter = null
+                }
                 releaseCpuWakeLock()
                 if (captureFailed) {
                     // A failed capture must not leave an idle foreground microphone service
@@ -269,10 +282,12 @@ class KwsForegroundService : Service() {
     }
 
     private fun stopCapture() {
-        running.set(false)
-        runCatching { recorder?.stop() }
-        worker?.interrupt()
-        worker = null
+        synchronized(captureLock) {
+            running.set(false)
+            runCatching { recorder?.stop() }
+            worker?.interrupt()
+            worker = null
+        }
         releaseCpuWakeLock()
     }
 
