@@ -51,6 +51,8 @@ The main screen includes a **PHONE SETUP** section with shortcuts to Android's P
 
 GitHub Actions runs `lintDebug testDebugUnitTest assembleDebug`, verifies APK signature/package metadata and (on the KWS spike branch) ARM native-library packaging, then uploads `personalai-debug-apk-device-test` for physical-device validation (14-day artifact retention).
 
+See [the Redmi Note 9 / Android 12 device-validation checklist](docs/REDMI_NOTE_9_DEVICE_VALIDATION.md) for the required on-device test sequence and result log.
+
 ## Branch strategy
 
 - `main`: stable reviewed code; do not modify directly.
