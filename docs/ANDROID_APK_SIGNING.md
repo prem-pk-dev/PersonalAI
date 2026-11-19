@@ -19,14 +19,14 @@ After all four secrets are saved, rerun the Android CI workflow or push a commit
 
 ## Expected signer
 
-- SHA-256 certificate fingerprint: `766ff50e0519533e76e40f52801d5848d72b50581154642feba583b69067772b`
+- SHA-256 certificate fingerprint: `944074fc734ee8e8dab28617abc1a8b4c448a7cbf59a7caf1437e5db20fbba94`
 - Alias: `pkassistant`
 - Keystore format: JKS
 - APK application ID: `com.prempk.personalai`
 
 ## Important migration note
 
-The already-installed APKs were signed by earlier ephemeral keys. They cannot be updated in place using this new persistent key. Uninstall the existing PK Assistant one final time, install the first APK signed with this persistent key, and keep that app installed for future updates. Uninstalling can remove local app data.
+The previous persistent signing key is unavailable. APKs signed with that old key cannot be updated in place using this replacement key. Uninstall the existing PK Assistant one final time, install the first APK signed with this persistent key, and keep that app installed for future updates. Uninstalling can remove local app data.
 
 ## Release security
 
