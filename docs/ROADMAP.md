@@ -372,3 +372,13 @@
 - [x] Debug APK artifact `personalai-debug-apk-device-test` uploaded (ID `14443606143`, SHA-256 `84325e63618b79cf9f9d3b5cdca89ea5787087e1840dc379eecb7c99dbf52e05`; expires 2026-12-02).
 - [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 acceptance remains outstanding. CI does not validate microphone capture, notification handoff, actual KWS accuracy, screen-off behavior, or OEM battery restrictions.
 - [ ] Continue to keep the APK classified as a debug/device-test artifact, not a release APK.
+
+
+## Latest branch-head verification — 2026-11-19
+
+- [x] Android CI Build #496 passed for exact feature branch head `624059a24a765ff8d21eb1f5cc007cd09f16429d`: clean lint, JVM unit tests, clean debug APK assembly, ARM JNI packaging, APK signature verification, and package metadata checks.
+- [ ] The persistently signed device-test APK upload was skipped because the four repository signing secrets are not configured (see `docs/ANDROID_APK_SIGNING.md`). No artifact was produced by Build #496.
+- [ ] Configure `PK_SIGNING_KEYSTORE_BASE64`, `PK_SIGNING_STORE_PASSWORD`, `PK_SIGNING_KEY_ALIAS`, and `PK_SIGNING_KEY_PASSWORD` as GitHub Actions repository secrets, then rerun Android CI to produce the update-compatible device-test APK.
+- [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 validation remains outstanding; CI does not validate microphone capture, notification handoff, KWS accuracy, screen-off behavior, or OEM battery restrictions.
+- [ ] Keep this work on `feature/sherpa-onnx-kws-spike`; do not merge to `main` before device acceptance and review. The current `main` branch does not yet contain the Android app implementation.
+- [ ] Keep all APKs classified as debug/device-test builds, not production releases.
