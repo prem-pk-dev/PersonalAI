@@ -177,7 +177,7 @@ class KwsForegroundService : Service() {
                     { localStream?.release() },
                     { localSpotter?.release() }
                 )
-                synchronized(this@KwsForegroundService) {
+                captureStartGate.withLock {
                     if (recorder === localRecorder) recorder = null
                     if (stream === localStream) stream = null
                     if (spotter === localSpotter) spotter = null
