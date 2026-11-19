@@ -392,3 +392,10 @@
 - [ ] Configure the four signing secrets using the procedure in `docs/ANDROID_APK_SIGNING.md`, then rerun Android CI to produce an update-compatible debug/device-test APK.
 - [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 validation remains outstanding, including microphone capture, notification tap-to-command handoff, KWS accuracy, screen-off behavior, and OEM battery restrictions.
 - [ ] Keep development on `feature/sherpa-onnx-kws-spike`; do not merge to `main` before device acceptance and review. Keep all APKs classified as debug/device-test builds, not production releases.
+
+
+## Documentation consistency fix — KWS notification priority (2026-11-19)
+
+- [x] Correct `docs/COMMANDS.md`: wake-detected notifications use the app's low-importance listener channel; the command contract no longer incorrectly calls them high-priority.
+- [ ] Verify the documentation-only commit with exact-head Android CI.
+- [ ] Confirm actual notification presentation and tap handoff on Redmi Note 9 / Android 12 / MIUI 13; documentation does not replace device testing.
