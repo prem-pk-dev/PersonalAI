@@ -104,7 +104,7 @@ class KwsForegroundService : Service() {
     }
 
     private fun startCapture() {
-        captureStartGate.reset()
+        val session = captureStartGate.reset()
         running.set(true)
         worker = thread(name = "PK-KWS-Audio", start = true) {
             var localSpotter: KeywordSpotter? = null
@@ -134,7 +134,7 @@ class KwsForegroundService : Service() {
                 check(localRecorder.state == AudioRecord.STATE_INITIALIZED) { "Microphone could not be initialized." }
                 // Serialize the final start gate with Stop so a late model/recorder
                 // initialization cannot start microphone capture after the user stops.
-                val started = captureStartGate.startIfAllowed {
+                val started = captureStartGate.startIfAllowed(session) {
                     if (running.get()) {
                         spotter = localSpotter
                         stream = localStream
@@ -144,16 +144,16 @@ class KwsForegroundService : Service() {
                 } && running.get()
                 if (!started) return@thread
                 val pcm = ShortArray(SAMPLE_RATE / 10)
-                while (running.get()) {
+                while (running.get() && captureStartGate.isCurrent(session)) {
                     val count = localRecorder.read(pcm, 0, pcm.size)
                     if (count > 0) {
                         val samples = FloatArray(count) { pcm[it] / 32768.0f }
                         localStream.acceptWaveform(samples, sampleRate = SAMPLE_RATE)
-                        while (running.get() && localSpotter.isReady(localStream)) {
+                        while (running.get() && captureStartGate.isCurrent(session) && localSpotter.isReady(localStream)) {
                             localSpotter.decode(localStream)
                             if (localSpotter.getResult(localStream).keyword.isNotBlank()) {
                                 localSpotter.reset(localStream)
-                                onWakeDetected()
+                                if (captureStartGate.isCurrent(session)) onWakeDetected()
                                 return@thread
                             }
                         }
@@ -169,7 +169,8 @@ class KwsForegroundService : Service() {
                     Log.d(TAG, "Wake-word capture stopped by request", error)
                 }
             } finally {
-                running.set(false)
+                val ownsSession = captureStartGate.isCurrent(session)
+                if (ownsSession) running.set(false)
                 // Isolate JNI cleanup failures so every native resource is attempted.
                 NativeResourceCleanup.releaseAll(
                     { localRecorder?.stop() },
@@ -182,8 +183,8 @@ class KwsForegroundService : Service() {
                     if (stream === localStream) stream = null
                     if (spotter === localSpotter) spotter = null
                 }
-                releaseCpuWakeLock()
-                if (captureFailed) {
+                if (ownsSession) releaseCpuWakeLock()
+                if (captureFailed && ownsSession) {
                     // A failed capture must not leave an idle foreground microphone service
                     // or a persisted opt-in that falsely claims the listener is active.
                     Handler(Looper.getMainLooper()).post {
