@@ -382,3 +382,13 @@
 - [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 validation remains outstanding; CI does not validate microphone capture, notification handoff, KWS accuracy, screen-off behavior, or OEM battery restrictions.
 - [ ] Keep this work on `feature/sherpa-onnx-kws-spike`; do not merge to `main` before device acceptance and review. The current `main` branch does not yet contain the Android app implementation.
 - [ ] Keep all APKs classified as debug/device-test builds, not production releases.
+
+
+## Latest branch-head verification — 2026-11-19 (Build #497)
+
+- [x] Android CI Build #497 passed for exact feature-branch head `96ea651c178c7bd560a80239fac8c6747c698b0e`: clean lint, JVM unit tests, clean debug APK assembly, ARM JNI packaging, APK signature verification, and package metadata checks.
+- [x] The roadmap update documenting Build #496 and the signing blocker is committed at `96ea651c178c7bd560a80239fac8c6747c698b0e`; this follow-up run confirms that documentation commit did not break the build.
+- [ ] The persistently signed device-test APK upload was skipped because `PK_SIGNING_KEYSTORE_BASE64`, `PK_SIGNING_STORE_PASSWORD`, `PK_SIGNING_KEY_ALIAS`, and `PK_SIGNING_KEY_PASSWORD` are not configured as GitHub Actions repository secrets. No APK artifact was produced by Build #497.
+- [ ] Configure the four signing secrets using the procedure in `docs/ANDROID_APK_SIGNING.md`, then rerun Android CI to produce an update-compatible debug/device-test APK.
+- [ ] Physical Redmi Note 9 / Android 12 / MIUI 13 validation remains outstanding, including microphone capture, notification tap-to-command handoff, KWS accuracy, screen-off behavior, and OEM battery restrictions.
+- [ ] Keep development on `feature/sherpa-onnx-kws-spike`; do not merge to `main` before device acceptance and review. Keep all APKs classified as debug/device-test builds, not production releases.
