@@ -161,7 +161,11 @@ class KwsForegroundService : Service() {
                         error("AudioRecord.read failed with code $count")
                     }
                 }
-            } catch (error: Exception) {
+            } catch (error: Throwable) {
+                // JNI initialization can fail with LinkageError (not Exception).
+                // Keep that failure inside the isolated KWS process and surface it
+                // through the foreground notification instead of taking down the UI.
+                if (error is VirtualMachineError || error is ThreadDeath) throw error
                 if (running.get()) {
                     captureFailed = true
                     Log.e(TAG, "Offline wake-word listener stopped", error)
