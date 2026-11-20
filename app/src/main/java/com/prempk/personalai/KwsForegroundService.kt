@@ -44,6 +44,7 @@ class KwsForegroundService : Service() {
                 getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                     .putBoolean(KEY_KWS_ENABLED, false).apply()
                 stopCapture()
+                publishState(STATE_STOPPED, "Background PK listener stopped.")
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
                 return START_NOT_STICKY
@@ -56,11 +57,14 @@ class KwsForegroundService : Service() {
                     return START_NOT_STICKY
                 }
                 if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_KWS_ENABLED, false).apply()
+                    publishState(STATE_FAILED, "Microphone permission is missing. Open PK and allow microphone access.")
                     stopSelf(startId)
                     return START_NOT_STICKY
                 }
                 createNotificationChannel()
-                startForegroundCompat(buildNotification(getString(R.string.kws_notification_listening), ongoing = true))
+                startForegroundCompat(buildNotification("Starting PK listener…", ongoing = true))
+                publishState(STATE_STARTING, "Starting background PK listener…")
                 acquireCpuWakeLock()
                 if (!running.get()) startCapture()
             }
@@ -143,6 +147,11 @@ class KwsForegroundService : Service() {
                     }
                 } && running.get()
                 if (!started) return@thread
+                check(localRecorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
+                    "Microphone did not enter the recording state."
+                }
+                updateNotification("PK is listening in the background. Tap to open.")
+                publishState(STATE_ACTIVE, "PK is listening in the background.")
                 val pcm = ShortArray(SAMPLE_RATE / 10)
                 while (running.get() && captureStartGate.isCurrent(session)) {
                     val count = localRecorder.read(pcm, 0, pcm.size)
@@ -195,6 +204,7 @@ class KwsForegroundService : Service() {
                         getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
                             .putBoolean(KEY_KWS_ENABLED, false).apply()
                         updateNotification(getString(R.string.kws_notification_error))
+                        publishState(STATE_FAILED, "PK listener stopped: microphone or offline model error.")
                         stopForeground(STOP_FOREGROUND_DETACH)
                         stopSelf()
                     }
@@ -205,6 +215,7 @@ class KwsForegroundService : Service() {
 
     private fun onWakeDetected() {
         running.set(false)
+        publishState(STATE_DETECTED, "PK detected. Tap the notification to give a command.")
         val launch = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(EXTRA_WAKE_DETECTED, true)
@@ -274,6 +285,14 @@ class KwsForegroundService : Service() {
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, buildNotification(message))
     }
 
+    private fun publishState(state: String, message: String) {
+        sendBroadcast(
+            Intent(ACTION_STATE_CHANGED).setPackage(packageName)
+                .putExtra(EXTRA_STATE, state)
+                .putExtra(EXTRA_MESSAGE, message)
+        )
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(
@@ -305,6 +324,14 @@ class KwsForegroundService : Service() {
         const val ACTION_START = "com.prempk.personalai.action.START_KWS"
         const val ACTION_STOP = "com.prempk.personalai.action.STOP_KWS"
         const val ACTION_WAKE_DETECTED = "com.prempk.personalai.action.WAKE_DETECTED"
+        const val ACTION_STATE_CHANGED = "com.prempk.personalai.action.KWS_STATE_CHANGED"
+        const val EXTRA_STATE = "kws_state"
+        const val EXTRA_MESSAGE = "kws_message"
+        const val STATE_STARTING = "STARTING"
+        const val STATE_ACTIVE = "ACTIVE"
+        const val STATE_FAILED = "FAILED"
+        const val STATE_STOPPED = "STOPPED"
+        const val STATE_DETECTED = "DETECTED"
         const val EXTRA_WAKE_DETECTED = "wake_detected"
         private const val TAG = "PK-KWS"
         private const val CHANNEL_ID = "pk_wake_listener_v4"
