@@ -3,7 +3,10 @@ package com.prempk.personalai
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.media.AudioFormat
@@ -60,6 +63,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var lastOpenedAppPackage: String? = null
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
+    private var kwsStateReceiverRegistered = false
+    private val kwsStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action != KwsForegroundService.ACTION_STATE_CHANGED) return
+            val state = intent.getStringExtra(KwsForegroundService.EXTRA_STATE).orEmpty()
+            val message = intent.getStringExtra(KwsForegroundService.EXTRA_MESSAGE).orEmpty()
+            kwsSetupStatus.text = message
+            when (state) {
+                KwsForegroundService.STATE_STARTING -> status.text = "●  Starting background listener…"
+                KwsForegroundService.STATE_ACTIVE -> status.text = "●  PK listener active in background"
+                KwsForegroundService.STATE_FAILED -> status.text = "●  PK listener unavailable"
+                KwsForegroundService.STATE_STOPPED -> status.text = "●  Listener stopped"
+                KwsForegroundService.STATE_DETECTED -> status.text = "●  PK detected — tap notification"
+            }
+        }
+    }
 
     private val backgroundColorValue = 0xFF08111F.toInt()
     private val panel = 0xFF14243A.toInt()
@@ -694,8 +713,26 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     override fun onResume() {
         super.onResume()
+        if (!kwsStateReceiverRegistered) {
+            val filter = IntentFilter(KwsForegroundService.ACTION_STATE_CHANGED)
+            if (Build.VERSION.SDK_INT >= 33) {
+                registerReceiver(kwsStateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                @Suppress("DEPRECATION")
+                registerReceiver(kwsStateReceiver, filter)
+            }
+            kwsStateReceiverRegistered = true
+        }
         refreshAssistantRoleStatus(assistantRoleStatusView)
         refreshAccessibilityStatus()
+    }
+
+    override fun onPause() {
+        if (kwsStateReceiverRegistered) {
+            unregisterReceiver(kwsStateReceiver)
+            kwsStateReceiverRegistered = false
+        }
+        super.onPause()
     }
 
     private fun refreshAccessibilityStatus() {
@@ -997,8 +1034,8 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         val serviceIntent = Intent(this, KwsForegroundService::class.java).setAction(KwsForegroundService.ACTION_START)
         try {
             if (Build.VERSION.SDK_INT >= 26) startForegroundService(serviceIntent) else startService(serviceIntent)
-            kwsSetupStatus.text = "Background PK listening started. Use notification to stop."
-            status.text = "●  Listening for PK in the background"
+            kwsSetupStatus.text = "Starting background PK listener… waiting for microphone confirmation."
+            status.text = "●  Starting background listener…"
         } catch (error: Exception) {
             getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit().putBoolean(KEY_KWS_ENABLED, false).apply()
             kwsSetupStatus.text = "Could not start listener: " + (error.localizedMessage ?: "system restriction")
