@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">PK</string>
     <string name="kws_notification_channel">PK wake-word listener</string>
-    <string name="kws_notification_listening">Listening for PK. Tap Stop to end the session.</string>
-    <string name="kws_notification_detected">PK detected. Tap to continue with your command.</string>
+    <string name="kws_notification_listening">Listening for PK in the background. Tap Stop to end the session.</string>
+    <string name="kws_notification_detected">PK heard. Tap this alert to speak your command.</string>
     <string name="kws_notification_error">Wake-word listening stopped. Open PK to review.</string>
     <string name="kws_notification_stop">Stop listening</string>
     <string name="pk_accessibility_description">Optional PK controls for scrolling and Back or Home actions in the current app. Screen content is not read.</string>
