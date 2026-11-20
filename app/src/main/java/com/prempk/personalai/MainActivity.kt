@@ -187,22 +187,22 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         }
         header.addView(languageButton)
 
-        val heroEyebrow = label("YOUR DAY, HANDS-FREE", 10f, 0xFF64D8E8.toInt(), true).apply {
+        val heroEyebrow = label("PERSONAL AI  /  VOICE INTELLIGENCE", 10f, 0xFF64D8E8.toInt(), true).apply {
             gravity = Gravity.CENTER
             letterSpacing = 0.18f
             setPadding(0, dp(24), 0, dp(5))
         }
-        val greeting = label("Hello. How can I help?", 25f, white, true).apply {
+        val greeting = label("Your AI. Always ready.", 25f, white, true).apply {
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, dp(5))
         }
-        val subtitle = label("Say “PK” to wake me  ·  Hindi + English", 13f, muted).apply {
+        val subtitle = label("OFFLINE WAKE WORD  ·  HINDI + ENGLISH", 11f, muted, true).apply {
             gravity = Gravity.CENTER
         }
 
         orb = SiriOrbView(this).apply { contentDescription = "PK animated voice assistant orb" }
         val orbFrame = FrameLayout(this).apply {
-            addView(orb, FrameLayout.LayoutParams(dp(250), dp(250), Gravity.CENTER))
+            addView(orb, FrameLayout.LayoutParams(dp(224), dp(224), Gravity.CENTER))
         }
 
         status = label("●  READY", 11f, 0xFF7BE8F2.toInt(), true).apply {
@@ -230,7 +230,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         listOf<View>(heroEyebrow, greeting, subtitle, orbFrame, statusWrap).forEachIndexed { index, view ->
             heroCard.addView(view, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                if (index == 3) dp(250) else LinearLayout.LayoutParams.WRAP_CONTENT
+                if (index == 3) dp(230) else LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = when (index) {
                     0 -> dp(2)
