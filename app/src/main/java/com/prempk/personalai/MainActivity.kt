@@ -35,6 +35,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import java.util.Locale
 
 class MainActivity : Activity(), TextToSpeech.OnInitListener {
@@ -715,12 +716,12 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         super.onResume()
         if (!kwsStateReceiverRegistered) {
             val filter = IntentFilter(KwsForegroundService.ACTION_STATE_CHANGED)
-            if (Build.VERSION.SDK_INT >= 33) {
-                registerReceiver(kwsStateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-            } else {
-                @Suppress("DEPRECATION")
-                registerReceiver(kwsStateReceiver, filter)
-            }
+            ContextCompat.registerReceiver(
+                this,
+                kwsStateReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
             kwsStateReceiverRegistered = true
         }
         refreshAssistantRoleStatus(assistantRoleStatusView)
