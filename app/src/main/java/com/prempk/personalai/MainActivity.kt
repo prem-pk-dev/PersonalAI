@@ -402,6 +402,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             background = surface(0x2228C99D, 20, 0x5543CDAA)
         }
         backgroundHeader.addView(livePill)
+        val backgroundChevron = label("⌄", 21f, 0xFF9BC7E8.toInt(), true).apply {
+            gravity = Gravity.CENTER
+            setPadding(dp(10), 0, dp(2), 0)
+        }
+        backgroundHeader.addView(backgroundChevron)
+        backgroundHeader.isClickable = true
+        backgroundHeader.isFocusable = true
+        backgroundHeader.contentDescription = "Expand background listener settings"
         backgroundCard.addView(backgroundHeader)
 
         val kwsSetupRow = LinearLayout(this).apply {
@@ -518,10 +526,36 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         refreshAssistantRoleStatus(assistantRoleStatusView)
         refreshAccessibilityStatus()
 
+        // Keep the home surface focused; advanced listener controls expand on demand.
+        for (index in 1 until backgroundCard.childCount) {
+            backgroundCard.getChildAt(index).visibility = View.GONE
+        }
+        backgroundHeader.setOnClickListener {
+            val expand = backgroundCard.getChildAt(1).visibility != View.VISIBLE
+            for (index in 1 until backgroundCard.childCount) {
+                backgroundCard.getChildAt(index).visibility = if (expand) View.VISIBLE else View.GONE
+            }
+            backgroundChevron.text = if (expand) "⌃" else "⌄"
+            backgroundHeader.contentDescription =
+                if (expand) "Collapse background listener settings" else "Expand background listener settings"
+        }
+
         // One place for the user to review Android settings required by optional features.
         // These buttons only open system settings; PK never silently changes protected settings.
         val deviceSetupCard = panelCard()
-        deviceSetupCard.addView(sectionTitle("PHONE SETUP"))
+        val deviceSetupHeader = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        deviceSetupHeader.addView(sectionTitle("PHONE SETUP"), LinearLayout.LayoutParams(0, -2, 1f))
+        val deviceSetupChevron = label("⌄", 21f, 0xFF9BC7E8.toInt(), true).apply {
+            gravity = Gravity.CENTER
+            setPadding(dp(10), 0, dp(2), 0)
+        }
+        deviceSetupHeader.addView(deviceSetupChevron)
+        deviceSetupHeader.isClickable = true
+        deviceSetupHeader.isFocusable = true
+        deviceSetupCard.addView(deviceSetupHeader)
         deviceSetupCard.addView(label(
             "Review permissions and background settings here. Android asks you to make each change.",
             12f, muted
@@ -559,6 +593,18 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
         deviceSetupCard.addView(accessibilitySettingsButton, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, dp(46)
         ).apply { topMargin = dp(8) })
+        for (index in 1 until deviceSetupCard.childCount) {
+            deviceSetupCard.getChildAt(index).visibility = View.GONE
+        }
+        deviceSetupHeader.setOnClickListener {
+            val expand = deviceSetupCard.getChildAt(1).visibility != View.VISIBLE
+            for (index in 1 until deviceSetupCard.childCount) {
+                deviceSetupCard.getChildAt(index).visibility = if (expand) View.VISIBLE else View.GONE
+            }
+            deviceSetupChevron.text = if (expand) "⌃" else "⌄"
+            deviceSetupHeader.contentDescription =
+                if (expand) "Collapse phone setup" else "Expand phone setup"
+        }
 
         val footer = label("PRIVATE BY DESIGN  ·  YOU STAY IN CONTROL", 9f, 0xFF7187A4.toInt(), true).apply {
             gravity = Gravity.CENTER
