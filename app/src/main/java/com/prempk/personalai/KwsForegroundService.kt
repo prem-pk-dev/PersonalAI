@@ -334,7 +334,8 @@ class KwsForegroundService : Service() {
         const val STATE_DETECTED = "DETECTED"
         const val EXTRA_WAKE_DETECTED = "wake_detected"
         private const val TAG = "PK-KWS"
-        private const val CHANNEL_ID = "pk_wake_listener_v4"
+        const val NOTIFICATION_CHANNEL_ID = "pk_wake_listener_v4"
+        private const val CHANNEL_ID = NOTIFICATION_CHANNEL_ID
         private const val NOTIFICATION_ID = 4201
         private const val SAMPLE_RATE = 16_000
     }
