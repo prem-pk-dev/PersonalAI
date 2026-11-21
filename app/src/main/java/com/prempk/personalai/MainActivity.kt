@@ -1009,6 +1009,31 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun requestStartKwsSession() {
+        // A microphone foreground service can keep running while its notification is
+        // hidden by Android/MIUI notification settings. Never start a listener that
+        // the user cannot see or stop from the notification shade.
+        val notificationManager = getSystemService(android.app.NotificationManager::class.java)
+        val listenerChannelBlocked = Build.VERSION.SDK_INT >= 26 &&
+            notificationManager.getNotificationChannel(KwsForegroundService.NOTIFICATION_CHANNEL_ID)
+                ?.importance == android.app.NotificationManager.IMPORTANCE_NONE
+        if (!notificationManager.areNotificationsEnabled() || listenerChannelBlocked) {
+            kwsSetupStatus.text = "PK notifications are disabled. Enable them to see and stop the background listener."
+            AlertDialog.Builder(this)
+                .setTitle("Enable PK notifications")
+                .setMessage("Android is currently blocking PK notifications. The background microphone listener needs a visible notification so you can confirm it is active and stop it at any time.")
+                .setPositiveButton("Open settings") { _, _ ->
+                    runCatching {
+                        startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                            .putExtra(Settings.EXTRA_APP_PACKAGE, packageName))
+                    }.onFailure {
+                        runCatching { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:$packageName"))) }
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+            return
+        }
         val decision = KwsStartGate.evaluate(
             sdkInt = Build.VERSION.SDK_INT,
             microphonePermissionGranted =
