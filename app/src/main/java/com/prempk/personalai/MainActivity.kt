@@ -65,6 +65,7 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private var assistantRoleStatusView: TextView? = null
     private var accessibilityStatusView: TextView? = null
     private var kwsStateReceiverRegistered = false
+    private var returnHomeWhenKwsActive = false
     private val kwsStateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action != KwsForegroundService.ACTION_STATE_CHANGED) return
@@ -73,9 +74,30 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             kwsSetupStatus.text = message
             when (state) {
                 KwsForegroundService.STATE_STARTING -> status.text = "●  Starting background listener…"
-                KwsForegroundService.STATE_ACTIVE -> status.text = "●  PK listener active in background"
-                KwsForegroundService.STATE_FAILED -> status.text = "●  PK listener unavailable"
-                KwsForegroundService.STATE_STOPPED -> status.text = "●  Listener stopped"
+                KwsForegroundService.STATE_ACTIVE -> {
+                    status.text = "●  PK listener active in background"
+                    if (returnHomeWhenKwsActive && !isFinishing && !isDestroyed) {
+                        returnHomeWhenKwsActive = false
+                        // Return to the launcher only after AudioRecord confirms capture.
+                        window.decorView.post {
+                            if (!isFinishing && !isDestroyed) {
+                                val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+                                    addCategory(Intent.CATEGORY_HOME)
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                runCatching { startActivity(homeIntent) }
+                            }
+                        }
+                    }
+                }
+                KwsForegroundService.STATE_FAILED -> {
+                    returnHomeWhenKwsActive = false
+                    status.text = "●  PK listener unavailable"
+                }
+                KwsForegroundService.STATE_STOPPED -> {
+                    returnHomeWhenKwsActive = false
+                    status.text = "●  Listener stopped"
+                }
                 KwsForegroundService.STATE_DETECTED -> status.text = "●  PK detected — tap notification"
             }
         }
@@ -1049,9 +1071,14 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             }
             KwsStartGate.Decision.MODEL_REQUIRED ->
                 kwsSetupStatus.text = "Download the offline model first."
-            KwsStartGate.Decision.NOTIFICATION_PERMISSION_REQUIRED ->
+            KwsStartGate.Decision.NOTIFICATION_PERMISSION_REQUIRED -> {
+                returnHomeWhenKwsActive = true
                 requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
-            KwsStartGate.Decision.READY -> startKwsService()
+            }
+            KwsStartGate.Decision.READY -> {
+                returnHomeWhenKwsActive = true
+                startKwsService()
+            }
         }
     }
 
