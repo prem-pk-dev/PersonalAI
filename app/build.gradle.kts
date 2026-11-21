@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core:1.15.0")
     implementation(files("libs/sherpa-onnx-2.0.1.aar"))
     implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("junit:junit:4.13.2")
